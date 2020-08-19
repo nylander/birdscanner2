@@ -1,0 +1,258 @@
+#
+# Birdscanner v2
+#
+# Last modified: ons aug 19, 2020  02:20
+# Sign: JN
+#
+
+# Input files
+GENOMES, = glob_wildcards("data/genomes/{GENOME}.gz")
+REFERENCES, = glob_wildcards("data/reference/{REFERENCE}.fas")
+
+# all
+rule all:
+    """
+    TODO: Figure out which lines that should be kept
+    """
+    input:
+        expand("run/tmp/{REFERENCE}.hmm", REFERENCE=REFERENCES),
+        expand("run/hmmer/{GENOME}.nhmmer.out", GENOME=GENOMES)
+
+# 1. cat_reference_fas
+# Uses: bash, awk
+rule cat_reference_fas:
+    """
+    Concatenate all reference fasta files to one (reference.fas),
+    while relabelling fasta headers.
+    TODO: make parallel.
+    """
+    input:
+        expand("data/reference/{REFERENCE}.fas", REFERENCE=REFERENCES)
+    output:
+        temp("run/plast/reference.fas")
+    shell:
+        """
+        for f in {input} ; do
+            awk -v a=$(basename $f .fas) '/>/{{$0=\">\"a\"__\"++n}}1' $f >> {output}
+        done
+        """
+
+# 2. split_genome_fasta
+# Uses: bash, splitfast, pigz
+rule split_genome_fasta:
+    """
+    Split fasta sequences longer than length=100,000.
+    """
+    input: 
+        "data/genomes/{GENOME}.gz"
+    output: 
+        temp("run/plast/{GENOME}.split.fas")
+    threads:
+        4
+    params:
+        length = 100000
+    shell:
+        "splitfast -m {params.length} <(pigz -p {threads} -d -c {input}) > {output}"
+
+# 3. make_genome_plast_db
+# Uses: bash, makeblastdb
+rule make_genome_plast_db:
+    """
+    Make plast database.
+    """
+    input:
+        reference = "run/plast/{GENOME}.split.fas",
+    output:
+        done = temp(touch("run/tmp/{GENOME}.makeblastdb.done"))
+    shell:
+        "makeblastdb -in {input} -dbtype nucl -parse_seqids"
+
+# 4. run_plast
+# Uses: bash, plast
+# TODO: after run_plast is done, one can remove {GENOME}.split.fas.*
+rule run_plast:
+    """
+    Run plast with all concatenated reference sequences as query,
+    and the splitted genome fasta as data base.
+    """
+    input:
+        db_done= "run/tmp/{GENOME}.makeblastdb.done",
+        query = "run/plast/reference.fas"
+    output:
+        protected("run/plast/{GENOME}.plast.tab")
+    threads:
+        workflow.cores
+    params:
+        maxhitperquery = "1"
+    shell:
+        "plast -p plastn -i {input.query} -d run/plast/{wildcards.GENOME}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} -bargraph"
+
+# 5. get_scaffold_ids
+# Uses: bash, awk, sort
+rule get_scaffold_ids:
+    """
+    The idea is that for each species, we would expect one best hit, and we wish to see which of the scaffolds that most often provides the best hit.
+    We wish to search with hmms only against the scaffolds having sufficiently long hits in the plast search.
+    Plast outfmt 1:
+    query ID, subject ID, percent identities, alignment length, nb. misses, nb. gaps, query begin, query end, subject begin, subject end, e-value, bit score
+    We will extract hits where ('alignment length' > minlen), and then we first sort the table on query ID, then sort the table on 'bit score' in descending order, and finally go down
+    the list and keep unique 'subject ID'. Note: There is room here to include a scaffold only if having some bit score or e-value.
+    """
+    input:
+        "run/plast/{GENOME}.plast.tab"
+    output:
+        temp("run/tmp/{GENOME}.scaffolds.ids")
+    params:
+        minlen = "50"
+    shell:
+        """
+        awk '$4>{params.minlen}' {input} | \
+        sort -t$'\t' -k1,1 -k12rg | \
+        awk -F $'\t' '!x[$1]++' | \
+        awk -F $'\t' '{{print $2}}' | \
+        sort -u > {output}
+        """
+
+# 6. get_reference_ids
+# Uses: bash, awk, perl, sort
+rule get_reference_ids:
+    """
+    Get IDs (file names) for those reference gene files that have a best plast hit with length above minlen.
+    NOTE: Room here for more filtering if needed.
+    """
+    input:
+        "run/plast/{GENOME}.plast.tab"
+    output:
+        temp("run/tmp/{GENOME}.ref.ids")
+    params:
+        minlen = "50"
+    shell:
+        """
+        awk '$4>{params.minlen}' {input} | \
+        sort -t$'\t' -k1g -k12rg | \
+        awk -F $'\t' '!x[$1]++' | \
+        awk -F $'__' '{{print $1 ".hmm"}}' | \
+        sort -u > {output}
+        """
+
+# 7. select_scaffolds
+# Uses: bash, blastdbcmd
+rule select_scaffolds:
+    """
+    Extract the scaffolds with best plast hits from the splitted genome fasta.
+    """
+    input:
+        db = "run/plast/{GENOME}.split.fas",
+        idfile = "run/tmp/{GENOME}.scaffolds.ids"
+    output:
+        temp("run/plast/{GENOME}.plast.fas")
+    shell:
+        "blastdbcmd -db {input.db} -dbtype nucl -entry_batch {input.idfile} -outfmt %f -out {output}"
+
+# 8. fasta_to_stockholm
+# Uses: bash, fasta2stockholm.pl
+rule fasta_to_stockholm:
+    """
+    Fasta to Stockholm MSA conversion.
+    """
+    input:
+        "data/reference/{REFERENCE}.fas"
+    output:
+        temp("run/tmp/{REFERENCE}.sto")
+    shell:
+        "fasta2stockholm.pl {input} > {output}"
+
+# 9. create_hmms
+# Uses: bash, hmmbuild
+rule create_hmms:
+    """
+    Create hmms from Stockholm format.
+    """
+    input:
+        "run/tmp/{REFERENCE}.sto"
+    output:
+        temp("run/tmp/{REFERENCE}.hmm")
+    shell:
+        "hmmbuild --dna {output} {input}"
+
+# 10. select_hmms
+# Uses: bash, cat, find, grep
+rule select_hmms:
+    """
+    Select those hmm from tmp files that have matches in plast, and concatenate them.
+    TODO: Currently, we do NOT have information on the gene from the plast output (.plast.tab):
+    we have the fasta headers from the queries, which in the example files are taxon abbreviaitons.
+    We can generate the gene-information by transforming the fasta headers while creating the
+    reference.fas file.
+    """
+    input:
+        "run/tmp/{GENOME}.ref.ids"
+    output:
+        temp("run/hmmer/{GENOME}.hmm")
+    shell:
+        "cat $(find run/tmp -type f -name \*.hmm | grep -f {input}) > {output}"
+
+# 11. run_hmmpress
+# Uses: bash, hmmpress
+rule run_hmmpress:
+    """
+    Run hmmpress.
+    """
+    input:
+        "run/hmmer/{GENOME}.hmm"
+    output:
+        temp(touch("run/tmp/{GENOME}.hmmpress.done"))
+    shell:
+        "hmmpress {input}"
+
+# 12. run_nhmmer
+# Uses: bash, nhmmer
+# TODO: after run_nhmmer is done, one can remove {GENOME}.hmm.*
+rule run_nhmmer:
+    """
+    Run nhmmer: the selected scaffolds against the selected hmms.
+    """
+    input:
+        "run/tmp/{GENOME}.hmmpress.done",
+        hmm = "run/hmmer/{GENOME}.hmm",
+        query = "run/plast/{GENOME}.plast.fas"
+    output:
+        protected("run/hmmer/{GENOME}.nhmmer.out")
+    threads:
+        workflow.cores
+    shell:
+        "nhmmer --notextw --cpu {threads} --tblout {output} {input.hmm} {input.query}"
+
+# 13. parse_nhmmer
+# Uses: bash, perl, parse_nhmmer.pl
+rule parse_nhmmer:
+    """
+    Parse nhmmer output.
+    """
+    input:
+        hmmer = "run/hmmer/{GENOME}.nhmmer.out",
+        fas = "run/plast/{GENOME}.plast.fas"
+    output:
+        "results/genomes/{GENOME}" # Output is a folder!
+    shell:
+        "perl workflow/scripts/parse_nhmmer.pl -i {input.hmmer} -g {input.fas} -d {output}"
+
+# 14. gather_genes
+# Uses: bash, perl, gather_genes.pl
+#rule gather_genes:
+#    """
+#    Gather genes from parsed nhmmer output.
+#    """
+#    input:
+#        expand("results/genomes/{GENOME}", GENOME=GENOMES) # Behöver skapa en lista med foldrar!
+#    output:
+#        "results/genes"
+#    shell:
+#        "perl workflow/scripts/gather_genes.pl --outdir={output} {input}"
+#
+
+
+# gör en funktion som returnerar en lista med foldrar?
+# import os
+# subfolders = [ f.path for f in os.scandir('results/genomes') if f.is_dir() ]
+#

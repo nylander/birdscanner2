@@ -1,0 +1,4 @@
+data/genomes/*.gz
+data/reference/*.fas
+run/*
+NOTES
