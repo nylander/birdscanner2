@@ -1,19 +1,25 @@
 # Birdscanner version 2
 
-- Last modified: tor aug 20, 2020  04:45
+- Last modified: tor aug 20, 2020  05:11
 - Sign: JN
 
 
 ## Description
 
 The workflow (Fig. \ref{workflow}) will try to extract known genomic regions
-(based on multiple- sequence alignments and HMMs; the *Reference*) from genome
-files (the *Genome*). The approach taken is essentially a search with HMM's
+(based on multiple- sequence alignments and HMMs; the *Reference*) from a genome
+file (the *Genome*). The approach taken is essentially a search with HMM's
 against a reference genome, with an extra step where an initial similarity
 search is used to reduce the input data down to matching HMM's and genomic
 regions. Both the known genomic regions (multiple nucleotide-sequence
 alignments in fasta format), and the genome files (fasta format, one or several
 scaffolds) must be provided by the user.
+
+If several genomes are provided, the workflow can also collect each genomic
+region extracted from each genome (the *Fasta seq* files), and produce
+unaligned "gene" files that can be the input to a multiple-sequence alignment
+software.
+
 
 ![Birdscanner2 workflow\label{workflow}](resources/img/Diagram1.png)
 
