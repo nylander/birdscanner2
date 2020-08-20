@@ -4,3 +4,4 @@ data/reference/*.fas
 run/*
 NOTES*
 TODO*
+*.swp
