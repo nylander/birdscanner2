@@ -1,7 +1,7 @@
 #
 # Birdscanner v2
 #
-# Last modified: ons aug 19, 2020  02:20
+# Last modified: tor aug 20, 2020  05:01
 # Sign: JN
 #
 
@@ -19,7 +19,7 @@ rule all:
         expand("run/hmmer/{GENOME}.nhmmer.out", GENOME=GENOMES)
 
 # 1. cat_reference_fas
-# Uses: bash, awk
+# Uses: bash 5.0.17, awk v5.0.1
 rule cat_reference_fas:
     """
     Concatenate all reference fasta files to one (reference.fas),
@@ -38,7 +38,7 @@ rule cat_reference_fas:
         """
 
 # 2. split_genome_fasta
-# Uses: bash, splitfast, pigz
+# Uses: bash 5.0.17, splitfast, pigz v2.4
 rule split_genome_fasta:
     """
     Split fasta sequences longer than length=100,000.
@@ -55,7 +55,7 @@ rule split_genome_fasta:
         "splitfast -m {params.length} <(pigz -p {threads} -d -c {input}) > {output}"
 
 # 3. make_genome_plast_db
-# Uses: bash, makeblastdb
+# Uses: bash 5.0.17, makeblastdb v2.9.0+ from blast v2.9.0
 rule make_genome_plast_db:
     """
     Make plast database.
@@ -68,7 +68,7 @@ rule make_genome_plast_db:
         "makeblastdb -in {input} -dbtype nucl -parse_seqids"
 
 # 4. run_plast
-# Uses: bash, plast
+# Uses: bash 5.0.17, plast v2.3.2
 # TODO: after run_plast is done, one can remove {GENOME}.split.fas.*
 rule run_plast:
     """
@@ -88,7 +88,7 @@ rule run_plast:
         "plast -p plastn -i {input.query} -d run/plast/{wildcards.GENOME}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} -bargraph"
 
 # 5. get_scaffold_ids
-# Uses: bash, awk, sort
+# Uses: bash 5.0.17, awk v5.0.1, sort v8.30
 rule get_scaffold_ids:
     """
     The idea is that for each species, we would expect one best hit, and we wish to see which of the scaffolds that most often provides the best hit.
@@ -114,7 +114,7 @@ rule get_scaffold_ids:
         """
 
 # 6. get_reference_ids
-# Uses: bash, awk, perl, sort
+# Uses: bash 5.0.17, awk v5.0.1, sort v8.30
 rule get_reference_ids:
     """
     Get IDs (file names) for those reference gene files that have a best plast hit with length above minlen.
@@ -136,7 +136,7 @@ rule get_reference_ids:
         """
 
 # 7. select_scaffolds
-# Uses: bash, blastdbcmd
+# Uses: bash 5.0.17, blastdbcmd v2.9.0+
 rule select_scaffolds:
     """
     Extract the scaffolds with best plast hits from the splitted genome fasta.
@@ -150,7 +150,7 @@ rule select_scaffolds:
         "blastdbcmd -db {input.db} -dbtype nucl -entry_batch {input.idfile} -outfmt %f -out {output}"
 
 # 8. fasta_to_stockholm
-# Uses: bash, fasta2stockholm.pl
+# Uses: bash 5.0.17, fasta2stockholm.pl
 rule fasta_to_stockholm:
     """
     Fasta to Stockholm MSA conversion.
@@ -163,7 +163,7 @@ rule fasta_to_stockholm:
         "fasta2stockholm.pl {input} > {output}"
 
 # 9. create_hmms
-# Uses: bash, hmmbuild
+# Uses: bash 5.0.17, hmmbuild from HMMER 3.3
 rule create_hmms:
     """
     Create hmms from Stockholm format.
@@ -176,7 +176,7 @@ rule create_hmms:
         "hmmbuild --dna {output} {input}"
 
 # 10. select_hmms
-# Uses: bash, cat, find, grep
+# Uses: bash 5.0.17, cat v8.30, find v4.7.0, grep v3.4
 rule select_hmms:
     """
     Select those hmm from tmp files that have matches in plast, and concatenate them.
@@ -193,7 +193,7 @@ rule select_hmms:
         "cat $(find run/tmp -type f -name \*.hmm | grep -f {input}) > {output}"
 
 # 11. run_hmmpress
-# Uses: bash, hmmpress
+# Uses: bash 5.0.17, hmmpress from HMMER 3.3
 rule run_hmmpress:
     """
     Run hmmpress.
@@ -206,7 +206,7 @@ rule run_hmmpress:
         "hmmpress {input}"
 
 # 12. run_nhmmer
-# Uses: bash, nhmmer
+# Uses: bash 5.0.17, nhmmer from HMMER 3.3
 # TODO: after run_nhmmer is done, one can remove {GENOME}.hmm.*
 rule run_nhmmer:
     """
@@ -224,7 +224,7 @@ rule run_nhmmer:
         "nhmmer --notextw --cpu {threads} --tblout {output} {input.hmm} {input.query}"
 
 # 13. parse_nhmmer
-# Uses: bash, perl, parse_nhmmer.pl
+# Uses: bash 5.0.17, perl v5.30.0, parse_nhmmer.pl v1.0
 rule parse_nhmmer:
     """
     Parse nhmmer output.
@@ -238,7 +238,7 @@ rule parse_nhmmer:
         "perl workflow/scripts/parse_nhmmer.pl -i {input.hmmer} -g {input.fas} -d {output}"
 
 # 14. gather_genes
-# Uses: bash, perl, gather_genes.pl
+# Uses: bash 5.0.17, perl v5.30.0, gather_genes.pl v1.0
 #rule gather_genes:
 #    """
 #    Gather genes from parsed nhmmer output.

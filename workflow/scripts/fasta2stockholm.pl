@@ -2,8 +2,9 @@
 
 # FASTA to Stockholm conversion.
 # Reads file names from stdin, prints to stdout.
-# Last modified: tor aug 20, 2020  02:34
+# Last modified: tor aug 20, 2020  03:07
 # Sign: JN
+# Version: 1.0
 
 use warnings;
 use strict;
