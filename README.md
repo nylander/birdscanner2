@@ -1,6 +1,6 @@
 # Birdscanner version 2
 
-- Last modified: tor aug 20, 2020  05:11
+- Last modified: fre aug 21, 2020  12:58
 - Sign: JN
 
 
@@ -50,6 +50,8 @@ software.
 
 
 ### Alt. 2: Use Conda 
+
+**TEXT NOT UPDATED!** 
 
 1. Install Conda
 
@@ -119,10 +121,10 @@ tools (and tested version) are given below.
 - hmmpress (3.3)
 - nhmmer (3.3)
 - perl (5.30.0)
-- fasta2stockholm.pl (1.0)
-- parse_nhmmer.pl (1.0)
-- gather_genes.pl (1.0)
-- splitfast (Tue 14 Jan 2020)
+- [fasta2stockholm.pl](workflow/scripts/fasta2stockholm.pl) (1.0)
+- [parse_nhmmer.pl](workflow/scripts/parse_nhmmer.pl) (1.0)
+- [gather_genes.pl](workflow/scripts/gather_genes.pl) (1.0)
+- [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
 
 
 ## Data
