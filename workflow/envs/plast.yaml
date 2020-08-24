@@ -1,0 +1,5 @@
+name: plast
+channels:
+ - bioconda 
+dependencies:
+ - blast>=2.9
