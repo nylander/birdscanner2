@@ -1,6 +1,6 @@
 # Birdscanner version 2
 
-- Last modified: fre aug 21, 2020  12:58
+- Last modified: mån aug 24, 2020  12:49
 - Sign: JN
 
 
@@ -53,9 +53,8 @@ software.
 
 **TEXT NOT UPDATED!** 
 
-1. Install Conda
+1. Install Conda (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html))
 
-        $ ...
 
 2. Clone birdscanner2 from GitHub:
 
@@ -66,7 +65,7 @@ software.
         $ cd birdscanner2
         $ wget -O data.tgz "https://owncloud.nrm.se/index.php/s/YSCC6S63x3b3Jv9/download"
         $ tar xfz data.tgz && rm data.tgz
-        $ snakemake --use-conda --dry-run
+        $ snakemake --use-conda --cores 4 --dry-run
 
 
 ## Input
