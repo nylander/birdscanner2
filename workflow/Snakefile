@@ -1,7 +1,7 @@
 #
 # Birdscanner v2
 #
-# Last modified: mån aug 24, 2020  12:22
+# Last modified: mån aug 24, 2020  12:53
 # Sign: JN
 #
 
@@ -64,8 +64,6 @@ rule make_genome_plast_db:
         reference = "run/plast/{GENOME}.split.fas",
     output:
         done = temp(touch("run/tmp/{GENOME}.makeblastdb.done"))
-    conda:
-        "envs/plast.yaml"
     shell:
         "makeblastdb -in {input} -dbtype nucl -parse_seqids"
 
@@ -82,8 +80,6 @@ rule run_plast:
         query = "run/plast/reference.fas"
     output:
         protected("run/plast/{GENOME}.plast.tab")
-    conda:
-        "envs/plast.yaml"
     threads:
         workflow.cores
     params:
@@ -150,8 +146,6 @@ rule select_scaffolds:
         idfile = "run/tmp/{GENOME}.scaffolds.ids"
     output:
         temp("run/plast/{GENOME}.plast.fas")
-    conda:
-        "envs/plast.yaml"
     shell:
         "blastdbcmd -db {input.db} -dbtype nucl -entry_batch {input.idfile} -outfmt %f -out {output}"
 
@@ -178,8 +172,6 @@ rule create_hmms:
         "run/tmp/{REFERENCE}.sto"
     output:
         temp("run/tmp/{REFERENCE}.hmm")
-    conda:
-        "envs/hmmer.yaml"
     shell:
         "hmmbuild --dna {output} {input}"
 
@@ -210,8 +202,6 @@ rule run_hmmpress:
         "run/hmmer/{GENOME}.hmm"
     output:
         temp(touch("run/tmp/{GENOME}.hmmpress.done"))
-    conda:
-        "envs/hmmer.yaml"
     shell:
         "hmmpress {input}"
 
@@ -228,8 +218,6 @@ rule run_nhmmer:
         query = "run/plast/{GENOME}.plast.fas"
     output:
         protected("run/hmmer/{GENOME}.nhmmer.out")
-    conda:
-        "envs/hmmer.yaml"
     threads:
         workflow.cores
     shell:
