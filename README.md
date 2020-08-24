@@ -1,6 +1,6 @@
 # Birdscanner version 2
 
-- Last modified: mån aug 24, 2020  12:51
+- Last modified: mån aug 24, 2020  03:15
 - Sign: JN
 
 
@@ -11,14 +11,14 @@ The workflow (Fig. \ref{workflow}) will try to extract known genomic regions
 file (the *Genome*). The approach taken is essentially a search with HMM's
 against a reference genome, with an extra step where an initial similarity
 search is used to reduce the input data down to matching HMM's and genomic
-regions. Both the known genomic regions (multiple nucleotide-sequence
-alignments in fasta format), and the genome files (fasta format, one or several
-scaffolds) must be provided by the user.
+regions.
 
-If several genomes are provided, the workflow can also collect each genomic
-region extracted from each genome (the *Fasta seq* files), and produce
-unaligned "gene" files that can be the input to a multiple-sequence alignment
-software.
+Both the known genomic regions (multiple nucleotide-sequence alignments in
+fasta format), and the genome files (fasta format, one or several scaffolds)
+must be provided by the user. If several genomes are provided, the workflow can
+also collect each genomic region extracted from each genome (the *Fasta seq*
+files), and produce unaligned "gene" files that can be the input to a
+multiple-sequence alignment software.
 
 
 ![Birdscanner2 workflow\label{workflow}](resources/img/Diagram1.png)
@@ -60,11 +60,11 @@ Example set up:
 ```
     data
     ├── genomes
-    │   ├── Ainor_genome.gz
-    │   └── CcervF_genome.gz
+    │   ├── Apa.gz
+    │   └── Bpa.gz
     └── reference
-        ├── myo.fas
-        └── odc.fas
+        ├── 1.fas
+        └── 2.fas
 ```
 
 ## Output
@@ -126,16 +126,19 @@ the fasta header for the extracted sequences. Examples: `apa_genome.gz`,
 ##### 2. Reference alignments
 
 Add reference sequence alignments (nucleotides, fasta format, file suffix
-`.fas`) in the folder `data/reference/`. Each alignment file would
-represent one genomic region ("gene"). The name of the alignment file will be
-used in downstream analyses, so they should have names that are easy to parse
-(do not use spaces or special characters, not even hyphens (`-`) in the file
-names). Examples: `myo.fas`, `odc.fas`, `988.fas`, `999.fas`, etc. The fasta
-headers are also used in downstream analyses and should also be easy to parse.
-Examples, `>Passe`, `>Ploceu`, `>Prunell`. Use underscores (`_`) instead of
-hyphens (`-`). Fasta headers needs to be unique (i.e., no duplicates in each
-individual alignment), but the number of sequences doesn't need to be the same
-in all files.
+`.fas`) in the folder `data/reference/`. Each alignment file would represent
+one genomic region ("gene").
+
+The name of the alignment file will be used in downstream analyses, so they
+should have names that are easy to parse (do not use spaces or special
+characters, not even hyphens (`-`) in the file names). Examples: `myo.fas`,
+`odc.fas`, `988.fas`, `999.fas`, etc.
+
+The fasta headers are also used in downstream analyses and should also be easy
+to parse.  Examples, `>Passe`, `>Ploceu`, `>Prunell`. Use underscores (`_`)
+instead of hyphens (`-`). Fasta headers needs to be unique (i.e., no duplicates
+in each individual alignment), but the number of sequences doesn't need to be
+the same in all files.
 
 ##### 2.2 Jarvis data
 
