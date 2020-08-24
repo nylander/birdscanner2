@@ -1,6 +1,6 @@
 # Birdscanner version 2
 
-- Last modified: fre aug 21, 2020  12:58
+- Last modified: mån aug 24, 2020  12:51
 - Sign: JN
 
 
@@ -29,7 +29,7 @@ software.
 ### Alt. 1: Manual installation
 
 1. Install prerequisites (see section [Software
-   prerequisites](#software-prerequisites) for details).  On a Debian-based
+   prerequisites](#software-prerequisites) for details). On a Debian-based
    GNU/Linux system (tested on Ubuntu Linux 20.04), this can be done using
 
         $ sudo apt install build-essential hmmer ncbi-blast+ pigz plast snakemake
@@ -47,26 +47,6 @@ software.
         $ tar xfz data.tgz && rm data.tgz
         $ snakemake -j -p --dry-run
         $ snakemake -j -p
-
-
-### Alt. 2: Use Conda 
-
-**TEXT NOT UPDATED!** 
-
-1. Install Conda
-
-        $ ...
-
-2. Clone birdscanner2 from GitHub:
-
-        $ git clone --depth=1 https://github.com/Naturhistoriska/birdscanner2.git
-
-3. Optional: Download example data (636 MB) and test the installation
-
-        $ cd birdscanner2
-        $ wget -O data.tgz "https://owncloud.nrm.se/index.php/s/YSCC6S63x3b3Jv9/download"
-        $ tar xfz data.tgz && rm data.tgz
-        $ snakemake --use-conda --dry-run
 
 
 ## Input
