@@ -78,8 +78,8 @@ while (my $dir = shift(@ARGV)) {
     }
     my @fasta_files = <$dir/*.fas>;
     foreach my $filename (@fasta_files) {
-        my ($name,$path,$suffix) = fileparse($filename,'.fas');
-        my ($n, $geneid) = split /\./, $name;
+        my ($name,$path,$suffix) = fileparse($filename,'.fas');  # Assumes "n.geneid.fas"
+        my ($n, $geneid) = split /\./, $name; # Assumes "n.geneid"
         push @{$gene_file_hash{$geneid}}, $filename;
     }
 }

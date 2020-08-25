@@ -1,13 +1,17 @@
 #
 # Birdscanner v2
 #
-# Last modified: mån aug 24, 2020  12:53
+# Last modified: tis aug 25, 2020  10:06
 # Sign: JN
 #
 
 # Input files
 GENOMES, = glob_wildcards("data/genomes/{GENOME}.gz")
 REFERENCES, = glob_wildcards("data/reference/{REFERENCE}.fas")
+
+# When finished
+#onsuccess:
+## Clean up all untracked files
 
 # all
 rule all:
@@ -16,7 +20,8 @@ rule all:
     """
     input:
         expand("run/tmp/{REFERENCE}.hmm", REFERENCE=REFERENCES),
-        expand("run/hmmer/{GENOME}.nhmmer.out", GENOME=GENOMES)
+        expand("run/hmmer/{GENOME}.nhmmer.out", GENOME=GENOMES),
+        expand("results/genomes/{GENOME}.done", GENOME=GENOMES)
 
 # 1. cat_reference_fas
 # Uses: bash 5.0.17, awk v5.0.1
@@ -233,9 +238,13 @@ rule parse_nhmmer:
         hmmer = "run/hmmer/{GENOME}.nhmmer.out",
         fas = "run/plast/{GENOME}.plast.fas"
     output:
-        "results/genomes/{GENOME}" # Output is a folder!
+        temp(touch("results/genomes/{GENOME}.done"))
+    params:
+        outdir = "results/genomes/{GENOME}"
     shell:
-        "perl workflow/scripts/parse_nhmmer.pl -i {input.hmmer} -g {input.fas} -d {output}"
+        """
+        perl workflow/scripts/parse_nhmmer.pl -i {input.hmmer} -g {input.fas} -d {params.outdir} && \
+        """
 
 # 14. gather_genes
 # Uses: bash 5.0.17, perl v5.30.0, gather_genes.pl v1.0
