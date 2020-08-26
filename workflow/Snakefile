@@ -1,7 +1,7 @@
 #
 # Birdscanner v2
 #
-# Last modified: tis aug 25, 2020  10:06
+# Last modified: ons aug 26, 2020  12:08
 # Sign: JN
 #
 
@@ -11,7 +11,8 @@ REFERENCES, = glob_wildcards("data/reference/{REFERENCE}.fas")
 
 # When finished
 #onsuccess:
-## Clean up all untracked files
+## Clean up all untracked files using "did_rm_plast", "did_rm_hmmer" as input for some rule?
+
 
 # all
 rule all:
@@ -20,8 +21,12 @@ rule all:
     """
     input:
         expand("run/tmp/{REFERENCE}.hmm", REFERENCE=REFERENCES),
-        expand("run/hmmer/{GENOME}.nhmmer.out", GENOME=GENOMES),
         expand("results/genomes/{GENOME}.done", GENOME=GENOMES)
+
+
+
+#        expand("run/hmmer/{GENOME}.nhmmer.out", GENOME=GENOMES),
+#        expand("results/genomes/{GENOME}.done", GENOME=GENOMES),
 
 # 1. cat_reference_fas
 # Uses: bash 5.0.17, awk v5.0.1
@@ -242,9 +247,7 @@ rule parse_nhmmer:
     params:
         outdir = "results/genomes/{GENOME}"
     shell:
-        """
-        perl workflow/scripts/parse_nhmmer.pl -i {input.hmmer} -g {input.fas} -d {params.outdir} && \
-        """
+        "perl workflow/scripts/parse_nhmmer.pl -i {input.hmmer} -g {input.fas} -d {params.outdir}"
 
 # 14. gather_genes
 # Uses: bash 5.0.17, perl v5.30.0, gather_genes.pl v1.0
@@ -258,10 +261,25 @@ rule parse_nhmmer:
 #        "results/genes"
 #    shell:
 #        "perl workflow/scripts/gather_genes.pl --outdir={output} {input}"
-#
 
 
-# gör en funktion som returnerar en lista med foldrar?
-# import os
-# subfolders = [ f.path for f in os.scandir('results/genomes') if f.is_dir() ]
-#
+hmm_db_formats = ["h3f", "h3i", "h3m", "h3p"]
+rule rm_hmmer:
+    input:
+        expand("run/hmmer/{GENOME}.hmm.{ext}", GENOME=GENOMES, ext=hmm_db_formats)
+    output:
+        touch("did_rm_hmm")
+    shell:
+        "rm {input}"
+
+
+plast_db_formats = ["nhr", "nin", "nog", "nsd", "nsi", "nsq"]
+rule rm_plast:
+    input:
+        expand("run/plast/{GENOME}.split.fas.{ext}", GENOME=GENOMES, ext=plast_db_formats)
+    output:
+        touch(temp("did_rm_plast"))
+    shell:
+        "rm {input}"
+
+
