@@ -24,7 +24,8 @@
 
          BUGS: ---
 
-        NOTES: ---
+        NOTES: Currently in birdscanner2, fas files are named <id>.fas, not
+               <genome>.<id>.fas
 
        AUTHOR: Johan Nylander (JN), johan.nylander@nbis.se
 
@@ -78,7 +79,7 @@ while (my $dir = shift(@ARGV)) {
     }
     my @fasta_files = <$dir/*.fas>;
     foreach my $filename (@fasta_files) {
-        my ($name,$path,$suffix) = fileparse($filename,'.fas');  # Assumes "n.geneid.fas"
+        my ($name, $path, $suffix) = fileparse($filename, '.fas');  # Assumes file named "n.geneid.fas"
         my ($n, $geneid) = split /\./, $name; # Assumes "n.geneid"
         push @{$gene_file_hash{$geneid}}, $filename;
     }

@@ -1,7 +1,16 @@
 # Birdscanner v2
 #
-# Last modified: ons aug 26, 2020  05:10
+# Last modified: tor aug 27, 2020  04:00
 # Sign: JN
+
+# Note: Porbably need to redesing to make sure
+# fasta entries for genes contain info on both
+# genome and geneid. This to facilitate concatenation
+# without name clashes.
+# Start by checking fasta headers and file names for the
+# results/genomes/*.fas
+
+
 
 # Python
 import os
@@ -11,10 +20,6 @@ import os
 # Input files
 GENOMES, = glob_wildcards("data/genomes/{GENOME}.gz")
 REFERENCES, = glob_wildcards("data/reference/{REFERENCE}.fas")
-
-# When finished
-#onsuccess:
-## Clean up all untracked files using "did_rm_plast", "did_rm_hmmer" as input for some rule?
 
 
 # all
@@ -269,22 +274,27 @@ rule distclean:
     shell:
         "rm -rf run/plast/* run/hmmer/* results/genes/* results/genomes/*"
 
-#hmm_db_formats = ["h3f", "h3i", "h3m", "h3p"]
-#rule rm_hmmer:
-#    input:
-#        expand("run/hmmer/{GENOME}.hmm.{ext}", GENOME=GENOMES, ext=hmm_db_formats)
-#    output:
-#        touch("did_rm_hmm")
-#    shell:
-#        "rm {input}"
-#
-#
-#plast_db_formats = ["nhr", "nin", "nog", "nsd", "nsi", "nsq"]
-#rule rm_plast:
-#    input:
-#        expand("run/plast/{GENOME}.split.fas.{ext}", GENOME=GENOMES, ext=plast_db_formats)
-#    output:
-#        touch(temp("did_rm_plast"))
-#    shell:
-#        "rm {input}"
+
+# Remove hmmer db files
+hmm_db_formats = ["h3f", "h3i", "h3m", "h3p"]
+rule rm_hmmer:
+    input:
+        expand("run/hmmer/{GENOME}.hmm.{ext}", GENOME=GENOMES, ext=hmm_db_formats)
+    output:
+        touch(temp("did_rm_hmm"))
+    shell:
+        "rm {input}"
+
+# Remove plast db files
+plast_db_formats = ["nhr", "nin", "nog", "nsd", "nsi", "nsq"]
+rule rm_plast:
+    input:
+        expand("run/plast/{GENOME}.split.fas.{ext}", GENOME=GENOMES, ext=plast_db_formats)
+    output:
+        touch(temp("did_rm_plast"))
+    shell:
+        "rm {input}"
+
+# When finished
+#onsuccess:
 
