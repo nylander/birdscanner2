@@ -1,6 +1,6 @@
 # Birdscanner version 2
 
-- Last modified: mån aug 24, 2020  03:15
+- Last modified: fre aug 28, 2020  02:38
 - Sign: JN
 
 
@@ -71,6 +71,20 @@ Example set up:
 
 Output are written to the folders `results/genomes/` and `results/genes/`.
 
+Example output:
+```
+    results
+    ├── genes
+    │   ├── 1.fas
+    │   └── 2.fas
+    └── genomes
+        ├── Apa
+        │   ├── Apa.1.fas
+        │   └── Apa.2.fas
+        └── Bpa
+            ├── Bpa.1.fas
+            └── Bpa.2.fas
+```
 
 ## Run
 
