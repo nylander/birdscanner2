@@ -1,10 +1,10 @@
 # Birdscanner v2
-# Last modified: ons sep 02, 2020  12:58
+# Last modified: ons sep 02, 2020  01:16
 # Sign: JN
 
 # Input files
-GENOMES, = glob_wildcards("data/genomes/{GENOME}.gz")
-REFERENCES, = glob_wildcards("data/reference/{REFERENCE}.fas")
+GENOMES, = glob_wildcards("data/genomes/{genome}.gz")
+REFERENCES, = glob_wildcards("data/reference/{ref}.fas")
 
 # First rule
 rule all:
@@ -12,26 +12,33 @@ rule all:
     TODO: Figure out which lines that should be kept
     """
     input:
-        expand("run/tmp/{REFERENCE}.hmm", REFERENCE=REFERENCES),
-        expand("results/genomes/{GENOME}", GENOME=GENOMES),
+        expand("run/tmp/{ref}.hmm", ref=REFERENCES),
+        expand("results/genomes/{genome}", genome=GENOMES),
         "run/tmp/genes.done"
 
 # 1. cat_reference_fas
 # Uses: bash 5.0.17, awk v5.0.1
+#rule cat_reference_fas:
+#    """
+#    Concatenate all reference fasta files to one (reference.fas),
+#    while relabelling fasta headers.
+#    TODO: make parallel.
+#    """
+#    input:
+#        expand("data/reference/{REFERENCE}.fas", REFERENCE=REFERENCES)
+#    output:
+#        temp("run/plast/reference.fas")
+#    shell:
+#        """for f in {input} ; do awk -v a=$(basename "$f" .fas) '/>/{{$0=">"a"__"++n}}1' "$f"  >> {output} ; done"""
 rule cat_reference_fas:
     """
     Concatenate all reference fasta files to one (reference.fas),
     while relabelling fasta headers.
-    TODO: make parallel.
     """
-    input:
-        expand("data/reference/{REFERENCE}.fas", REFERENCE=REFERENCES)
     output:
         temp("run/plast/reference.fas")
     shell:
-        """
-        for f in {input} ; do awk -v a=$(basename "$f" .fas) '/>/{{$0=">"a"__"++n}}1' "$f"  >> {output} ; done
-        """
+        "find data/reference -type f -name \*.fas -exec cat {{}} \+ > {output}"
 
 # 2. split_genome_fasta
 # Uses: bash 5.0.17, splitfast, pigz v2.4
@@ -40,9 +47,9 @@ rule split_genome_fasta:
     Split fasta sequences longer than length=100,000.
     """
     input: 
-        "data/genomes/{GENOME}.gz"
+        "data/genomes/{genome}.gz"
     output: 
-        temp("run/plast/{GENOME}.split.fas")
+        temp("run/plast/{genome}.split.fas")
     threads:
         4
     params:
@@ -57,9 +64,9 @@ rule make_genome_plast_db:
     Make plast database.
     """
     input:
-        "run/plast/{GENOME}.split.fas",
+        "run/plast/{genome}.split.fas",
     output:
-        temp(touch("run/tmp/{GENOME}.makeblastdb.done"))
+        temp(touch("run/tmp/{genome}.makeblastdb.done"))
     params:
         dbtype = "nucl",
         parse_seqids = "-parse_seqids"
@@ -74,17 +81,17 @@ rule run_plast:
     and the splitted genome fasta as data base.
     """
     input:
-        db_done= "run/tmp/{GENOME}.makeblastdb.done",
+        db_done= "run/tmp/{genome}.makeblastdb.done",
         query = "run/plast/reference.fas"
     output:
-        protected("run/plast/{GENOME}.plast.tab")
+        protected("run/plast/{genome}.plast.tab")
     threads:
         workflow.cores
     params:
         maxhitperquery = "1",
         bargraph = "-bargraph"
     shell:
-        "plast -p plastn -i {input.query} -d run/plast/{wildcards.GENOME}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
+        "plast -p plastn -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
 
 # 5. get_scaffold_ids
 # Uses: bash 5.0.17, awk v5.0.1, sort v8.30
@@ -98,9 +105,9 @@ rule get_scaffold_ids:
     the list and keep unique 'subject ID'. Note: There is room here to include a scaffold only if having some bit score or e-value.
     """
     input:
-        "run/plast/{GENOME}.plast.tab"
+        "run/plast/{genome}.plast.tab"
     output:
-        temp("run/tmp/{GENOME}.scaffolds.ids")
+        temp("run/tmp/{genome}.scaffolds.ids")
     params:
         minlen = "50"
     shell:
@@ -120,9 +127,9 @@ rule get_reference_ids:
     NOTE: Room here for more filtering if needed.
     """
     input:
-        "run/plast/{GENOME}.plast.tab"
+        "run/plast/{genome}.plast.tab"
     output:
-        temp("run/tmp/{GENOME}.ref.ids")
+        temp("run/tmp/{genome}.ref.ids")
     params:
         minlen = "50"
     shell:
@@ -141,10 +148,10 @@ rule select_scaffolds:
     Extract the scaffolds with best plast hits from the splitted genome fasta.
     """
     input:
-        db = "run/plast/{GENOME}.split.fas",
-        idfile = "run/tmp/{GENOME}.scaffolds.ids"
+        db = "run/plast/{genome}.split.fas",
+        idfile = "run/tmp/{genome}.scaffolds.ids"
     output:
-        temp("run/plast/{GENOME}.plast.fas")
+        temp("run/plast/{genome}.plast.fas")
     params:
         dbtype = "nucl",
         outfmt = "%f"
@@ -158,9 +165,9 @@ rule fasta_to_stockholm:
     Fasta to Stockholm MSA conversion.
     """
     input:
-        "data/reference/{REFERENCE}.fas"
+        "data/reference/{ref}.fas"
     output:
-        temp("run/tmp/{REFERENCE}.sto")
+        temp("run/tmp/{ref}.sto")
     shell:
         "fasta2stockholm.pl {input} > {output}"
 
@@ -171,9 +178,9 @@ rule create_hmms:
     Create hmms from Stockholm format.
     """
     input:
-        "run/tmp/{REFERENCE}.sto"
+        "run/tmp/{ref}.sto"
     output:
-        temp("run/tmp/{REFERENCE}.hmm")
+        temp("run/tmp/{ref}.hmm")
     shell:
         "hmmbuild --dna {output} {input}"
 
@@ -188,9 +195,9 @@ rule select_hmms:
     reference.fas file.
     """
     input:
-        "run/tmp/{GENOME}.ref.ids"
+        "run/tmp/{genome}.ref.ids"
     output:
-        temp("run/hmmer/{GENOME}.hmm")
+        temp("run/hmmer/{genome}.hmm")
     shell:
         "cat $(find run/tmp -type f -name \*.hmm | grep -f {input}) > {output}"
 
@@ -201,9 +208,9 @@ rule run_hmmpress:
     Run hmmpress.
     """
     input:
-        "run/hmmer/{GENOME}.hmm"
+        "run/hmmer/{genome}.hmm"
     output:
-        temp(touch("run/tmp/{GENOME}.hmmpress.done"))
+        temp(touch("run/tmp/{genome}.hmmpress.done"))
     shell:
         "hmmpress {input}"
 
@@ -214,11 +221,11 @@ rule run_nhmmer:
     Run nhmmer: the selected scaffolds against the selected hmms.
     """
     input:
-        "run/tmp/{GENOME}.hmmpress.done",
-        hmm = "run/hmmer/{GENOME}.hmm",
-        query = "run/plast/{GENOME}.plast.fas"
+        "run/tmp/{genome}.hmmpress.done",
+        hmm = "run/hmmer/{genome}.hmm",
+        query = "run/plast/{genome}.plast.fas"
     output:
-        protected("run/hmmer/{GENOME}.nhmmer.out")
+        protected("run/hmmer/{genome}.nhmmer.out")
     params:
         notextw = "--notextw"
     threads:
@@ -233,14 +240,14 @@ rule parse_nhmmer:
     Parse nhmmer output.
     """
     input:
-        hmmer = "run/hmmer/{GENOME}.nhmmer.out",
-        fas = "run/plast/{GENOME}.plast.fas"
+        hmmer = "run/hmmer/{genome}.nhmmer.out",
+        fas = "run/plast/{genome}.plast.fas"
     output:
-        directory("results/genomes/{GENOME}"),
+        directory("results/genomes/{genome}"),
     params:
         stats = "--stats",
-        prefix = "{GENOME}",
-        fastaheader = "{GENOME}"
+        prefix = "{genome}",
+        fastaheader = "{genome}"
     shell:
         "perl workflow/scripts/parse_nhmmer.pl -f {params.fastaheader} -p {params.prefix} -i {input.hmmer} -g {input.fas} -d {output} {params.stats}"
 
@@ -252,7 +259,7 @@ rule gather_genes:
     Gather genes from parsed nhmmer output in genome folders.
     """
     input:
-        expand("results/genomes/{GENOME}", GENOME=GENOMES)
+        expand("results/genomes/{genome}", genome=GENOMES)
     output:
         dir = directory("results/genes"),
         file = temp(touch("run/tmp/genes.done"))
@@ -273,7 +280,7 @@ rule distclean:
 #hmm_db_formats = ["h3f", "h3i", "h3m", "h3p"]
 #rule rm_hmmer:
 #    input:
-#        expand("run/hmmer/{GENOME}.hmm.{ext}", GENOME=GENOMES, ext=hmm_db_formats)
+#        expand("run/hmmer/{genome}.hmm.{ext}", genome=GENOMES, ext=hmm_db_formats)
 #    output:
 #        temp(touch("did_rm_hmm"))
 #    shell:
@@ -283,7 +290,7 @@ rule distclean:
 #plast_db_formats = ["nhr", "nin", "nog", "nsd", "nsi", "nsq"]
 #rule rm_plast:
 #    input:
-#        expand("run/plast/{GENOME}.split.fas.{ext}", GENOME=GENOMES, ext=plast_db_formats)
+#        expand("run/plast/{genome}.split.fas.{ext}", genome=GENOMES, ext=plast_db_formats)
 #    output:
 #        temp(touch("did_rm_plast"))
 #    shell:
