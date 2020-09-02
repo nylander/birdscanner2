@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: tis sep 01, 2020  06:52
+# Last modified: ons sep 02, 2020  12:58
 # Sign: JN
 
 # Input files
@@ -29,7 +29,9 @@ rule cat_reference_fas:
     output:
         temp("run/plast/reference.fas")
     shell:
-        """for f in {input} ; do awk -v a=$(basename "$f" .fas) '/>/{{$0=">"a"__"++n}}1' "$f"  >> {output} ; done"""
+        """
+        for f in {input} ; do awk -v a=$(basename "$f" .fas) '/>/{{$0=">"a"__"++n}}1' "$f"  >> {output} ; done
+        """
 
 # 2. split_genome_fasta
 # Uses: bash 5.0.17, splitfast, pigz v2.4
