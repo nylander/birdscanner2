@@ -1,10 +1,15 @@
 # Birdscanner v2
-# Last modified: ons sep 02, 2020  01:16
+# Last modified: ons sep 02, 2020  06:47
 # Sign: JN
 
 # Input files
 GENOMES, = glob_wildcards("data/genomes/{genome}.gz")
 REFERENCES, = glob_wildcards("data/reference/{ref}.fas")
+
+# Function for providing list of reference files
+def convert_input(wildcards):
+    files = expand("data/reference/{ref}.fas", ref=REFERENCES)
+    return files
 
 # First rule
 rule all:
@@ -13,8 +18,18 @@ rule all:
     """
     input:
         expand("run/tmp/{ref}.hmm", ref=REFERENCES),
+        expand("run/tmp/{ref}.fasta", ref=REFERENCES),
         expand("results/genomes/{genome}", genome=GENOMES),
         "run/tmp/genes.done"
+
+# 0. Convert fasta 
+rule convert_fas:
+    input:
+        "data/reference/{ref}.fas"
+    output:
+        "run/tmp/{ref}.fasta"
+    shell:
+        "awk -v a=$(basename {input} .fas) '/>/{{$0=\">\"a\"__\"++i}}1' {input} > {output}"
 
 # 1. cat_reference_fas
 # Uses: bash 5.0.17, awk v5.0.1
@@ -36,9 +51,9 @@ rule cat_reference_fas:
     while relabelling fasta headers.
     """
     output:
-        temp("run/plast/reference.fas")
+        "run/plast/reference.fas"
     shell:
-        "find data/reference -type f -name \*.fas -exec cat {{}} \+ > {output}"
+        "find run/tmp -type f -name \*.fasta -exec cat {{}} \+ > {output}"
 
 # 2. split_genome_fasta
 # Uses: bash 5.0.17, splitfast, pigz v2.4
@@ -49,7 +64,7 @@ rule split_genome_fasta:
     input: 
         "data/genomes/{genome}.gz"
     output: 
-        temp("run/plast/{genome}.split.fas")
+        "run/plast/{genome}.split.fas"
     threads:
         4
     params:
@@ -66,7 +81,7 @@ rule make_genome_plast_db:
     input:
         "run/plast/{genome}.split.fas",
     output:
-        temp(touch("run/tmp/{genome}.makeblastdb.done"))
+        touch("run/tmp/{genome}.makeblastdb.done")
     params:
         dbtype = "nucl",
         parse_seqids = "-parse_seqids"
@@ -84,7 +99,7 @@ rule run_plast:
         db_done= "run/tmp/{genome}.makeblastdb.done",
         query = "run/plast/reference.fas"
     output:
-        protected("run/plast/{genome}.plast.tab")
+        "run/plast/{genome}.plast.tab"
     threads:
         workflow.cores
     params:
@@ -107,7 +122,7 @@ rule get_scaffold_ids:
     input:
         "run/plast/{genome}.plast.tab"
     output:
-        temp("run/tmp/{genome}.scaffolds.ids")
+        "run/tmp/{genome}.scaffolds.ids"
     params:
         minlen = "50"
     shell:
@@ -129,7 +144,7 @@ rule get_reference_ids:
     input:
         "run/plast/{genome}.plast.tab"
     output:
-        temp("run/tmp/{genome}.ref.ids")
+        "run/tmp/{genome}.ref.ids"
     params:
         minlen = "50"
     shell:
@@ -151,7 +166,7 @@ rule select_scaffolds:
         db = "run/plast/{genome}.split.fas",
         idfile = "run/tmp/{genome}.scaffolds.ids"
     output:
-        temp("run/plast/{genome}.plast.fas")
+        "run/plast/{genome}.plast.fas"
     params:
         dbtype = "nucl",
         outfmt = "%f"
@@ -167,7 +182,7 @@ rule fasta_to_stockholm:
     input:
         "data/reference/{ref}.fas"
     output:
-        temp("run/tmp/{ref}.sto")
+        "run/tmp/{ref}.sto"
     shell:
         "fasta2stockholm.pl {input} > {output}"
 
@@ -180,7 +195,7 @@ rule create_hmms:
     input:
         "run/tmp/{ref}.sto"
     output:
-        temp("run/tmp/{ref}.hmm")
+        "run/tmp/{ref}.hmm"
     shell:
         "hmmbuild --dna {output} {input}"
 
@@ -197,7 +212,7 @@ rule select_hmms:
     input:
         "run/tmp/{genome}.ref.ids"
     output:
-        temp("run/hmmer/{genome}.hmm")
+        "run/hmmer/{genome}.hmm"
     shell:
         "cat $(find run/tmp -type f -name \*.hmm | grep -f {input}) > {output}"
 
@@ -210,7 +225,7 @@ rule run_hmmpress:
     input:
         "run/hmmer/{genome}.hmm"
     output:
-        temp(touch("run/tmp/{genome}.hmmpress.done"))
+        touch("run/tmp/{genome}.hmmpress.done")
     shell:
         "hmmpress {input}"
 
@@ -225,7 +240,7 @@ rule run_nhmmer:
         hmm = "run/hmmer/{genome}.hmm",
         query = "run/plast/{genome}.plast.fas"
     output:
-        protected("run/hmmer/{genome}.nhmmer.out")
+        "run/hmmer/{genome}.nhmmer.out"
     params:
         notextw = "--notextw"
     threads:
@@ -262,7 +277,7 @@ rule gather_genes:
         expand("results/genomes/{genome}", genome=GENOMES)
     output:
         dir = directory("results/genes"),
-        file = temp(touch("run/tmp/genes.done"))
+        file = touch("run/tmp/genes.done")
     shell:
         "perl workflow/scripts/gather_genes.pl --outdir={output.dir} $(find results/genomes -type d)"
 
