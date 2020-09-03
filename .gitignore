@@ -1,8 +1,9 @@
 .snakemake
+.snakemake_timestamp
+*.swp
 data/genomes/*.gz
-data/reference/*.fas
-run/*
+data/references/*.fas
 NOTES*
 TODO*
-*.swp
+run/*
 tmp/*

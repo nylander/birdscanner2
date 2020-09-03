@@ -2,11 +2,11 @@
 
 all: run
 
-dryrun:
-	snakemake -j -p -n
-
 run:
 	snakemake -j -p
 
+dryrun:
+	snakemake -j -p -n
+
 clean:
-	rm -rf .snakemake run/plast/* run/hmmer/* run/tmp/* results/genes/* results/genomes/*
+	rm -rf .snakemake run results
