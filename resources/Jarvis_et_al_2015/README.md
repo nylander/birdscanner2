@@ -1,6 +1,6 @@
 # Phylogenomic data for the Avian Phylogenomics project
 
-- Last modified: tor sep 03, 2020  11:08
+- Last modified: fre sep 04, 2020  12:04
 - Sign: JN
 
 ## Description of Data sets
@@ -22,8 +22,9 @@ These two data sets are available for download here:
 
         $ wget -O references.tgz "http://owncloud.nrm.se/index.php/s/R4CHCmtIQUXab3t/download"
 
-Description of the original data can be found here <http://gigadb.org/dataset/101041>,
-and here <ftp://parrot.genomics.cn/gigadb/pub/10.5524/101001_102000/101041/readme.txt>.
+Description of the original data can be found here
+[http://gigadb.org/dataset/101041](http://gigadb.org/dataset/101041), and here
+[ftp://parrot.genomics.cn/gigadb/pub/10.5524/101001_102000/101041/readme.txt](ftp://parrot.genomics.cn/gigadb/pub/10.5524/101001_102000/101041/readme.txt).
 
 A taxon-translation file for the acronyms used in the fasta headers can be
 found here: [species_list.csv](species_list.csv). The source of this file was
