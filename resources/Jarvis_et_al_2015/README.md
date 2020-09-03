@@ -1,6 +1,6 @@
 # Phylogenomic data for the Avian Phylogenomics project
 
-- Last modified: fre sep 04, 2020  12:04
+- Last modified: fre sep 04, 2020  12:07
 - Sign: JN
 
 ## Description of Data sets
@@ -95,7 +95,5 @@ Custom scripts are from [https://github.com/Naturhistoriska/birdscanner](https:/
 ## References
 
 [1]: Jarvis ED; Mirarab S; Aberer AJ; Houde P; Li C; Ho SYW; Faircloth BC; Nabholz B; Howard JT; Suh A; Weber CC; da Fonseca RR; Alfaro-Nunez A; Narula N; Liu L; Burt DW; Ellegren H; Edwards SV; Stamatakis A; Mindell DP; Cracraft J; Braun EL; Warnow T; Wang J; Gilbert MTP; Zhang G (2014): Phylogenomic analyses data of the avian phylogenomics project. GigaScience Database. <http://dx.doi.org/10.5524/101041>
-
 [2]: <ftp://parrot.genomics.cn/gigadb/pub/10.5524/101001_102000/101041/FASTA_files_of_loci_datasets/Filtered_sequence_alignments/8295_Exons/pep2cds-filtered-sate-alignments-noout.tar.gz>
-
 [3]: <ftp://parrot.genomics.cn/gigadb/pub/10.5524/101001_102000/101041/FASTA_files_of_loci_datasets/Filtered_sequence_alignments/2516_Introns/introns-filtered-sate-alignments-with-and-without-outgroups.tar.gz>
