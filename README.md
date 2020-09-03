@@ -1,6 +1,6 @@
 # Birdscanner version 2
 
-- Last modified: tor sep 03, 2020  10:18
+- Last modified: tor sep 03, 2020  11:10
 - Sign: JN
 
 
@@ -38,12 +38,12 @@ multiple-sequence alignment software.
 
 2. Clone birdscanner2 from GitHub:
 
-        $ git clone --depth=1 https://github.com/Naturhistoriska/birdscanner2.git
+        $ git clone https://github.com/Naturhistoriska/birdscanner2.git
 
 3. Optional: Download example data (636 MB) and test the installation
 
         $ cd birdscanner2
-        $ wget -O data.tgz "https://owncloud.nrm.se/index.php/s/YSCC6S63x3b3Jv9/download"
+        $ wget -O data.tgz "http://owncloud.nrm.se/index.php/s/d6EuUJSHlQwCN6X"
         $ tar xfz data.tgz && rm data.tgz
         $ snakemake -j -p --dry-run
         $ snakemake -j -p

@@ -1,10 +1,7 @@
 # Phylogenomic data for the Avian Phylogenomics project
 
-- Last modified: tor aug 20, 2020  03:58
+- Last modified: tor sep 03, 2020  11:08
 - Sign: JN
-
-**TEXT NEEDS TO BE UPDATED FOR BIRDSCANNER2!**
-
 
 ## Description of Data sets
 
@@ -13,17 +10,17 @@ polished into two sets; **Introns** and **Exons**.
 
 These two data sets are available for download here:
 
-- [Exons, compressed folder "fasta_files.tgz", 70
-  MB](https://owncloud.nrm.se/index.php/s/HaHin085YXvDQIf): 8,253 fasta files
+- [Exons, compressed folder "references.tgz", 70
+  MB](http://owncloud.nrm.se/index.php/s/j3Hot6BWVafW21U): 8,253 fasta files
   with 42--48 sequences per file, and seq length in the range of 99--15,777 bp.
 
-        $ wget -O fasta_files.tgz "https://owncloud.nrm.se/index.php/s/HaHin085YXvDQIf/download"
+        $ wget -O references.tgz "http://owncloud.nrm.se/index.php/s/j3Hot6BWVafW21U/download"
 
-- [Introns, compressed folder "fasta_files.tgz" 164
-  MB](https://owncloud.nrm.se/index.php/s/AJ2jgQl3DZr6cs9): 11,013 fasta files
+- [Introns, compressed folder "references.tgz" 164
+  MB](http://owncloud.nrm.se/index.php/s/R4CHCmtIQUXab3t): 11,013 fasta files
   with 38--48 sequences per file, and seq length in the range of 58--38,848 bp.
 
-        $ wget -O fasta_files.tgz "https://owncloud.nrm.se/index.php/s/AJ2jgQl3DZr6cs9/download"
+        $ wget -O references.tgz "http://owncloud.nrm.se/index.php/s/R4CHCmtIQUXab3t/download"
 
 Description of the original data can be found here <http://gigadb.org/dataset/101041>,
 and here <ftp://parrot.genomics.cn/gigadb/pub/10.5524/101001_102000/101041/readme.txt>.
@@ -36,127 +33,23 @@ Two additional subsets of the exon and intron data, including only files
 containing sequences of lengths between 200 and 5,000 bp (see below), are also
 available here: 
 
-- [Length-filtered Exons, compressed folder "fasta_files.tgz", 60.3 
-  MB](https://owncloud.nrm.se/index.php/s/XaqkBWbAPCZenhI): 7,979 fasta files
+- [Length-filtered Exons, compressed folder "references.tgz", 60.3 
+  MB](http://owncloud.nrm.se/index.php/s/Z3w3TBebyyyFH27): 7,979 fasta files
   with 42--48 sequences per file, and seq length in the range of 201--4,989 bp.
 
-        $ wget -O fasta_files.tgz "https://owncloud.nrm.se/index.php/s/XaqkBWbAPCZenhI/download"
+        $ wget -O references.tgz "http://owncloud.nrm.se/index.php/s/Z3w3TBebyyyFH27/download"
 
-- [Length-filtered Introns, compressed folder "fasta_files.tgz" 100.7
-  MB](https://owncloud.nrm.se/index.php/s/nPvL1lefxm1V8PO): 9,362 fasta files
+- [Length-filtered Introns, compressed folder "references.tgz" 100.7
+  MB](http://owncloud.nrm.se/index.php/s/y35lLlvrf0pn8VR): 9,362 fasta files
   with 38--48 sequences per file, and seq length in the range of 200--4,998 bp.
 
-        $ wget -O fasta_files.tgz "https://owncloud.nrm.se/index.php/s/nPvL1lefxm1V8PO/download"
-
-To save some time in the Birdscanner pipeline, the HMM's and summary fasta
-file are also provided. If these data sets are to be used in
-[Birdscanner](https://github.com/Naturhistoriska/birdscanner), it is
-recommended to download and uncompress the data (`selected.tgz`) directly
-inside the `birdscanner/data/reference/` folder and proceed with the SLURM
-script `init_and_plast.slurm.sh`. These data can be downloaded here:
-
-- [Length-filtered Exons with HMM's. Compressed folder "selected.tgz", 233.4
-  MB](https://owncloud.nrm.se/index.php/s/oZQt1pbtcBRyTvk/download).
-
-        $ wget -O selected.tgz "https://owncloud.nrm.se/index.php/s/oZQt1pbtcBRyTvk/download"
-
-- [Length-filtered Introns with HMM's. Compressed folder "selected.tgz" 389.5 
-  MB](https://owncloud.nrm.se/index.php/s/rASoR1zdWeqj11A).
-
-        $ wget -O selected.tgz "https://owncloud.nrm.se/index.php/s/rASoR1zdWeqj11A/download"
-
-
-## Further filtering and selection of alignments - examples
-
-When using sequences in searches using HMMer, it might be beneficial to filter
-the files based on sequence length. This can be done in many ways. Here are
-some examples using the combination of
-[`get_fasta_info.pl`](https://github.com/nylander/get_fasta_info),
-[`grepfasta.pl`](https://github.com/nylander/grepfasta), `degap_fasta.pl`,
-`parallel`, and `awk`:
-
-
-#### Example 1. Select alignments of certain lengths
-
-Here we copy alignments of min. length 200, and max length 5,000 to a new folder.
-
-    $ mkdir -p selected/one
-    $ cp $(get_fasta_info.pl fasta_files/*.fas 2>/dev/null | \
-        awk '$2 >= 200 && $2 <= 5000 {print $NF}') selected/one
-
-
-#### Example 2. Select a subset of fasta headers
-
-If you wish to select a subset of the taxa in the alignments,
-one may do so by using, for example:
-
-First, find all fasta headers
-
-    $ grep -h '>' fasta_files/*.fas | sort -u | paste - - - -
-    >ACACH	>ANAPL	>APAVI	>APTFO
-    >BALRE	>BUCRH	>CALAN	>CAPCA
-    >CARCR	>CATAU	>CHAPE	>CHAVO
-    >CHLUN	>COLLI	>COLST	>CORBR
-    >CUCCA	>EGRGA	>EURHE	>FALPE
-    >FULGL	>GALGA	>GAVST	>GEOFO
-    >HALAL	>HALLE	>LEPDI	>MANVI
-    >MELGA	>MELUN	>MERNU	>MESUN
-    >NESNO	>NIPNI	>OPHHO	>PELCR
-    >PHACA	>PHALE	>PHORU	>PICPU
-    >PODCR	>PTEGU	>PYGAD	>STRCA
-    >TAEGU	>TAUER	>TINMA	>TYTAL
-
-Create a file with the headers you wish to extract:
-
-    $ echo -e "FULGL\nGALGA\nGAVST\nGEOFO" > searchfile.txt
-
-Create output folder:
-
-    $ mkdir -p selected/two
-
-Get the selected sequences from the files:
-
-    $ find fasta_files -name '*.fas' | \
-        parallel "grepfasta.pl -f=searchfile.txt {} > selected/two/{/}"
-
-Note that not all original files contains all headers!
-
-    $ get_fasta_info.pl selected/two/*.fas
-
-Keep only files with four sequences:
-
-    $ rm -v $(get_fasta_info.pl selected/two/*.fas 2>/dev/null | \
-        awk '$1 != 4 {print $NF}')
-
-Note that many/most of the alignments now contain "all-gap" columns!
-Those can be removed using, for example:
-
-    $ find selected/two -name '*.fas' | \
-        parallel "degap_fasta.pl -o={.}.degap {}"
-    $ find selected/two -name '*.degap' | \
-        parallel "mv {} {.}.fas"
-
-
-#### Example 3. Combine the above (examples 1. and 2.)
-
-    $ mkdir -p selected/fas
-    $ echo -e "FULGL\nGALGA\nGAVST\nGEOFO" > searchfile.txt
-    $ find fasta_files -name '*.fas' | \
-        parallel "grepfasta.pl -f=searchfile.txt {} > selected/fas/{/}"
-    $ find selected/fas -name '*.fas' | \
-        parallel "degap_fasta.pl -o={.}.degap {}"
-    $ find selected/fas -name '*.degap' | \
-        parallel "mv {} {.}.fas"
-    $ rm -v $(get_fasta_info.pl selected/fas/*.fas 2>/dev/null | \
-        awk '$1 != 4 || $2 < 200 || $2 > 5000  {print $NF}')
-
+        $ wget -O references.tgz "http://owncloud.nrm.se/index.php/s/y35lLlvrf0pn8VR/download"
 
 ## How the Introns and Exons data sets were prepared
 
 Custom scripts are from [https://github.com/Naturhistoriska/birdscanner](https://github.com/Naturhistoriska/birdscanner).
 
     SCRDIR=/path/to/birdscanner/src
-
 
 ### Exons (download file link [2])
 
@@ -176,7 +69,6 @@ Custom scripts are from [https://github.com/Naturhistoriska/birdscanner](https:/
         parallel "sed -i '/^$/d' {}"
     $ find fasta_files -type f -name '*.degapped' | \
         parallel "mv {} {.}.fas"
-
 
 ### Introns (download file link [3])
 
@@ -202,5 +94,7 @@ Custom scripts are from [https://github.com/Naturhistoriska/birdscanner](https:/
 ## References
 
 [1]: Jarvis ED; Mirarab S; Aberer AJ; Houde P; Li C; Ho SYW; Faircloth BC; Nabholz B; Howard JT; Suh A; Weber CC; da Fonseca RR; Alfaro-Nunez A; Narula N; Liu L; Burt DW; Ellegren H; Edwards SV; Stamatakis A; Mindell DP; Cracraft J; Braun EL; Warnow T; Wang J; Gilbert MTP; Zhang G (2014): Phylogenomic analyses data of the avian phylogenomics project. GigaScience Database. <http://dx.doi.org/10.5524/101041>
+
 [2]: <ftp://parrot.genomics.cn/gigadb/pub/10.5524/101001_102000/101041/FASTA_files_of_loci_datasets/Filtered_sequence_alignments/8295_Exons/pep2cds-filtered-sate-alignments-noout.tar.gz>
+
 [3]: <ftp://parrot.genomics.cn/gigadb/pub/10.5524/101001_102000/101041/FASTA_files_of_loci_datasets/Filtered_sequence_alignments/2516_Introns/introns-filtered-sate-alignments-with-and-without-outgroups.tar.gz>
