@@ -1,8 +1,7 @@
 # Birdscanner version 2
 
-- Last modified: tor sep 03, 2020  11:10
+- Last modified: tor sep 03, 2020  11:57
 - Sign: JN
-
 
 ## Description
 
@@ -20,9 +19,7 @@ also collect each genomic region extracted from each genome (the *Fasta seq*
 files), and produce unaligned "gene" files that can be the input to a
 multiple-sequence alignment software.
 
-
-![Birdscanner2 workflow\label{workflow}](resources/img/Diagram1.png)
-
+![Birdscanner2 workflow\label{workflow}](resources/img/Diagram1.png){width=60%}
 
 ## Installation and testing
 
@@ -32,9 +29,9 @@ multiple-sequence alignment software.
    prerequisites](#software-prerequisites) for details). On a Debian-based
    GNU/Linux system (tested on Ubuntu Linux 20.04), this can be done using
 
-        $ sudo apt install build-essential hmmer ncbi-blast+ pigz plast snakemake
+        $ sudo apt install build-essential git hmmer ncbi-blast+ pigz plast snakemake
         $ git clone https://github.com/nylander/split-fasta-seq.git
-        $ cd split-fasta-seq/src/ && make && sudo cp splitfast /usr/local/bin/
+        $ cd split-fasta-seq/src/ && make && sudo make install 
 
 2. Clone birdscanner2 from GitHub:
 
@@ -48,12 +45,11 @@ multiple-sequence alignment software.
         $ snakemake -j -p --dry-run
         $ snakemake -j -p
 
-
 ## Input
 
 Place properly named genome files (fasta format, gzip compressed, `.gz`) in
 `data/genomes/` and properly named reference files (aligned fasta files,
-`.fas`) in `data/reference/`. See section [Data](#data) for details on the data
+`.fas`) in `data/references/`. See section [Data](#data) for details on the data
 format.
 
 Example set up:
@@ -123,7 +119,6 @@ tools (and tested version) are given below.
 - [parse_nhmmer.pl](workflow/scripts/parse_nhmmer.pl) (1.0)
 - [gather_genes.pl](workflow/scripts/gather_genes.pl) (1.0)
 - [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
-
 
 ## Data
 
