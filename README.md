@@ -1,17 +1,17 @@
 # Birdscanner version 2
 
-- Last modified: fre aug 28, 2020  02:38
+- Last modified: tor sep 03, 2020  10:18
 - Sign: JN
 
 
 ## Description
 
 The workflow (Fig. \ref{workflow}) will try to extract known genomic regions
-(based on multiple- sequence alignments and HMMs; the *Reference*) from a genome
-file (the *Genome*). The approach taken is essentially a search with HMM's
-against a reference genome, with an extra step where an initial similarity
-search is used to reduce the input data down to matching HMM's and genomic
-regions.
+(based on multiple- sequence alignments and HMMs; the *Reference*) from a
+genome file (the *Genome*). The approach taken is essentially a search with
+HMM's against a reference genome, with an extra step where an initial
+similarity search is used to reduce the input data down to matching HMM's and
+genomic regions.
 
 Both the known genomic regions (multiple nucleotide-sequence alignments in
 fasta format), and the genome files (fasta format, one or several scaffolds)
@@ -58,38 +58,42 @@ format.
 
 Example set up:
 ```
-    data
-    ├── genomes
-    │   ├── Apa.gz
-    │   └── Bpa.gz
-    └── reference
-        ├── 1.fas
-        └── 2.fas
+data/
+├── genomes
+│   ├── Apa.gz
+│   └── Bpa.gz
+└── references
+    ├── 1.fas
+    └── 2.fas
 ```
 
 ## Output
 
-Output are written to the folders `results/genomes/` and `results/genes/`.
+Output are written to the folder `results/`.
 
 Example output:
 ```
-    results
-    ├── genes
-    │   ├── 1.fas
-    │   └── 2.fas
-    └── genomes
-        ├── Apa
-        │   ├── Apa.1.fas
-        │   └── Apa.2.fas
-        └── Bpa
-            ├── Bpa.1.fas
-            └── Bpa.2.fas
+results/
+├── genes
+│   ├── 1.fas
+│   └── 2.fas
+├── genomes
+│   ├── Apa
+│   │   ├── Apa.1.fas
+│   │   └── Apa.2.fas
+│   └── Bpa
+│       ├── Bpa.1.fas
+│       └── Bpa.2.fas
+└── hmmer
+    ├── Apa.hmmer.out.gz
+    └── Bpa.hmmer.out.gz
 ```
 
 ## Run
 
     $ cd birdscanner2
-    $ snakemake --jobs --reason --printshellcmds
+    $ snakemake -j -p 
+    $ snakemake -j --report
 
 \newpage 
 
@@ -99,22 +103,22 @@ The workflow is tested on GNU/Linux (Ubuntu 20.04), and uses standard Linux
 (bash) tools in addition to the main workflow manager `snakemake`.  A list of
 tools (and tested version) are given below.
 
-- bash (5.0.17)
+- [bash](https://www.gnu.org/software/bash/) (5.0.17)
     - awk (5.0.1)
     - cat (8.30)
     - find (4.7.0)
     - grep (3.4)
     - sort (8.30)
-- python (3.8.2)
-- snakemake (5.10.0)
-- pigz (2.4)
-- makeblastdb (2.9.0+)
-- blastdbcmd (2.9.0+)
-- plast (2.3.2)
-- hmmbuild (3.3)
-- hmmpress (3.3)
-- nhmmer (3.3)
-- perl (5.30.0)
+- [python](https://www.python.org/downloads/) (3.8.2)
+- [snakemake](https://snakemake.github.io/) (5.10.0)
+- [pigz](https://zlib.net/pigz/) (2.4)
+- [makeblastdb](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
+- [blastdbcmd](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
+- [plast](https://github.com/PLAST-software/plast-library) (2.3.2)
+- [hmmbuild](http://hmmer.org/download.html) (3.3)
+- [hmmpress](http://hmmer.org/download.html) (3.3)
+- [nhmmer](http://hmmer.org/download.html) (3.3)
+- [perl](https://www.perl.org/get.html) (5.30.0)
 - [fasta2stockholm.pl](workflow/scripts/fasta2stockholm.pl) (1.0)
 - [parse_nhmmer.pl](workflow/scripts/parse_nhmmer.pl) (1.0)
 - [gather_genes.pl](workflow/scripts/gather_genes.pl) (1.0)
@@ -123,9 +127,9 @@ tools (and tested version) are given below.
 
 ## Data
 
-**Note:** The pipeline is, unfortunately, very picky about the format of both
-file names and file content. Safest option is to make sure they are OK before
-trying to run the analyses.
+Note: The pipeline is, unfortunately, very picky about the format of both file
+names and file content. Safest option is to make sure they are OK before trying
+to run the analyses.
 
 ### Indata
 
@@ -140,7 +144,7 @@ the fasta header for the extracted sequences. Examples: `apa_genome.gz`,
 ##### 2. Reference alignments
 
 Add reference sequence alignments (nucleotides, fasta format, file suffix
-`.fas`) in the folder `data/reference/`. Each alignment file would represent
+`.fas`) in the folder `data/references/`. Each alignment file would represent
 one genomic region ("gene").
 
 The name of the alignment file will be used in downstream analyses, so they
@@ -156,39 +160,29 @@ the same in all files.
 
 ##### 2.2 Jarvis data
 
-**TEXT NOT UPDATED!** 
-
 We also provide filtered versions of the "Jarvis data" ([Jarvis *et al*.
 2015](doc/Jarvis_et_al_2015/Jarvis_et_al_2015.pdf)). If you wish to use any of
 these data sets, it is recommend to download and uncompress the data
-(`fasta_files.tgz`) directly inside the `data/reference/` folder.
-
-If you wish to save some computational time, and use the
-"length-filtered" data subsets, we also provide the necessary HMM's and
-reference fasta file.  It is then recommended to download and uncompress the
-data (`selected.tgz`) directly inside the `data/reference/` folder and ...
-Please see the file
+(`references.tgz`) directly inside the `birdscanner2/data/` folder. Please see
+the file
 [`resources/Jarvis_et_al_2015/README.md`](resources/Jarvis_et_al_2015/README.md)
 for full description.
 
 ### Outdata
 
-**TEXT NOT UPDATED!**
-
 Individual `gene` files (fasta format) for each `genome` are written to the
-folder `out/<genome>_nhmmer_output/`, with the default name
-`<genome>.<gene>.fas`. The (default) fasta header contains the genome name:
-`><genome>` and, in addition, some statistics from the HMMer search. The
-default filenames and fasta header format can be changed by altering the call
-to the script [`parse_nhmmer.pl`](src/parse_nhmmer.pl) inside the
-[`Makefile`](Makefile) (line starting with `perl $(PARSENHMMER)`). This is
-mostly untested, however.
+folder `results/genome/<genome>/`, with the default name `<genome>.<gene>.fas`.
+The fasta header contains the genome name: `><genome>` and some statistics from
+the HMMer search.
 
-If several genome files have been run, it should be possible to gather the
-individual sequences and sort them into (unaligned) data matrices.  This can be
-done by using the [`gather_genes.pl`](src/gather_genes.pl) script. See examples
-at the end of the [Worked Examples](#worked-examples).
+The output files from the hmmer-search step is also saved as compressed text
+files, one for each genome, as `results/hmmer/<genome>.hmmer.out.gz`.
 
+The gene files are also concatenated and written to the folder
+`results/genes/`, one file for each gene (`results/genes/<gene1>.fas`,
+`results/genes/<gene2>.fas`, etc). The fasta headers contains the genome
+names: `><genome>`, and these files can be input to a software for doing
+multiple-sequence alignments.
 
 ## License and copyright
 
