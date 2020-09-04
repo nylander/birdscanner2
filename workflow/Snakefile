@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: fre sep 04, 2020  02:24
+# Last modified: fre sep 04, 2020  02:34
 # Sign: JN
 
 # Input files
@@ -20,8 +20,6 @@ rule all:
         expand("results/genomes/{genome}", genome=GENOMES),
         expand("results/hmmer/{genome}.hmmer.out.gz", genome=GENOMES),
         "run/tmp/genes.done"
-#        expand("run/tmp/{ref}.hmm", ref=REFERENCES),
-#        "run/tmp/reference.fas",
 
 # 1. Convert fasta
 # Uses: bash 5.0.17, awk 5.0.1
