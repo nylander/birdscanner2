@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: tor sep 03, 2020  03:04
+# Last modified: fre sep 04, 2020  02:24
 # Sign: JN
 
 # Input files
@@ -17,11 +17,11 @@ rule all:
     TODO: Figure out which lines that should be kept
     """
     input:
-        expand("run/tmp/{ref}.hmm", ref=REFERENCES),
-        expand("run/tmp/{ref}.fasta", ref=REFERENCES),
         expand("results/genomes/{genome}", genome=GENOMES),
         expand("results/hmmer/{genome}.hmmer.out.gz", genome=GENOMES),
         "run/tmp/genes.done"
+#        expand("run/tmp/{ref}.hmm", ref=REFERENCES),
+#        "run/tmp/reference.fas",
 
 # 1. Convert fasta
 # Uses: bash 5.0.17, awk 5.0.1
@@ -42,10 +42,13 @@ rule cat_reference_fas:
     """
     Concatenate all reference fasta files to one (reference.fas).
     """
+    input:
+        expand("run/tmp/{ref}.fasta", ref=REFERENCES)
     output:
         temp("run/tmp/reference.fas")
     shell:
-        "find run/tmp -type f -name \*.fasta -exec cat {{}} \+ > {output}"
+        "cat {input} > {output}"
+#        "find run/tmp -type f -name \*.fasta -exec cat {{}} \+ > {output}"
 
 # 3. split_genome_fasta
 # Uses: bash 5.0.17, splitfast 1.0, pigz v2.4
@@ -199,11 +202,13 @@ rule select_hmms:
     Select those hmm from tmp files that have matches in plast, and concatenate them.
     """
     input:
-        "run/tmp/{genome}.ref.ids"
+        refids = "run/tmp/{genome}.ref.ids",
+        hmms = expand("run/tmp/{ref}.hmm", ref=REFERENCES)
     output:
         temp("run/hmmer/{genome}.hmm")
     shell:
-        "cat $(find run/tmp -type f -name \*.hmm | grep -f {input}) > {output}"
+        "cat $(echo {input.hmms} | grep -f {input.refids}) > {output}"
+        #"cat $(find run/tmp -type f -name \*.hmm | grep -f {input}) > {output}"
 
 # 12. run_hmmpress
 # Uses: bash 5.0.17, hmmpress from HMMER 3.3
@@ -233,7 +238,7 @@ rule run_hmmer:
     params:
         notextw = "--notextw"
     threads:
-        workflow.cores
+        workflow.cores * 0.5
     shell:
         "nhmmer {params.notextw} --cpu {threads} --tblout {output} {input.hmm} {input.query}"
 
