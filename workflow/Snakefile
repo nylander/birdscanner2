@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: fre sep 04, 2020  07:42
+# Last modified: tis sep 08, 2020  07:18
 # Sign: JN
 
 # Input files
@@ -204,8 +204,8 @@ rule select_hmms:
     output:
         temp("run/hmmer/{genome}.hmm")
     shell:
-        "cat $(echo {input.hmms} | grep -f {input.refids}) > {output}"
-        #"cat $(find run/tmp -type f -name \*.hmm | grep -f {input}) > {output}"
+        #"cat $(echo {input.hmms} | grep -f {input.refids}) > {output}"
+        "cat $(find run/tmp -type f -name \*.hmm | grep -f {input.refids}) > {output}"
 
 # 12. run_hmmpress
 # Uses: bash 5.0.17, hmmpress from HMMER 3.3
