@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: ons sep 09, 2020  05:51
+# Last modified: ons sep 09, 2020  06:03
 # Sign: JN
 
 # Input files
@@ -211,7 +211,6 @@ rule O11_select_hmms:
         """
         #"cat $(echo {input.hmms} | grep -f {input.refids}) > {output}"
         #"cat $(find run/tmp -type f -name \*.hmm | grep -f {input.refids}) > {output}"
-        #
 
 # 12. run_hmmpress
 # Uses: bash 5.0.17, hmmpress from HMMER 3.3
