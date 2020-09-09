@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: tis sep 08, 2020  07:18
+# Last modified: ons sep 09, 2020  05:51
 # Sign: JN
 
 # Input files
@@ -23,7 +23,7 @@ rule all:
 
 # 1. Convert fasta
 # Uses: bash 5.0.17, awk 5.0.1
-rule convert_fas:
+rule OO1_convert_fas:
     """
     Relabel fasta headers to '>filename__i', where i is an iterator. The '__' is important and used later in rule get_reference_ids.
     """
@@ -36,7 +36,7 @@ rule convert_fas:
 
 # 2. cat_reference_fas
 # Uses: bash 5.0.17, find 4.7.0
-rule cat_reference_fas:
+rule OO2_cat_reference_fas:
     """
     Concatenate all reference fasta files to one (reference.fas).
     """
@@ -49,7 +49,7 @@ rule cat_reference_fas:
 
 # 3. split_genome_fasta
 # Uses: bash 5.0.17, splitfast 1.0, pigz v2.4
-rule split_genome_fasta:
+rule OO3_split_genome_fasta:
     """
     Split fasta sequences longer than length=100,000. Note that 100,000 is the maximum length for plast.
     """
@@ -66,7 +66,7 @@ rule split_genome_fasta:
 
 # 4. make_genome_plast_db
 # Uses: bash 5.0.17, makeblastdb v2.9.0+ from blast v2.9.0
-rule make_genome_plast_db:
+rule OO4_make_genome_plast_db:
     """
     Make plast database.
     """
@@ -82,7 +82,7 @@ rule make_genome_plast_db:
 
 # 5. run_plast
 # Uses: bash 5.0.17, plast v2.3.2
-rule run_plast:
+rule OO5_run_plast:
     """
     Run plast with all concatenated reference sequences as query,
     and the splitted genome fasta as data base.
@@ -102,7 +102,7 @@ rule run_plast:
 
 # 6. get_scaffold_ids
 # Uses: bash 5.0.17, awk v5.0.1, sort v8.30
-rule get_scaffold_ids:
+rule OO6_get_scaffold_ids:
     """
     The idea is that for each species, we would expect one best hit, and we wish to see which of the scaffolds that most often provides the best hit.
     We wish to search with hmms only against the scaffolds having sufficiently long hits in the plast search.
@@ -128,7 +128,7 @@ rule get_scaffold_ids:
 
 # 7. get_reference_ids
 # Uses: bash 5.0.17, awk v5.0.1, sort v8.30
-rule get_reference_ids:
+rule OO7_get_reference_ids:
     """
     Get IDs (file names) for those reference gene files that have a best plast hit with length above minlen.
     NOTE: Room here for more filtering if needed.
@@ -148,10 +148,12 @@ rule get_reference_ids:
         awk -F $'__' '{{print $1 ".hmm"}}' | \
         sort -u > {output}
         """
+        # awk '$4>50' run/plast/Apa.plast.tab | sort -t$'\t' -k1g -k12rg | awk -F $'\t' '!x[$1]++' | awk -F $'__' '{print $1 ".hmm"}' | sort -u > run/tmp/Apa.ref.ids
+
 
 # 8. select_scaffolds
 # Uses: bash 5.0.17, blastdbcmd v2.9.0+
-rule select_scaffolds:
+rule OO8_select_scaffolds:
     """
     Extract the scaffolds with best plast hits from the splitted genome fasta.
     """
@@ -168,7 +170,7 @@ rule select_scaffolds:
 
 # 9. fasta_to_stockholm
 # Uses: bash 5.0.17, fasta2stockholm.pl
-rule fasta_to_stockholm:
+rule OO9_fasta_to_stockholm:
     """
     Fasta to Stockholm MSA conversion.
     """
@@ -181,7 +183,7 @@ rule fasta_to_stockholm:
 
 # 10. create_hmms
 # Uses: bash 5.0.17, hmmbuild from HMMER 3.3
-rule create_hmms:
+rule O10_create_hmms:
     """
     Create hmms from Stockholm format.
     """
@@ -194,7 +196,7 @@ rule create_hmms:
 
 # 11. select_hmms
 # Uses: bash 5.0.17, cat v8.30, find v4.7.0, grep v3.4
-rule select_hmms:
+rule O11_select_hmms:
     """
     Select those hmm from tmp files that have matches in plast, and concatenate them.
     """
@@ -204,12 +206,16 @@ rule select_hmms:
     output:
         temp("run/hmmer/{genome}.hmm")
     shell:
+        """
+        while IFS= read -r line; do cat run/tmp/$line >> {output}; done < {input.refids}
+        """
         #"cat $(echo {input.hmms} | grep -f {input.refids}) > {output}"
-        "cat $(find run/tmp -type f -name \*.hmm | grep -f {input.refids}) > {output}"
+        #"cat $(find run/tmp -type f -name \*.hmm | grep -f {input.refids}) > {output}"
+        #
 
 # 12. run_hmmpress
 # Uses: bash 5.0.17, hmmpress from HMMER 3.3
-rule run_hmmpress:
+rule O12_run_hmmpress:
     """
     Run hmmpress.
     """
@@ -222,7 +228,7 @@ rule run_hmmpress:
 
 # 13. run_hmmer
 # Uses: bash 5.0.17, nhmmer from HMMER 3.3
-rule run_hmmer:
+rule O13_run_hmmer:
     """
     Run nhmmer: the selected scaffolds against the selected hmms.
     """
@@ -241,7 +247,7 @@ rule run_hmmer:
 
 # 14. parse_hmmer
 # Uses: bash 5.0.17, perl v5.30.0, parse_nhmmer.pl v1.0
-rule parse_hmmer:
+rule O14_parse_hmmer:
     """
     Parse nhmmer output.
     """
@@ -259,7 +265,7 @@ rule parse_hmmer:
 
 # 15. gather_genes
 # Uses: bash 5.0.17, perl v5.30.0, gather_genes.pl v1.0
-rule gather_genes:
+rule O15_gather_genes:
     """
     Gather genes from parsed nhmmer output in genome folders.
     """
@@ -272,7 +278,7 @@ rule gather_genes:
         "perl workflow/scripts/gather_genes.pl --outdir={output.dir} $(find results/genomes -type d)"
 
 # 16. Compress hmmer.out
-rule compress_hmmer_out:
+rule O16_compress_hmmer_out:
     """
     Compress  and keep hmmer output.
     """
