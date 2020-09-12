@@ -1,32 +1,31 @@
-# Birdscanner version 2
+# Birdscanner version 2 (Snakemake version)
 
-- Last modified: tor sep 03, 2020  11:57
+- Last modified: lör sep 12, 2020  05:30
 - Sign: JN
 
 ## Description
 
 The workflow (Fig. \ref{workflow}) will try to extract known genomic regions
-(based on multiple- sequence alignments and HMMs; the *Reference*) from a
-genome file (the *Genome*). The approach taken is essentially a search with
-HMM's against a reference genome, with an extra step where an initial
-similarity search is used to reduce the input data down to matching HMM's and
-genomic regions.
+(based on multiple- sequence alignments and HMMs; the `Reference`) from a
+genome file (the `Genome`). The approach taken is essentially a search with
+HMM's against a genome, with an extra step where an initial similarity search
+is used to reduce the input data down to matching HMM's and genomic regions.
 
 Both the known genomic regions (multiple nucleotide-sequence alignments in
 fasta format), and the genome files (fasta format, one or several scaffolds)
 must be provided by the user. If several genomes are provided, the workflow can
-also collect each genomic region extracted from each genome (the *Fasta seq*
-files), and produce unaligned "gene" files that can be the input to a
-multiple-sequence alignment software.
+also collect each genomic region extracted from each genome (the `Fasta seq`
+files), and produce unaligned "gene" files. These can, for example, be the
+input for further processing with a multiple-sequence alignment software.
 
-![Birdscanner2 workflow\label{workflow}](resources/img/Diagram1.png){width=60%}
+![Birdscanner2 workflow\label{workflow}](resources/img/workflow.png){width=60%}
 
 ## Installation and testing
 
 ### Alt. 1: Manual installation
 
-1. Install prerequisites (see section [Software
-   prerequisites](#software-prerequisites) for details). On a Debian-based
+1. Install prerequisites (see section [**Software
+   prerequisites**](#software-prerequisites) for details). On a Debian-based
    GNU/Linux system (tested on Ubuntu Linux 20.04), this can be done using
 
         $ sudo apt install build-essential git hmmer ncbi-blast+ pigz plast snakemake
@@ -49,7 +48,7 @@ multiple-sequence alignment software.
 
 Place properly named genome files (fasta format, gzip compressed, `.gz`) in
 `data/genomes/` and properly named reference files (aligned fasta files,
-`.fas`) in `data/references/`. See section [Data](#data) for details on the data
+`.fas`) in `data/references/`. See section [**Data**](#data) for details on the data
 format.
 
 Example set up:
@@ -122,9 +121,9 @@ tools (and tested version) are given below.
 
 ## Data
 
-Note: The pipeline is, unfortunately, very picky about the format of both file
-names and file content. Safest option is to make sure they are OK before trying
-to run the analyses.
+Note: The pipeline is very picky about the format of both file names and file
+content. Safest option is to make sure they are OK before trying to run the
+analyses.
 
 ### Indata
 
@@ -175,9 +174,35 @@ files, one for each genome, as `results/hmmer/<genome>.hmmer.out.gz`.
 
 The gene files are also concatenated and written to the folder
 `results/genes/`, one file for each gene (`results/genes/<gene1>.fas`,
-`results/genes/<gene2>.fas`, etc). The fasta headers contains the genome
-names: `><genome>`, and these files can be input to a software for doing
+`results/genes/<gene2>.fas`, etc). The fasta headers contains the genome names:
+`><genome>`, and these files can be input to a software for doing
 multiple-sequence alignments.
+
+## Run time
+
+A runtime example (output from `snakemake --report` after succesful run) is
+given below. The input was two genomes (nseqs=2393, avg.len=463145, and
+nseqs=2401, avg.len=461424, respectively), and reference data consisted of
+7,979 multiple sequence alignments (avg.len=1491). The analysis was run on one
+multi-core computer.
+
+![Runtimes per Snakemake rule\label{runtime}](resources/img/runtime.png){width=40%}
+
+The bottle-necks in the workflow are the similarity searches using `plast`, and
+most noticeable, the search with `nhmmer`. These will take a long time. In
+Figure \ref{runtime} we can see that the plast-search (`005_run_plast`) took
+about 55 min per genome, and that the nhmmer-search (`O13_run_hmmer`) took around
+20h per genome.  Hence, the whole process of analysing the two genomes took
+almost two days.
+
+![File creation dates\label{creationdate}](resources/img/creation-date.png){width=40%}
+
+Note: if one scrutinizes the creation dates of the output files for individual
+genomes, we see that processing of genomes are essentially serial (Fig.
+\ref{creationdate}). Work on parallelize this process on a single machine is
+currently in progress.
+
+\newpage
 
 ## License and copyright
 

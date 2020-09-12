@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: ons sep 09, 2020  06:03
+# Last modified: lör sep 12, 2020  03:38
 # Sign: JN
 
 # Input files
@@ -148,8 +148,6 @@ rule OO7_get_reference_ids:
         awk -F $'__' '{{print $1 ".hmm"}}' | \
         sort -u > {output}
         """
-        # awk '$4>50' run/plast/Apa.plast.tab | sort -t$'\t' -k1g -k12rg | awk -F $'\t' '!x[$1]++' | awk -F $'__' '{print $1 ".hmm"}' | sort -u > run/tmp/Apa.ref.ids
-
 
 # 8. select_scaffolds
 # Uses: bash 5.0.17, blastdbcmd v2.9.0+
@@ -209,8 +207,6 @@ rule O11_select_hmms:
         """
         while IFS= read -r line; do cat run/tmp/$line >> {output}; done < {input.refids}
         """
-        #"cat $(echo {input.hmms} | grep -f {input.refids}) > {output}"
-        #"cat $(find run/tmp -type f -name \*.hmm | grep -f {input.refids}) > {output}"
 
 # 12. run_hmmpress
 # Uses: bash 5.0.17, hmmpress from HMMER 3.3
@@ -306,10 +302,10 @@ rule distclean:
     shell:
         "rm -rf run/ results/"
 
-# 19. When finished, remove run/ when finished
+# 19. When finished, remove run/ and .snakemake_timestamp from results/ when finished
 onsuccess:
     """
     Remove run directory on succesful finish.
     """
-    shell("rm -r run")
+    shell("rm -r run ; find ./results -type f -name .snakemake_timestamp -exec rm {{}} +")
 
