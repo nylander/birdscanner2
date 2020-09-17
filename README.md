@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: ons sep 16, 2020  02:14
+- Last modified: tor sep 17, 2020  05:21
 - Sign: JN
 
 ## Description
@@ -90,35 +90,6 @@ results/
     $ snakemake -j -p 
     $ snakemake -j --report
 
-\newpage 
-
-## Software prerequisites
-
-The workflow is tested on GNU/Linux (Ubuntu 20.04), and uses standard Linux
-(bash) tools in addition to the main workflow manager `snakemake`.  A list of
-tools (and tested version) are given below.
-
-- [bash](https://www.gnu.org/software/bash/) (5.0.17)
-    - awk (5.0.1)
-    - cat (8.30)
-    - find (4.7.0)
-    - grep (3.4)
-    - sort (8.30)
-- [python](https://www.python.org/downloads/) (3.8.2)
-- [snakemake](https://snakemake.github.io/) (5.10.0)
-- [pigz](https://zlib.net/pigz/) (2.4)
-- [makeblastdb](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
-- [blastdbcmd](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
-- [plast](https://github.com/PLAST-software/plast-library) (2.3.2)
-- [hmmbuild](http://hmmer.org/download.html) (3.3)
-- [hmmpress](http://hmmer.org/download.html) (3.3)
-- [nhmmer](http://hmmer.org/download.html) (3.3)
-- [perl](https://www.perl.org/get.html) (5.30.0)
-- [fasta2stockholm.pl](workflow/scripts/fasta2stockholm.pl) (1.0)
-- [parse_nhmmer.pl](workflow/scripts/parse_nhmmer.pl) (1.0)
-- [gather_genes.pl](workflow/scripts/gather_genes.pl) (1.0)
-- [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
-
 ## Data
 
 Note: The pipeline is very picky about the format of both file names and file
@@ -194,6 +165,88 @@ The concatenated files are in folder `out/`. Note that not all genomes may have
 the same number of output files in `results/genomes/`, hence the number of
 sequences in the concatenated files may not be the same.
 
+## Software prerequisites
+
+The workflow is tested on GNU/Linux (Ubuntu 20.04), and uses standard Linux
+(bash) tools in addition to the main workflow manager `snakemake`.  A list of
+tools (and tested version) are given below.
+See also section [**Running birdscanner2 on UPPMAX**](#running-birdscanner2-on-uppmax).
+
+- [bash](https://www.gnu.org/software/bash/) (5.0.17)
+    - awk (5.0.1)
+    - cat (8.30)
+    - find (4.7.0)
+    - grep (3.4)
+    - sort (8.30)
+- [python](https://www.python.org/downloads/) (3.8.2)
+- [snakemake](https://snakemake.github.io/) (5.10.0)
+- [pigz](https://zlib.net/pigz/) (2.4)
+- [makeblastdb](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
+- [blastdbcmd](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
+- [plast](https://github.com/PLAST-software/plast-library) (2.3.2)
+- [hmmbuild](http://hmmer.org/download.html) (3.3)
+- [hmmpress](http://hmmer.org/download.html) (3.3)
+- [nhmmer](http://hmmer.org/download.html) (3.3)
+- [perl](https://www.perl.org/get.html) (5.30.0)
+- [fasta2stockholm.pl](workflow/scripts/fasta2stockholm.pl) (1.0)
+- [parse_nhmmer.pl](workflow/scripts/parse_nhmmer.pl) (1.0)
+- [gather_genes.pl](workflow/scripts/gather_genes.pl) (1.0)
+- [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
+
+## Running birdscanner2 on [UPPMAX](https://www.uppmax.uu.se)
+
+### 1. Install needed software
+
+On UPPMAX, most software are available as modules. However, the `plast` and
+`splitfast` programs need to be installed manually.  For example (assuming
+`$HOME/bin` is in your `PATH`):
+
+#### plast
+
+    # Alt. 1: Copy binary
+    $ wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
+    $ tar xvzf plastbinary_linux_v2.3.2.tar.gz
+    $ cp plastbinary_linux_v2.3.2/build/bin/plast ~/bin/plast
+
+    # Alt. 2: Compile
+    $ module load cmake doxygen
+    $ git clone https://github.com/PLAST-software/plast-library.git
+    $ cd plast-library
+    $ git checkout stable
+    $ sed -i '98,99{s/^/#/}' CMakeLists.txt # if no cppunit, disable unittest 
+    $ mkdir build
+    $ cd build
+    $ cmake -Wno-dev ..
+    $ make
+    $ cp bin/PlastCmd $HOME/bin/plast
+
+#### splitfast
+
+    $ git clone https://github.com/nylander/split-fasta-seq.git
+    $ cd split-fasta-seq/src
+    $ make
+    $ cp splitfast $HOME/bin/
+
+### 2. Clone birdscanner2
+
+    $ git clone https://github.com/Naturhistoriska/birdscanner2.git
+
+### 3. Add genome and reference data
+
+See [**Section Indata**](#indata)
+
+### 4. Prepare and submit a batch script for the [SLURM](https://uppmax.uu.se/support/user-guides/slurm-user-guide/) system
+
+The script need to load the following modules:
+
+    module load bioinfo-tools
+    module load snakemake/5.10.0
+    module load hmmer/3.2.1-intel
+    module load blast/2.9.0+
+    module load pigz/2.4
+
+**(SECTION NOT FINISHED!)**
+
 ## Run time
 
 A runtime example (output from `snakemake --report` after succesful run) is
@@ -218,7 +271,7 @@ genomes, we see that processing of genomes are essentially serial (Fig.
 \ref{creationdate}). Work on parallelize this process on a single machine is
 currently in progress.
 
-## License and copyright
+## License and Copyright
 
 Copyright (c) 2020 Johan Nylander
 
