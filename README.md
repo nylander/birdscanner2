@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: lör sep 12, 2020  05:30
+- Last modified: ons sep 16, 2020  02:14
 - Sign: JN
 
 ## Description
@@ -152,7 +152,7 @@ instead of hyphens (`-`). Fasta headers needs to be unique (i.e., no duplicates
 in each individual alignment), but the number of sequences doesn't need to be
 the same in all files.
 
-##### 2.2 Jarvis data
+##### 2.2 Jarvis bird data
 
 We also provide filtered versions of the "Jarvis data" ([Jarvis *et al*.
 2015](doc/Jarvis_et_al_2015/Jarvis_et_al_2015.pdf)). If you wish to use any of
@@ -178,6 +178,22 @@ The gene files are also concatenated and written to the folder
 `><genome>`, and these files can be input to a software for doing
 multiple-sequence alignments.
 
+## Concatenate output from separate runs
+
+If different runs have been made *with the same references data*, then the
+separate runs can be combined using the helper script
+[`gather_genes.pl`](workflow/scripts/gather_genes.pl). For example, if genome
+`Apa.gz` and `Bpa.gz` have been run against the same set of references at
+different occasions, the individual files in `results/genomes/Apa` and
+`results/genomes/Bpa` can be concatenated to fasta files ready for
+multiple-sequence alignment:
+
+    $ gather_genes.pl --outdir=out /path/to/results/genomes/Apa /path/to/results/genomes/Bpa
+
+The concatenated files are in folder `out/`. Note that not all genomes may have
+the same number of output files in `results/genomes/`, hence the number of
+sequences in the concatenated files may not be the same.
+
 ## Run time
 
 A runtime example (output from `snakemake --report` after succesful run) is
@@ -201,8 +217,6 @@ Note: if one scrutinizes the creation dates of the output files for individual
 genomes, we see that processing of genomes are essentially serial (Fig.
 \ref{creationdate}). Work on parallelize this process on a single machine is
 currently in progress.
-
-\newpage
 
 ## License and copyright
 
