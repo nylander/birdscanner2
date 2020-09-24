@@ -1,0 +1,18 @@
+# Config file for birdscanner2
+# Last modified: tor sep 24, 2020  05:07
+# Sign: JN
+
+# Reference input is DNA (True) or Protein (False).
+#Reference_is_DNA: True
+
+# Genome input is DNA (True) or Protein (False)
+#Genome_is_DNA: True
+
+# for rule OO6_get_scaffold_ids, OO7_get_reference_ids
+Minlen: "50"
+
+# Split length for rule OO3_split_genome_fasta. 100000 is maximum.
+Splitlen: "1000000"
+
+# Gather genes in the end (if more than one genome)
+#Gathergenes: True
