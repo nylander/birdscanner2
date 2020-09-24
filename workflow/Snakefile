@@ -1,13 +1,37 @@
 # Birdscanner v2
-# Last modified: lör sep 12, 2020  03:38
+# Last modified: tor sep 24, 2020  05:19
 # Sign: JN
 
+configfile: "config/config.yaml"
+
+DBTYPE = "nucl"
+PLASTPROG = "plastn"
+HMMBUILDTYPE = "--dna"
+HMMERPROG = "nhmmer"
+
+# Nucleotide or aminoacid input
+#if (config["Reference_is_DNA"] == True):
+#    DBTYPE = "nucl"
+#    PLASTPROG = "plastn"
+#    HMMBUILDTYPE = "--dna"
+#    HMMERPROG = "nhmmer"
+#else:
+#    DBTYPE = "prot"
+#    PLASTPROG = "tplastn"
+#    HMMBUILDTYPE = "--amino"
+#    HMMERPROG = "phmmer"
+#
+#if (config["Genome_is_DNA"] == True):
+
+
 # Input files
-GENOMES, = glob_wildcards("data/genomes/{genome}.gz")
 REFERENCES, = glob_wildcards("data/references/{ref}.fas")
+GENOMES, = glob_wildcards("data/genomes/{genome}.gz")
 
 # Function for providing list of reference files
 def convert_input(wildcards):
+    #refexts = ["fas", "fna", "faa"]
+    #files = expand("data/references/{ref}.{ext}", ref=REFERENCES, ext=refexts)
     files = expand("data/references/{ref}.fas", ref=REFERENCES)
     return files
 
@@ -60,7 +84,7 @@ rule OO3_split_genome_fasta:
     threads:
         workflow.cores * 0.5
     params:
-        length = "100000"
+        length = config["Splitlen"]
     shell:
         "splitfast -m {params.length} <(pigz -p {threads} -d -c {input}) > {output}"
 
@@ -75,7 +99,7 @@ rule OO4_make_genome_plast_db:
     output:
         temp(touch("run/tmp/{genome}.makeblastdb.done"))
     params:
-        dbtype = "nucl",
+        dbtype = DBTYPE,
         parse_seqids = "-parse_seqids"
     shell:
         "makeblastdb -in {input} -dbtype {params.dbtype} {params.parse_seqids}"
@@ -96,9 +120,10 @@ rule OO5_run_plast:
         workflow.cores
     params:
         maxhitperquery = "1",
-        bargraph = "-bargraph"
+        bargraph = "-bargraph",
+        plastprog = PLASTPROG
     shell:
-        "plast -p plastn -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
+        "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
 
 # 6. get_scaffold_ids
 # Uses: bash 5.0.17, awk v5.0.1, sort v8.30
@@ -116,7 +141,7 @@ rule OO6_get_scaffold_ids:
     output:
         temp("run/tmp/{genome}.scaffolds.ids")
     params:
-        minlen = "50"
+        minlen = config["Minlen"]
     shell:
         """
         awk '$4>{params.minlen}' {input} | \
@@ -139,7 +164,7 @@ rule OO7_get_reference_ids:
     output:
         temp("run/tmp/{genome}.ref.ids")
     params:
-        minlen = "50"
+        minlen = config["Minlen"]
     shell:
         """
         awk '$4>{params.minlen}' {input} | \
@@ -161,7 +186,7 @@ rule OO8_select_scaffolds:
     output:
         temp("run/plast/{genome}.plast.fas")
     params:
-        dbtype = "nucl",
+        dbtype = DBTYPE,
         outfmt = "%f"
     shell:
         "blastdbcmd -db {input.db} -dbtype {params.dbtype} -entry_batch {input.idfile} -outfmt {params.outfmt} -out {output}"
@@ -189,8 +214,10 @@ rule O10_create_hmms:
         "run/tmp/{ref}.sto"
     output:
         temp("run/tmp/{ref}.hmm")
+    params:
+        hmmbuildtype = HMMBUILDTYPE
     shell:
-        "hmmbuild --dna {output} {input}"
+        "hmmbuild {params.hmmbuildtype} {output} {input}"
 
 # 11. select_hmms
 # Uses: bash 5.0.17, cat v8.30, find v4.7.0, grep v3.4
@@ -234,11 +261,12 @@ rule O13_run_hmmer:
     output:
         temp("run/hmmer/{genome}.hmmer.out")
     params:
+        hmmerprog = HMMERPROG,
         notextw = "--notextw"
     threads:
-        workflow.cores * 0.5
+        workflow.cores
     shell:
-        "nhmmer {params.notextw} --cpu {threads} --tblout {output} {input.hmm} {input.query}"
+        "{params.hmmerprog} {params.notextw} --cpu {threads} --tblout {output} {input.hmm} {input.query}"
 
 # 14. parse_hmmer
 # Uses: bash 5.0.17, perl v5.30.0, parse_nhmmer.pl v1.0
@@ -282,7 +310,7 @@ rule O16_compress_hmmer_out:
     output:
         "results/hmmer/{genome}.hmmer.out.gz"
     threads:
-        workflow.cores * 0.5
+        workflow.cores
     shell:
         "pigz -p {threads} -c {input} > {output}"
 
