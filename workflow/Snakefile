@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: ons okt 07, 2020  02:22
+# Last modified: ons okt 07, 2020  03:07
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -83,7 +83,7 @@ rule OO3_split_genome_fasta:
     threads:
         workflow.cores * 0.5
     params:
-        length = config["Splitlen"]
+        length = config["splitfast"]["max"]
     conda:
         "envs/pigz.yaml"
     shell:
@@ -101,7 +101,7 @@ rule OO4_make_genome_plast_db:
         temp(touch("run/tmp/{genome}.makeblastdb.done"))
     params:
         dbtype = DBTYPE,
-        parse_seqids = "-parse_seqids"
+        parse_seqids = config["makeblastdb"]["parseseqids"]
     conda:
         "envs/blast.yaml"
     shell:
@@ -122,8 +122,8 @@ rule OO5_run_plast:
     threads:
         workflow.cores
     params:
-        maxhitperquery = "1",
-        bargraph = "-bargraph",
+        maxhitperquery = config["plast"]["maxhitperquery"],
+        bargraph = config["plast"]["bargraph"],
         plastprog = PLASTPROG
     shell:
         "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
@@ -144,7 +144,7 @@ rule OO6_get_scaffold_ids:
     output:
         temp("run/tmp/{genome}.scaffolds.ids")
     params:
-        minlen = config["Minlen"]
+        minlen = config["lengthfilter"]["min"]
     shell:
         """
         awk '$4>{params.minlen}' {input} | \
@@ -167,7 +167,7 @@ rule OO7_get_reference_ids:
     output:
         temp("run/tmp/{genome}.ref.ids")
     params:
-        minlen = config["Minlen"]
+        minlen = config["lengthfilter"]["min"]
     shell:
         """
         awk '$4>{params.minlen}' {input} | \
@@ -190,7 +190,7 @@ rule OO8_select_scaffolds:
         temp("run/plast/{genome}.plast.fas")
     params:
         dbtype = DBTYPE,
-        outfmt = "%f"
+        outfmt = config["blastdbcmd"]["outfmt"]
     conda:
         "envs/blast.yaml"
     shell:
@@ -255,7 +255,7 @@ rule O12_run_hmmpress:
     output:
         temp(touch("run/tmp/{genome}.hmmpress.done"))
     conda:
-        "env/hmmer.yaml"
+        "envs/hmmer.yaml"
     shell:
         "hmmpress {input}"
 
@@ -273,11 +273,11 @@ rule O13_run_hmmer:
         temp("run/hmmer/{genome}.hmmer.out")
     params:
         hmmerprog = HMMERPROG,
-        notextw = "--notextw"
+        notextw = config["hmmer"]["notextw"]
     threads:
         workflow.cores
     conda:
-        "env/hmmer.yaml"
+        "envs/hmmer.yaml"
     shell:
         "{params.hmmerprog} {params.notextw} --cpu {threads} --tblout {output} {input.hmm} {input.query}"
 
@@ -293,9 +293,9 @@ rule O14_parse_hmmer:
     output:
         directory("results/genomes/{genome}")
     params:
-        stats = "--stats",
         prefix = "{genome}",
-        fastaheader = "{genome}"
+        fastaheader = "{genome}",
+        stats = config["parsehmmer"]["stats"]
     conda:
         "envs/perl.yaml"
     shell:

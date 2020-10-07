@@ -1,9 +1,9 @@
 # Config file for birdscanner2
-# Last modified: ons okt 07, 2020  12:19
+# Last modified: ons okt 07, 2020  03:13
 # Sign: JN
 
 # Running on UPPMAX (rackham)
-#on_uppmax: False
+#On_uppmax: False
 
 # Reference input is DNA (True) or Protein (False).
 #Reference_is_DNA: True
@@ -11,11 +11,35 @@
 # Genome input is DNA (True) or Protein (False)
 #Genome_is_DNA: True
 
-# for rule OO6_get_scaffold_ids, OO7_get_reference_ids
-Minlen: "50"
-
-# Split length for rule OO3_split_genome_fasta. 100000 is maximum.
-Splitlen: "1000000"
-
 # Gather genes in the end (if more than one genome)
 #Gathergenes: True
+
+# Length filter for rule OO6_get_scaffold_ids, OO7_get_reference_ids
+lengthfilter:
+    min: "50"
+
+# Splitfast. 100000 is maximum for plast.
+splitfast:
+    max: "1000000"
+
+# Plast
+plast:
+    maxhitperquery: "1"
+    bargraph: "-bargraph"
+
+# Makeblastdb
+makeblastdb:
+    parseseqids: "-parse_seqids"
+
+# Blastcmd
+blastdbcmd:
+    outfmt: "%f"
+
+# Hmmer
+hmmer:
+    notextw: "--notextw"
+
+# Parsehmmer
+parsehmmer:
+    stats: "--stats"
+

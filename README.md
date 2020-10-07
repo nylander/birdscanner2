@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: tor sep 17, 2020  05:21
+- Last modified: ons okt 07, 2020  02:40
 - Sign: JN
 
 ## Description
@@ -172,26 +172,33 @@ The workflow is tested on GNU/Linux (Ubuntu 20.04), and uses standard Linux
 tools (and tested version) are given below.
 See also section [**Running birdscanner2 on UPPMAX**](#running-birdscanner2-on-uppmax).
 
-- [bash](https://www.gnu.org/software/bash/) (5.0.17)
+1. [bash](https://www.gnu.org/software/bash/) (5.0.17)
     - awk (5.0.1)
     - cat (8.30)
     - find (4.7.0)
     - grep (3.4)
     - sort (8.30)
-- [python](https://www.python.org/downloads/) (3.8.2)
-- [snakemake](https://snakemake.github.io/) (5.10.0)
-- [pigz](https://zlib.net/pigz/) (2.4)
-- [makeblastdb](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
-- [blastdbcmd](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
-- [plast](https://github.com/PLAST-software/plast-library) (2.3.2)
-- [hmmbuild](http://hmmer.org/download.html) (3.3)
-- [hmmpress](http://hmmer.org/download.html) (3.3)
-- [nhmmer](http://hmmer.org/download.html) (3.3)
-- [perl](https://www.perl.org/get.html) (5.30.0)
-- [fasta2stockholm.pl](workflow/scripts/fasta2stockholm.pl) (1.0)
-- [parse_nhmmer.pl](workflow/scripts/parse_nhmmer.pl) (1.0)
-- [gather_genes.pl](workflow/scripts/gather_genes.pl) (1.0)
-- [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
+2. [python](https://www.python.org/downloads/) (3.8.2)
+3. [snakemake](https://snakemake.github.io/) (5.10.0)
+4. [pigz](https://zlib.net/pigz/) (2.4)
+5. [makeblastdb](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
+6. [blastdbcmd](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
+7. [hmmbuild](http://hmmer.org/download.html) (3.3)
+8. [hmmpress](http://hmmer.org/download.html) (3.3)
+9. [nhmmer](http://hmmer.org/download.html) (3.3)
+10. [perl](https://www.perl.org/get.html) (5.30.0)
+11. [fasta2stockholm.pl](workflow/scripts/fasta2stockholm.pl) (1.0)
+12. [parse_nhmmer.pl](workflow/scripts/parse_nhmmer.pl) (1.0)
+13. [gather_genes.pl](workflow/scripts/gather_genes.pl) (1.0)
+14. [plast](https://github.com/PLAST-software/plast-library) (2.3.2)
+15. [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
+
+Software requirements (nrs. 1--10) can also be taken care of by the conda system by
+running the pipeline with commands
+
+    $ snakemake -j -p --use-conda
+
+Note that softwares 14, 15 needs to be installed separately (currently not in conda). 
 
 ## Running birdscanner2 on [UPPMAX](https://www.uppmax.uu.se)
 
