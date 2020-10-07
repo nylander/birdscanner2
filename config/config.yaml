@@ -1,6 +1,9 @@
 # Config file for birdscanner2
-# Last modified: tor sep 24, 2020  05:07
+# Last modified: ons okt 07, 2020  12:19
 # Sign: JN
+
+# Running on UPPMAX (rackham)
+#on_uppmax: False
 
 # Reference input is DNA (True) or Protein (False).
 #Reference_is_DNA: True

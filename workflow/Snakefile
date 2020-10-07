@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: tor sep 24, 2020  05:19
+# Last modified: ons okt 07, 2020  10:41
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -46,7 +46,7 @@ rule all:
         "run/tmp/genes.done"
 
 # 1. Convert fasta
-# Uses: bash 5.0.17, awk 5.0.1
+# Uses: bash 5.0.17, gawk 5.0.1
 rule OO1_convert_fas:
     """
     Relabel fasta headers to '>filename__i', where i is an iterator. The '__' is important and used later in rule get_reference_ids.
@@ -126,7 +126,7 @@ rule OO5_run_plast:
         "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
 
 # 6. get_scaffold_ids
-# Uses: bash 5.0.17, awk v5.0.1, sort v8.30
+# Uses: bash 5.0.17, gawk v5.0.1, sort v8.30
 rule OO6_get_scaffold_ids:
     """
     The idea is that for each species, we would expect one best hit, and we wish to see which of the scaffolds that most often provides the best hit.
@@ -152,7 +152,7 @@ rule OO6_get_scaffold_ids:
         """
 
 # 7. get_reference_ids
-# Uses: bash 5.0.17, awk v5.0.1, sort v8.30
+# Uses: bash 5.0.17, gawk v5.0.1, sort v8.30
 rule OO7_get_reference_ids:
     """
     Get IDs (file names) for those reference gene files that have a best plast hit with length above minlen.
