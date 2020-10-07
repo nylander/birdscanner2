@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: ons okt 07, 2020  10:41
+# Last modified: ons okt 07, 2020  02:22
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -22,7 +22,6 @@ HMMERPROG = "nhmmer"
 #    HMMERPROG = "phmmer"
 #
 #if (config["Genome_is_DNA"] == True):
-
 
 # Input files
 REFERENCES, = glob_wildcards("data/references/{ref}.fas")
@@ -85,6 +84,8 @@ rule OO3_split_genome_fasta:
         workflow.cores * 0.5
     params:
         length = config["Splitlen"]
+    conda:
+        "envs/pigz.yaml"
     shell:
         "splitfast -m {params.length} <(pigz -p {threads} -d -c {input}) > {output}"
 
@@ -101,6 +102,8 @@ rule OO4_make_genome_plast_db:
     params:
         dbtype = DBTYPE,
         parse_seqids = "-parse_seqids"
+    conda:
+        "envs/blast.yaml"
     shell:
         "makeblastdb -in {input} -dbtype {params.dbtype} {params.parse_seqids}"
 
@@ -188,6 +191,8 @@ rule OO8_select_scaffolds:
     params:
         dbtype = DBTYPE,
         outfmt = "%f"
+    conda:
+        "envs/blast.yaml"
     shell:
         "blastdbcmd -db {input.db} -dbtype {params.dbtype} -entry_batch {input.idfile} -outfmt {params.outfmt} -out {output}"
 
@@ -201,6 +206,8 @@ rule OO9_fasta_to_stockholm:
         "data/references/{ref}.fas"
     output:
         temp("run/tmp/{ref}.sto")
+    conda:
+        "envs/perl.yaml"
     shell:
         "fasta2stockholm.pl {input} > {output}"
 
@@ -216,6 +223,8 @@ rule O10_create_hmms:
         temp("run/tmp/{ref}.hmm")
     params:
         hmmbuildtype = HMMBUILDTYPE
+    conda:
+        "envs/hmmer.yaml"
     shell:
         "hmmbuild {params.hmmbuildtype} {output} {input}"
 
@@ -245,6 +254,8 @@ rule O12_run_hmmpress:
         "run/hmmer/{genome}.hmm"
     output:
         temp(touch("run/tmp/{genome}.hmmpress.done"))
+    conda:
+        "env/hmmer.yaml"
     shell:
         "hmmpress {input}"
 
@@ -265,6 +276,8 @@ rule O13_run_hmmer:
         notextw = "--notextw"
     threads:
         workflow.cores
+    conda:
+        "env/hmmer.yaml"
     shell:
         "{params.hmmerprog} {params.notextw} --cpu {threads} --tblout {output} {input.hmm} {input.query}"
 
@@ -283,6 +296,8 @@ rule O14_parse_hmmer:
         stats = "--stats",
         prefix = "{genome}",
         fastaheader = "{genome}"
+    conda:
+        "envs/perl.yaml"
     shell:
         "perl workflow/scripts/parse_nhmmer.pl -f {params.fastaheader} -p {params.prefix} -i {input.hmmer} -g {input.fas} -d {output} {params.stats}"
 
@@ -297,6 +312,8 @@ rule O15_gather_genes:
     output:
         dir = directory("results/genes"),
         file = temp(touch("run/tmp/genes.done"))
+    conda:
+        "envs/perl.yaml"
     shell:
         "perl workflow/scripts/gather_genes.pl --outdir={output.dir} $(find results/genomes -type d)"
 
@@ -311,6 +328,8 @@ rule O16_compress_hmmer_out:
         "results/hmmer/{genome}.hmmer.out.gz"
     threads:
         workflow.cores
+    conda:
+        "envs/pigz.yaml"
     shell:
         "pigz -p {threads} -c {input} > {output}"
 
