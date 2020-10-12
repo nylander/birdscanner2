@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: ons okt 07, 2020  02:40
+- Last modified: mån okt 12, 2020  06:20
 - Sign: JN
 
 ## Description
@@ -39,7 +39,7 @@ input for further processing with a multiple-sequence alignment software.
 3. Optional: Download example data (636 MB) and test the installation
 
         $ cd birdscanner2
-        $ wget -O data.tgz "http://owncloud.nrm.se/index.php/s/d6EuUJSHlQwCN6X"
+        $ wget -O data.tgz "http://owncloud.nrm.se/index.php/s/d6EuUJSHlQwCN6X/download"
         $ tar xfz data.tgz && rm data.tgz
         $ snakemake -j -p --dry-run
         $ snakemake -j -p
