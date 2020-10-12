@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: ons okt 07, 2020  03:07
+# Last modified: mån okt 12, 2020  07:15
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -23,14 +23,15 @@ HMMERPROG = "nhmmer"
 #
 #if (config["Genome_is_DNA"] == True):
 
+# Local rules are run on the submit node on a cluster
+localrules: all, OO6_get_scaffold_ids, OO7_get_reference_ids, OO8_select_scaffolds, O11_select_hmms
+
 # Input files
 REFERENCES, = glob_wildcards("data/references/{ref}.fas")
 GENOMES, = glob_wildcards("data/genomes/{genome}.gz")
 
 # Function for providing list of reference files
 def convert_input(wildcards):
-    #refexts = ["fas", "fna", "faa"]
-    #files = expand("data/references/{ref}.{ext}", ref=REFERENCES, ext=refexts)
     files = expand("data/references/{ref}.fas", ref=REFERENCES)
     return files
 
