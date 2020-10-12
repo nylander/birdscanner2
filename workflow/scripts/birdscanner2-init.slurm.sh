@@ -1,6 +1,5 @@
 #! /bin/bash -l
 
-#SBATCH -A #UPPMAXACCOUNTNR#
 #SBATCH -J birdscanner2-init
 #SBATCH -t 24:00:00
 #SBATCH -p core
@@ -11,10 +10,10 @@
 # Slurm script for birdscanner2-init
 #
 # Test by using:
-#     sbatch --test-only workflow/scripts/birdscanner2-init.slurm.sh
+#     sbatch -A <accountnr> --test-only workflow/scripts/birdscanner2-init.slurm.sh
 #
 # Start by using:
-#     sbatch workflow/scripts/birdscanner2-init.slurm.sh
+#     sbatch -A <accountnr> workflow/scripts/birdscanner2-init.slurm.sh
 #
 # Stop by using:
 #     scancel 1234
