@@ -3,13 +3,19 @@
 all: run
 
 run:
-	snakemake -j -p
+	snakemake --jobs
 
 debug:
-	snakemake -j -p --notemp --reason
+	snakemake --jobs --printshellcmds --notemp --reason
 
 dryrun:
-	snakemake -j -p -n
+	snakemake --jobs --printshellcmds --dry-run
+
+report:
+	snakemake --report birdscanner2-report.html
+
+init:
+	bash workflow/scripts/init.sh
 
 clean:
-	rm -rf .snakemake run results
+	rm -rf .snakemake run results birdscanner2-report.html
