@@ -1,0 +1,7 @@
+__default__:
+  # exchange <snic123> with your SLURM account id below
+  account: snic123
+
+  # directories for slurm logs (no need to change these)
+  output: "slurm/logs/{rule}.{wildcards}.out"
+  error: "slurm/err/{rule}.{wildcards}.err"

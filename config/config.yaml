@@ -1,15 +1,17 @@
 # Config file for birdscanner2
-# Last modified: ons okt 07, 2020  03:13
+# Last modified: tis okt 13, 2020  02:39
 # Sign: JN
-
-# Running on UPPMAX (rackham)
-#On_uppmax: False
 
 # Reference input is DNA (True) or Protein (False).
 #Reference_is_DNA: True
-
 # Genome input is DNA (True) or Protein (False)
 #Genome_is_DNA: True
+# Ad hoc setting of type-specific variables
+type:
+    dbtype: "nucl"
+    plastprog: "plastn"
+    hmmbuildtype: "--dna"
+    hmmerprog: "nhmmer"
 
 # Gather genes in the end (if more than one genome)
 #Gathergenes: True
@@ -26,6 +28,7 @@ splitfast:
 plast:
     maxhitperquery: "1"
     bargraph: "-bargraph"
+    threads: 10
 
 # Makeblastdb
 makeblastdb:
@@ -38,8 +41,13 @@ blastdbcmd:
 # Hmmer
 hmmer:
     notextw: "--notextw"
+    threads: 10
 
 # Parsehmmer
 parsehmmer:
     stats: "--stats"
+
+# Pigz
+pigz:
+    threads: 8
 

@@ -1,27 +1,8 @@
 # Birdscanner v2
-# Last modified: mån okt 12, 2020  07:15
+# Last modified: tis okt 13, 2020  02:09
 # Sign: JN
 
 configfile: "config/config.yaml"
-
-DBTYPE = "nucl"
-PLASTPROG = "plastn"
-HMMBUILDTYPE = "--dna"
-HMMERPROG = "nhmmer"
-
-# Nucleotide or aminoacid input
-#if (config["Reference_is_DNA"] == True):
-#    DBTYPE = "nucl"
-#    PLASTPROG = "plastn"
-#    HMMBUILDTYPE = "--dna"
-#    HMMERPROG = "nhmmer"
-#else:
-#    DBTYPE = "prot"
-#    PLASTPROG = "tplastn"
-#    HMMBUILDTYPE = "--amino"
-#    HMMERPROG = "phmmer"
-#
-#if (config["Genome_is_DNA"] == True):
 
 # Local rules are run on the submit node on a cluster
 localrules: all, OO6_get_scaffold_ids, OO7_get_reference_ids, OO8_select_scaffolds, O11_select_hmms
@@ -82,7 +63,7 @@ rule OO3_split_genome_fasta:
     output: 
         temp("run/plast/{genome}.split.fas")
     threads:
-        workflow.cores * 0.5
+        config["pigz"]["threads"]
     params:
         length = config["splitfast"]["max"]
     conda:
@@ -101,7 +82,7 @@ rule OO4_make_genome_plast_db:
     output:
         temp(touch("run/tmp/{genome}.makeblastdb.done"))
     params:
-        dbtype = DBTYPE,
+        dbtype = config["type"]["dbtype"],
         parse_seqids = config["makeblastdb"]["parseseqids"]
     conda:
         "envs/blast.yaml"
@@ -121,11 +102,11 @@ rule OO5_run_plast:
     output:
         temp("run/plast/{genome}.plast.tab")
     threads:
-        workflow.cores
+        config["plast"]["threads"]
     params:
         maxhitperquery = config["plast"]["maxhitperquery"],
         bargraph = config["plast"]["bargraph"],
-        plastprog = PLASTPROG
+        plastprog = config["type"]["plastprog"]
     shell:
         "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
 
@@ -190,7 +171,7 @@ rule OO8_select_scaffolds:
     output:
         temp("run/plast/{genome}.plast.fas")
     params:
-        dbtype = DBTYPE,
+        dbtype = config["type"]["dbtype"],
         outfmt = config["blastdbcmd"]["outfmt"]
     conda:
         "envs/blast.yaml"
@@ -223,7 +204,7 @@ rule O10_create_hmms:
     output:
         temp("run/tmp/{ref}.hmm")
     params:
-        hmmbuildtype = HMMBUILDTYPE
+        hmmbuildtype = config["type"]["hmmbuildtype"]
     conda:
         "envs/hmmer.yaml"
     shell:
@@ -273,10 +254,10 @@ rule O13_run_hmmer:
     output:
         temp("run/hmmer/{genome}.hmmer.out")
     params:
-        hmmerprog = HMMERPROG,
+        hmmerprog = config["type"]["hmmerprog"],
         notextw = config["hmmer"]["notextw"]
     threads:
-        workflow.cores
+        config["hmmer"]["threads"]
     conda:
         "envs/hmmer.yaml"
     shell:
@@ -328,7 +309,7 @@ rule O16_compress_hmmer_out:
     output:
         "results/hmmer/{genome}.hmmer.out.gz"
     threads:
-        workflow.cores
+        config["pigz"]["threads"]
     conda:
         "envs/pigz.yaml"
     shell:
