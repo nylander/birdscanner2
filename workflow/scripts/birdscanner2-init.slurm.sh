@@ -37,7 +37,7 @@ make init
 >&2 echo "birdscanner2-init job should now have been submitted to cluster."
 >&2 echo "Submission details, and any possible errors, are in the birdscanner2-init.err file."
 >&2 echo "Monitor submitted jobs with with the 'jobinfo' command."
->&2 echo "When all nhmmer searches are finished, you should see outfiles"
+>&2 echo "When all processing are finished, you should see outfiles"
 >&2 echo "in folder birdscanner2/run/tmp/."
 >&2 echo ""
 >&2 echo "Reached the end of the birdscanner2-init slurm script."
