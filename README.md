@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: mån okt 12, 2020  06:20
+- Last modified: ons okt 14, 2020  04:49
 - Sign: JN
 
 ## Description
@@ -202,13 +202,15 @@ Note that softwares 14, 15 needs to be installed separately (currently not in co
 
 ## Running birdscanner2 on [UPPMAX](https://www.uppmax.uu.se)
 
-### 1. Install needed software
+### 1. Install software
 
 On UPPMAX, most software are available as modules. However, the `plast` and
-`splitfast` programs need to be installed manually.  For example (assuming
-`$HOME/bin` is in your `PATH`):
+`splitfast` programs need to be installed manually. For example (tested on
+cluster
+["Rackham"](https://uppmax.uu.se/support/user-guides/rackham-user-guide/), and
+assuming `$HOME/bin` is in your `PATH`):
 
-#### plast
+#### 1.1. plast
 
     # Alt. 1: Copy binary
     $ wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
@@ -227,7 +229,7 @@ On UPPMAX, most software are available as modules. However, the `plast` and
     $ make
     $ cp bin/PlastCmd $HOME/bin/plast
 
-#### splitfast
+#### 1.2. splitfast
 
     $ git clone https://github.com/nylander/split-fasta-seq.git
     $ cd split-fasta-seq/src
@@ -238,21 +240,32 @@ On UPPMAX, most software are available as modules. However, the `plast` and
 
     $ git clone https://github.com/Naturhistoriska/birdscanner2.git
 
-### 3. Add genome and reference data
+### 3. Add your uppmax account number
+
+Manually edit the file [`cluster/cluster.yaml`](cluster/cluster.yaml), and add
+your [SNIC compute project account
+number](https://uppmax.uu.se/support/getting-started/applying-for-projects/)
+(e.g., "snic2020-12-34"). For example:
+
+    $ sed -i 's/#SNICACCOUNT#/snic2020-12-34/' config/cluster.yaml
+
+### 4. Add genome and reference data
 
 See [**Section Indata**](#indata)
 
-### 4. Prepare and submit a batch script for the [SLURM](https://uppmax.uu.se/support/user-guides/slurm-user-guide/) system
+### 5. Run the initial data conversion
 
-The script need to load the following modules:
+Note, this step is an ad-hoc step currently used to avoid submission
+of too many snakemake rules to slurm. Replace the "snic1234-56-78" below
+with your SNIC account number.
 
-    module load bioinfo-tools
-    module load snakemake/5.10.0
-    module load hmmer/3.2.1-intel
-    module load blast/2.9.0+
-    module load pigz/2.4
+    $ sbatch -A snic1234-56-78 -t 60 workflow/scripts/birdscanner2-init.slurm.sh
 
-**(SECTION NOT FINISHED!)**
+### 6. Run the rest of the workflow
+
+Replace the "snic1234-56-78" below with your SNIC account number.
+
+    $ sbatch -A snic1234-56-78 workflow/scripts/birdscanner2-run.slurm.sh
 
 ## Run time
 

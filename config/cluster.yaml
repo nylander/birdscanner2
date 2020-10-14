@@ -1,12 +1,12 @@
 # Set defaults for birdscanner2 rules on cluster.
-# Last modified: ons okt 14, 2020  03:41
+# Last modified: ons okt 14, 2020  04:47
 # Sign: JN
 # Notes: Exceptions are specified below.
 # Threads are given per tool, and are specifies in config/config.yaml
+# IMPORTANT: Adjust the account number below.
 
 __default__:
-  # Replace <snic1234-56-7> with your SLURM account below
-  account: snic2020-15-97
+  account: "#SNICACCOUNT#"
   partition: core
   time: 14
   cpus-per-task: 1
