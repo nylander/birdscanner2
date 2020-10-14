@@ -1,11 +1,12 @@
 # Birdscanner v2
-# Last modified: ons okt 14, 2020  11:50
+# Last modified: ons okt 14, 2020  01:14
 # Sign: JN
 
 configfile: "config/config.yaml"
 
 # Local rules are run on the submit node on a cluster
 #localrules: all, OO6_get_scaffold_ids, OO7_get_reference_ids, OO8_select_scaffolds, O11_select_hmms
+localrules: all
 
 # Input files
 REFERENCES, = glob_wildcards("data/references/{ref}.fas")
@@ -39,9 +40,41 @@ rule OO1_convert_fas:
     shell:
         "awk -v a=$(basename {input} .fas) '/>/{{$0=\">\"a\"__\"++i}}1' {input} > {output}"
 
-# 2. cat_reference_fas
+# 2. fasta_to_stockholm
+# Uses: bash 5.0.17, fasta2stockholm.pl
+rule OO2_fasta_to_stockholm:
+    """
+    Fasta to Stockholm MSA conversion.
+    """
+    input:
+        "data/references/{ref}.fas"
+    output:
+        temp("run/tmp/{ref}.sto")
+    conda:
+        "envs/perl.yaml"
+    shell:
+        "fasta2stockholm.pl {input} > {output}"
+
+# 3. create_hmms
+# Uses: bash 5.0.17, hmmbuild from HMMER 3.3
+rule OO3_create_hmms:
+    """
+    Create hmms from Stockholm format.
+    """
+    input:
+        "run/tmp/{ref}.sto"
+    output:
+        temp("run/tmp/{ref}.hmm")
+    params:
+        hmmbuildtype = config["type"]["hmmbuildtype"]
+    conda:
+        "envs/hmmer.yaml"
+    shell:
+        "hmmbuild {params.hmmbuildtype} {output} {input}"
+
+# 4. cat_reference_fas
 # Uses: bash 5.0.17, find 4.7.0
-rule OO2_cat_reference_fas:
+rule OO4_cat_reference_fas:
     """
     Concatenate all reference fasta files to one (reference.fas).
     """
@@ -52,9 +85,9 @@ rule OO2_cat_reference_fas:
     shell:
         "find run/tmp -type f -name \*.fasta -exec cat {{}} \+ > {output}"
 
-# 3. split_genome_fasta
+# 5. split_genome_fasta
 # Uses: bash 5.0.17, splitfast 1.0, pigz v2.4
-rule OO3_split_genome_fasta:
+rule OO5_split_genome_fasta:
     """
     Split fasta sequences longer than length=100,000. Note that 100,000 is the maximum length for plast.
     """
@@ -71,9 +104,9 @@ rule OO3_split_genome_fasta:
     shell:
         "splitfast -m {params.length} <(pigz -p {threads} -d -c {input}) > {output}"
 
-# 4. make_genome_plast_db
+# 6. make_genome_plast_db
 # Uses: bash 5.0.17, makeblastdb v2.9.0+ from blast v2.9.0
-rule OO4_make_genome_plast_db:
+rule OO6_make_genome_plast_db:
     """
     Make plast database.
     """
@@ -89,9 +122,9 @@ rule OO4_make_genome_plast_db:
     shell:
         "makeblastdb -in {input} -dbtype {params.dbtype} {params.parse_seqids}"
 
-# 5. run_plast
+# 7. run_plast
 # Uses: bash 5.0.17, plast v2.3.2
-rule OO5_run_plast:
+rule OO7_run_plast:
     """
     Run plast with all concatenated reference sequences as query,
     and the splitted genome fasta as data base.
@@ -110,9 +143,9 @@ rule OO5_run_plast:
     shell:
         "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
 
-# 6. get_scaffold_ids
+# 8. get_scaffold_ids
 # Uses: bash 5.0.17, gawk v5.0.1, sort v8.30
-rule OO6_get_scaffold_ids:
+rule OO8_get_scaffold_ids:
     """
     The idea is that for each species, we would expect one best hit, and we wish to see which of the scaffolds that most often provides the best hit.
     We wish to search with hmms only against the scaffolds having sufficiently long hits in the plast search.
@@ -136,9 +169,9 @@ rule OO6_get_scaffold_ids:
         sort -u > {output}
         """
 
-# 7. get_reference_ids
+# 9. get_reference_ids
 # Uses: bash 5.0.17, gawk v5.0.1, sort v8.30
-rule OO7_get_reference_ids:
+rule OO9_get_reference_ids:
     """
     Get IDs (file names) for those reference gene files that have a best plast hit with length above minlen.
     NOTE: Room here for more filtering if needed.
@@ -159,9 +192,9 @@ rule OO7_get_reference_ids:
         sort -u > {output}
         """
 
-# 8. select_scaffolds
+# 10. select_scaffolds
 # Uses: bash 5.0.17, blastdbcmd v2.9.0+
-rule OO8_select_scaffolds:
+rule O10_select_scaffolds:
     """
     Extract the scaffolds with best plast hits from the splitted genome fasta.
     """
@@ -177,38 +210,6 @@ rule OO8_select_scaffolds:
         "envs/blast.yaml"
     shell:
         "blastdbcmd -db {input.db} -dbtype {params.dbtype} -entry_batch {input.idfile} -outfmt {params.outfmt} -out {output}"
-
-# 9. fasta_to_stockholm
-# Uses: bash 5.0.17, fasta2stockholm.pl
-rule OO9_fasta_to_stockholm:
-    """
-    Fasta to Stockholm MSA conversion.
-    """
-    input:
-        "data/references/{ref}.fas"
-    output:
-        temp("run/tmp/{ref}.sto")
-    conda:
-        "envs/perl.yaml"
-    shell:
-        "fasta2stockholm.pl {input} > {output}"
-
-# 10. create_hmms
-# Uses: bash 5.0.17, hmmbuild from HMMER 3.3
-rule O10_create_hmms:
-    """
-    Create hmms from Stockholm format.
-    """
-    input:
-        "run/tmp/{ref}.sto"
-    output:
-        temp("run/tmp/{ref}.hmm")
-    params:
-        hmmbuildtype = config["type"]["hmmbuildtype"]
-    conda:
-        "envs/hmmer.yaml"
-    shell:
-        "hmmbuild {params.hmmbuildtype} {output} {input}"
 
 # 11. select_hmms
 # Uses: bash 5.0.17, cat v8.30, find v4.7.0, grep v3.4
