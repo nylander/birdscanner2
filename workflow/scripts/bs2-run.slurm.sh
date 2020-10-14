@@ -28,6 +28,8 @@
 
 module load bioinfo-tools
 module load snakemake/5.10.0
+module load hmmer/3.2.1-intel
+module load blast/2.9.0+
 
 make slurm-run
 
