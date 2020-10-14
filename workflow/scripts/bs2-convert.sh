@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# File: init.sh
+# File: bs2-convert.sh
 #
-# Last modified: ons okt 14, 2020  04:07
+# Last modified: ons okt 14, 2020  05:51
 #
 # Sign: JN
 #
-# Usage: ./init.sh
+# Usage: ./bs2-convert.sh
 #
 # Description: Convert and concatenate fasta, create hmms.
 # To be used with birdscanner2 workflow as an ad-hoc script to
@@ -14,8 +14,8 @@
 # The script basically runs rules OO1_convert_fas, OO2_fasta_to_stockholm,
 # OO3_create_hmms, and OO4_cat_reference_fas -- but without snakemake.
 #
-# Requirements: nucleotide fasta files (suffix .fas) in folder data/references;
-# softwares awk, fasta2stockholm.pl, hmmbuild, and gnuparallel.
+# Requirements: nucleotide fasta files (suffix .fas) in folder data/references,
+# and softwares awk, bs2-fas-to-sto.pl, hmmbuild, and gnuparallel.
 #
 # Copyright (C) 2020 Johan Nylander <johan.nylander@nrm.se>
 # Distributed under terms of the MIT license. 
@@ -26,8 +26,8 @@ command -v hmmbuild > /dev/null 2>&1 || { echo >&2 "Error: hmmbuild not found.";
 command -v parallel > /dev/null 2>&1 || { echo >&2 "Error: parallel not found."; exit 1; }
 
 scriptsdir=$(dirname "$(readlink -f "$0")")
-f2s="${scriptsdir}/fasta2stockholm.pl"
-command -v "${f2s}" > /dev/null 2>&1 || { echo >&2 "Error: fasta2stockholm.pl not found."; exit 1; }
+f2s="${scriptsdir}/bs2-fas-to-sto.pl"
+command -v "${f2s}" > /dev/null 2>&1 || { echo >&2 "Error: bs2-fas-to-sto.pl not found."; exit 1; }
 
 if [ -e run/tmp/reference.fas ] ; then
     echo "Warning: file run/tmp/reference.fas already exists. Will not concatenate fasta files."

@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: ons okt 14, 2020  01:14
+# Last modified: ons okt 14, 2020  05:51
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -28,7 +28,6 @@ rule all:
         "run/tmp/genes.done"
 
 # 1. Convert fasta
-# Uses: bash 5.0.17, gawk 5.0.1
 rule OO1_convert_fas:
     """
     Relabel fasta headers to '>filename__i', where i is an iterator. The '__' is important and used later in rule get_reference_ids.
@@ -41,7 +40,6 @@ rule OO1_convert_fas:
         "awk -v a=$(basename {input} .fas) '/>/{{$0=\">\"a\"__\"++i}}1' {input} > {output}"
 
 # 2. fasta_to_stockholm
-# Uses: bash 5.0.17, fasta2stockholm.pl
 rule OO2_fasta_to_stockholm:
     """
     Fasta to Stockholm MSA conversion.
@@ -53,10 +51,9 @@ rule OO2_fasta_to_stockholm:
     conda:
         "envs/perl.yaml"
     shell:
-        "fasta2stockholm.pl {input} > {output}"
+        "perl workflow/scripts/bs2-fas-to-sto.pl {input} > {output}"
 
 # 3. create_hmms
-# Uses: bash 5.0.17, hmmbuild from HMMER 3.3
 rule OO3_create_hmms:
     """
     Create hmms from Stockholm format.
@@ -73,7 +70,6 @@ rule OO3_create_hmms:
         "hmmbuild {params.hmmbuildtype} {output} {input}"
 
 # 4. cat_reference_fas
-# Uses: bash 5.0.17, find 4.7.0
 rule OO4_cat_reference_fas:
     """
     Concatenate all reference fasta files to one (reference.fas).
@@ -86,7 +82,6 @@ rule OO4_cat_reference_fas:
         "find run/tmp -type f -name \*.fasta -exec cat {{}} \+ > {output}"
 
 # 5. split_genome_fasta
-# Uses: bash 5.0.17, splitfast 1.0, pigz v2.4
 rule OO5_split_genome_fasta:
     """
     Split fasta sequences longer than length=100,000. Note that 100,000 is the maximum length for plast.
@@ -105,7 +100,6 @@ rule OO5_split_genome_fasta:
         "splitfast -m {params.length} <(pigz -p {threads} -d -c {input}) > {output}"
 
 # 6. make_genome_plast_db
-# Uses: bash 5.0.17, makeblastdb v2.9.0+ from blast v2.9.0
 rule OO6_make_genome_plast_db:
     """
     Make plast database.
@@ -123,7 +117,6 @@ rule OO6_make_genome_plast_db:
         "makeblastdb -in {input} -dbtype {params.dbtype} {params.parse_seqids}"
 
 # 7. run_plast
-# Uses: bash 5.0.17, plast v2.3.2
 rule OO7_run_plast:
     """
     Run plast with all concatenated reference sequences as query,
@@ -144,7 +137,6 @@ rule OO7_run_plast:
         "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
 
 # 8. get_scaffold_ids
-# Uses: bash 5.0.17, gawk v5.0.1, sort v8.30
 rule OO8_get_scaffold_ids:
     """
     The idea is that for each species, we would expect one best hit, and we wish to see which of the scaffolds that most often provides the best hit.
@@ -170,7 +162,6 @@ rule OO8_get_scaffold_ids:
         """
 
 # 9. get_reference_ids
-# Uses: bash 5.0.17, gawk v5.0.1, sort v8.30
 rule OO9_get_reference_ids:
     """
     Get IDs (file names) for those reference gene files that have a best plast hit with length above minlen.
@@ -193,7 +184,6 @@ rule OO9_get_reference_ids:
         """
 
 # 10. select_scaffolds
-# Uses: bash 5.0.17, blastdbcmd v2.9.0+
 rule O10_select_scaffolds:
     """
     Extract the scaffolds with best plast hits from the splitted genome fasta.
@@ -212,7 +202,6 @@ rule O10_select_scaffolds:
         "blastdbcmd -db {input.db} -dbtype {params.dbtype} -entry_batch {input.idfile} -outfmt {params.outfmt} -out {output}"
 
 # 11. select_hmms
-# Uses: bash 5.0.17, cat v8.30, find v4.7.0, grep v3.4
 rule O11_select_hmms:
     """
     Select those hmm from tmp files that have matches in plast, and concatenate them.
@@ -228,7 +217,6 @@ rule O11_select_hmms:
         """
 
 # 12. run_hmmpress
-# Uses: bash 5.0.17, hmmpress from HMMER 3.3
 rule O12_run_hmmpress:
     """
     Run hmmpress.
@@ -243,10 +231,9 @@ rule O12_run_hmmpress:
         "hmmpress {input}"
 
 # 13. run_hmmer
-# Uses: bash 5.0.17, nhmmer from HMMER 3.3
 rule O13_run_hmmer:
     """
-    Run nhmmer: the selected scaffolds against the selected hmms.
+    Run hmmer: the selected scaffolds against the selected hmms.
     """
     input:
         "run/tmp/{genome}.hmmpress.done",
@@ -265,10 +252,9 @@ rule O13_run_hmmer:
         "{params.hmmerprog} {params.notextw} --cpu {threads} --tblout {output} {input.hmm} {input.query}"
 
 # 14. parse_hmmer
-# Uses: bash 5.0.17, perl v5.30.0, parse_nhmmer.pl v1.0
 rule O14_parse_hmmer:
     """
-    Parse nhmmer output.
+    Parse hmmer output.
     """
     input:
         hmmer = "run/hmmer/{genome}.hmmer.out",
@@ -282,10 +268,9 @@ rule O14_parse_hmmer:
     conda:
         "envs/perl.yaml"
     shell:
-        "perl workflow/scripts/parse_nhmmer.pl -f {params.fastaheader} -p {params.prefix} -i {input.hmmer} -g {input.fas} -d {output} {params.stats}"
+        "perl workflow/scripts/bs2-parse-nhmmer.pl -f {params.fastaheader} -p {params.prefix} -i {input.hmmer} -g {input.fas} -d {output} {params.stats}"
 
 # 15. gather_genes
-# Uses: bash 5.0.17, perl v5.30.0, gather_genes.pl v1.0
 rule O15_gather_genes:
     """
     Gather genes from parsed nhmmer output in genome folders.
@@ -298,9 +283,9 @@ rule O15_gather_genes:
     conda:
         "envs/perl.yaml"
     shell:
-        "perl workflow/scripts/gather_genes.pl --outdir={output.dir} $(find results/genomes -type d)"
+        "perl workflow/scripts/bs2-gather-genes.pl --outdir={output.dir} $(find results/genomes -type d)"
 
-# 16. Compress hmmer.out
+# 16. compress_hmmer_out
 rule O16_compress_hmmer_out:
     """
     Compress  and keep hmmer output.

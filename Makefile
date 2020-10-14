@@ -1,5 +1,5 @@
 # Makefile for birdscanner2
-# Last modified: ons okt 14, 2020  04:45
+# Last modified: ons okt 14, 2020  05:46
 # Sign: JN
 
 #UPPNR :=
@@ -24,8 +24,8 @@ dryrun:
 report:
 	snakemake --report birdscanner2-report.html
 
-slurm-init:
-	bash workflow/scripts/init.sh
+convert:
+	bash workflow/scripts/bs2-convert.sh
 
 slurm-run:
 	snakemake --profile slurm -j 100

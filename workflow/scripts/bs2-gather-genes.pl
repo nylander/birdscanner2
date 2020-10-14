@@ -5,10 +5,10 @@
 
 =head2
 
-         FILE: gather_genes.pl
+         FILE: bs2-gather-genes.pl
 
-        USAGE: ./gather_genes.pl --outdir=out  inputfolders
-               ./gather_genes.pl --outdir=genes $(find out -mindepth 1 -type d)
+        USAGE: ./bs2-gather-genes.pl --outdir=out  inputfolders
+               ./bs2-gather-genes.pl --outdir=genes $(find out -mindepth 1 -type d)
 
   DESCRIPTION: Gather genes from parsed nhmmer output. The script takes
                folder names as input, where it expects fasta files named
@@ -27,7 +27,7 @@
         NOTES: Currently in birdscanner2, fas files are named <id>.fas, not
                <genome>.<id>.fas
 
-       AUTHOR: Johan Nylander (JN), johan.nylander@nbis.se
+       AUTHOR: Johan Nylander (JN), johan.nylander@nrm.se
 
       COMPANY: NBIS/NRM
 
@@ -35,7 +35,7 @@
 
       CREATED: 2019-04-12 16:12:21
 
-     REVISION: Wed 12 Feb 2020 06:09:47 PM CET
+     REVISION: ons 14 okt 2020 17:30:15
 
 =cut
 

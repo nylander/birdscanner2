@@ -1,19 +1,19 @@
 #! /bin/bash -l
 
-#SBATCH -J birdscanner2-run
+#SBATCH -J bs2-run
 #SBATCH -t 10
 #SBATCH -p core
 #SBATCH -n 1
 #SBATCH -M rackham,snowy 
-#SBATCH --output=birdscanner2-run.err
+#SBATCH --output=bs2-run.err
 
 # Slurm script for birdscanner2-run
 #
 # Test by using:
-#     sbatch -A <accountnr> --test-only workflow/scripts/birdscanner2-run.slurm.sh
+#     sbatch -A <accountnr> --test-only workflow/scripts/bs2-run.slurm.sh
 #
 # Start by using:
-#     sbatch -A <accountnr> workflow/scripts/birdscanner2-run.slurm.sh
+#     sbatch -A <accountnr> workflow/scripts/bs2-run.slurm.sh
 #
 # Stop by using:
 #     scancel 1234
@@ -33,10 +33,10 @@ make slurm-run
 
 >&2 echo ""
 >&2 echo ""
->&2 echo "birdscanner2-run job should now have been submitted to cluster."
->&2 echo "Submission details, and any possible errors, are in the birdscanner2-run.err file."
+>&2 echo "bs2-run job should now have been submitted to cluster."
+>&2 echo "Submission details, and any possible errors, are in the bs2-run.err file."
 >&2 echo "Monitor submitted jobs with with the 'jobinfo' command."
 >&2 echo "When all processing are finished, you should see outfiles"
 >&2 echo "in folder birdscanner2/results."
 >&2 echo ""
->&2 echo "Reached the end of the birdscanner2-run slurm script."
+>&2 echo "Reached the end of the bs2-run slurm script."

@@ -5,15 +5,15 @@
 
 =head1
 
-         FILE:  parse_nhmmer.pl
+         FILE:  bs2-parse-nhmmer.pl
 
-        USAGE: ./parse_nhmmer.pl -i nhmmer.out -g genome.fas [-d outdir] [-p prefix] [--nostats] [-f output-fasta-header]
+        USAGE: ./bs2-parse-nhmmer.pl -i nhmmer.out -g genome.fas [-d outdir] [-p prefix] [--nostats] [-f output-fasta-header]
 
-               ./parse_nhmmer.pl \
+               ./bs2-parse-nhmmer.pl \
                    -i run/hmmer/AbucgeM_genome.nhmmer.out \
                    -g run/plast/AbucgeM_genome.plast200.fas
 
-               perl src/parse_nhmmer.pl \
+               perl workflow/scripts/bs2-parse-nhmmer.pl \
                    -i run/hmmer/AbucgeM_genome.nhmmer.out \
                    -g run/plast/AbucgeM_genome.plast200.fas \
                    -d out/AbucgeM_genome_hmmer \
@@ -57,7 +57,7 @@
 
         NOTES: --- 
 
-       AUTHOR: Johan Nylander (JN), Johan.Nylander@nbis.se
+       AUTHOR: Johan Nylander (JN), Johan.Nylander@nrm.se
 
       COMPANY: NBIS/NRM
 
@@ -65,7 +65,7 @@
 
       CREATED: 09/17/2015 11:06:04 PM
 
-     REVISION: Wed 11 Dec 2019 10:02:09 AM CET
+     REVISION: ons 14 okt 2020 17:31:49
 
 =cut
 
