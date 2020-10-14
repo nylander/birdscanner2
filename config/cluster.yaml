@@ -1,5 +1,5 @@
 # Set defaults for birdscanner2 rules on cluster.
-# Last modified: ons okt 14, 2020  03:06
+# Last modified: ons okt 14, 2020  03:41
 # Sign: JN
 # Notes: Exceptions are specified below.
 # Threads are given per tool, and are specifies in config/config.yaml
@@ -8,7 +8,7 @@ __default__:
   # Replace <snic1234-56-7> with your SLURM account below
   account: snic2020-15-97
   partition: core
-  time: "00:14:00"
+  time: 14
   cpus-per-task: 1
 
   # directories for slurm logs (no need to change these)
@@ -19,60 +19,58 @@ __default__:
 # and the software runs on a single cpu (not multi-threading).
 # The job will be repeated, however, for thousands of files.
 #OO1_convert_fas:
-#    time: 00:10:00
-#    n: 1
+#    time: 10
 #
+### repeated thousands of times
 #OO2_fasta_to_stockholm:
-#    time: 00:10:00     ### repeated thousands of times
-#    n: 1
+#    time: 10
 #
+### repeated thousands of times
 #OO3_create_hmms:
-#    time: 00:10:00  ### repeated thousands of times
-#    n: 1
+#    time: 10
 #
 #OO4_cat_reference_fas:
-#    time: 00:10:00   
-#    n: 1
+#    time: 10   
 
 #OO5_split_genome_fasta:
-#    time: 00:10:00
+#    time: 10
 
 #OO6_make_genome_plast_db:
-#    time: 00:10:00
+#    time: 10
 
 ##### 10,000 secs
 OO7_run_plast:
-    time: "04:00:00"
+    time: 200
 
 # local rule?
 #OO8_get_scaffold_ids:
-#    time: 00:10:00
+#    time: 10
 
 # local rule?
 #OO9_get_reference_ids:
-#    time: 00:10:00
+#    time: 10
 
 # local rule?
 #O10_select_scaffolds:
-#    time: 00:10:00
+#    time: 10
 
 # local rule?
 #O11_select_hmms:
-#    time: 00:10:00
+#    time: 10
 
 #O12_run_hmmpress:
-#    time: 00:10:00
+#    time: 10
 
 ##### 100,000 secs
 O13_run_hmmer:
-    time: "2-00:00:00"
+    time: 2000
 
 #O14_parse_hmmer:
-#    time: 00:10:00
+#    time: 10
 
 #O15_gather_genes:
-#    time: 00:10:00
+#    time: 10
 
 #O16_compress_hmmer_out:
-#    time: 00:10:00
+#    time: 10
 
