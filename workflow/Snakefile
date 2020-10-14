@@ -1,11 +1,11 @@
 # Birdscanner v2
-# Last modified: tis okt 13, 2020  02:09
+# Last modified: ons okt 14, 2020  11:50
 # Sign: JN
 
 configfile: "config/config.yaml"
 
 # Local rules are run on the submit node on a cluster
-localrules: all, OO6_get_scaffold_ids, OO7_get_reference_ids, OO8_select_scaffolds, O11_select_hmms
+#localrules: all, OO6_get_scaffold_ids, OO7_get_reference_ids, OO8_select_scaffolds, O11_select_hmms
 
 # Input files
 REFERENCES, = glob_wildcards("data/references/{ref}.fas")
