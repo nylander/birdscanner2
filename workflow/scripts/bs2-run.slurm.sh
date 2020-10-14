@@ -1,7 +1,7 @@
 #! /bin/bash -l
 
 #SBATCH -J bs2-run
-#SBATCH -t 10
+#SBATCH -t 48:00:00
 #SBATCH -p core
 #SBATCH -n 1
 #SBATCH -M rackham,snowy 
