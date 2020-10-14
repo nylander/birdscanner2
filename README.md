@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: ons okt 14, 2020  06:02
+- Last modified: ons okt 14, 2020  06:09
 - Sign: JN
 
 ## Description
@@ -261,13 +261,13 @@ Note, this step is an ad-hoc step currently used to avoid submission
 of too many snakemake rules to slurm. Replace the "snic1234-56-78" below
 with your SNIC account number.
 
-    $ sbatch -A snic1234-56-78 -t 60 workflow/scripts/birdscanner2-init.slurm.sh
+    $ sbatch -A snic1234-56-78 -t 60 workflow/scripts/bs2-convert.slurm.sh
 
 ### 6. Run the rest of the workflow
 
 Replace the "snic1234-56-78" below with your SNIC account number.
 
-    $ sbatch -A snic1234-56-78 workflow/scripts/birdscanner2-run.slurm.sh
+    $ sbatch -A snic1234-56-78 workflow/scripts/bs2-run.slurm.sh
 
 ## Run time
 
