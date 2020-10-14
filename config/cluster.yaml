@@ -1,9 +1,9 @@
 __default__:
   # exchange <snic1234-56-7> with your SLURM account id below
-  account: snic1234-56-7
+  account: snic2020-15-97
   partition: core
   time: 00:14:00
-  n: 1
+  cpus-per-task: 1
 
   # directories for slurm logs (no need to change these)
   output: "slurm/logs/{rule}.{wildcards}.out"
