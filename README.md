@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: ons okt 14, 2020  04:58
+- Last modified: ons okt 14, 2020  06:02
 - Sign: JN
 
 ## Description
@@ -153,13 +153,13 @@ multiple-sequence alignments.
 
 If different runs have been made *with the same references data*, then the
 separate runs can be combined using the helper script
-[`gather_genes.pl`](workflow/scripts/gather_genes.pl). For example, if genome
-`Apa.gz` and `Bpa.gz` have been run against the same set of references at
-different occasions, the individual files in `results/genomes/Apa` and
+[`bs2-gather-genes.pl`](workflow/scripts/bs2-gather-genes.pl). For example, if
+genome `Apa.gz` and `Bpa.gz` have been run against the same set of references
+at different occasions, the individual files in `results/genomes/Apa` and
 `results/genomes/Bpa` can be concatenated to fasta files ready for
 multiple-sequence alignment:
 
-    $ gather_genes.pl --outdir=out /path/to/results/genomes/Apa /path/to/results/genomes/Bpa
+    $ bs2-gather-genes.pl --outdir=out /path/to/results/genomes/Apa /path/to/results/genomes/Bpa
 
 The concatenated files are in folder `out/`. Note that not all genomes may have
 the same number of output files in `results/genomes/`, hence the number of
@@ -168,7 +168,7 @@ sequences in the concatenated files may not be the same.
 ## Software prerequisites
 
 The workflow is tested on GNU/Linux (Ubuntu 20.04), and uses standard Linux
-(bash) tools in addition to the main workflow manager `snakemake`.  A list of
+(bash) tools in addition to the main workflow manager `snakemake`. A list of
 tools (and tested version) are given below.
 See also section [**Running birdscanner2 on UPPMAX**](#running-birdscanner2-on-uppmax).
 
@@ -187,18 +187,20 @@ See also section [**Running birdscanner2 on UPPMAX**](#running-birdscanner2-on-u
 8. [hmmpress](http://hmmer.org/download.html) (3.3)
 9. [nhmmer](http://hmmer.org/download.html) (3.3)
 10. [perl](https://www.perl.org/get.html) (5.30.0)
-11. [fasta2stockholm.pl](workflow/scripts/fasta2stockholm.pl) (1.0)
-12. [parse_nhmmer.pl](workflow/scripts/parse_nhmmer.pl) (1.0)
-13. [gather_genes.pl](workflow/scripts/gather_genes.pl) (1.0)
-14. [plast](https://github.com/PLAST-software/plast-library) (2.3.2)
-15. [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
+11. [plast](https://github.com/PLAST-software/plast-library) (2.3.2)
+12. [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
+13. [bs2-fas-to-sto.pl](workflow/scripts/bs2-fas-to-sto.pl) (1.0)
+14. [bs2-parse-nhmmer.pl](workflow/scripts/bs2-parse-nhmmer.pl) (1.0)
+15. [bs2-gather-genes.pl](workflow/scripts/bs2-gather-genes.pl) (1.0)
 
-Software requirements (nrs. 1--10) can also be taken care of by the conda system by
-running the pipeline with commands
+Softwares 13-15 are provided. Software requirements 1-10 can also be
+taken care of by the [conda system](https://docs.conda.io/) by running the
+pipeline with commands
 
     $ snakemake -j -p --use-conda
 
-Note that softwares 14, 15 needs to be installed separately (currently not in conda). 
+Note that softwares 11, and 12 still needs to be installed separately
+(currently not in any conda channels). 
 
 ## Running birdscanner2 on [UPPMAX](https://www.uppmax.uu.se)
 
