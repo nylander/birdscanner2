@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: ons okt 14, 2020  04:49
+- Last modified: ons okt 14, 2020  04:58
 - Sign: JN
 
 ## Description
@@ -242,7 +242,7 @@ assuming `$HOME/bin` is in your `PATH`):
 
 ### 3. Add your uppmax account number
 
-Manually edit the file [`cluster/cluster.yaml`](cluster/cluster.yaml), and add
+Manually edit the file [`config/cluster.yaml`](config/cluster.yaml), and add
 your [SNIC compute project account
 number](https://uppmax.uu.se/support/getting-started/applying-for-projects/)
 (e.g., "snic2020-12-34"). For example:
