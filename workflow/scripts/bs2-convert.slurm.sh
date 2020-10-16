@@ -5,7 +5,8 @@
 #SBATCH -p core
 #SBATCH -n 10
 #SBATCH -M rackham,snowy 
-#SBATCH --output=bs2-convert.err
+#SBATCH --error=slurm/err/bs2-convert.err
+#SBATCH --output=slurm/logs/bs2-convert.out
 
 # Slurm script for bs2-convert
 #
