@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: ons okt 14, 2020  06:09
+- Last modified: fre okt 16, 2020  05:09
 - Sign: JN
 
 ## Description
@@ -265,9 +265,31 @@ with your SNIC account number.
 
 ### 6. Run the rest of the workflow
 
-Replace the "snic1234-56-78" below with your SNIC account number.
+~~Replace the "snic1234-56-78" below with your SNIC account number.~~
 
-    $ sbatch -A snic1234-56-78 workflow/scripts/bs2-run.slurm.sh
+~~$ sbatch -A snic1234-56-78 workflow/scripts/bs2-run.slurm.sh~~
+
+- **6.1. Launch a screen session**
+
+        $ screen -S birdscanner2
+
+- **6.2. Load modules**
+
+       $ module load bioinfo-tools \
+             hmmer/3.2.1-intel \
+             blast/2.9.0+ \
+             snakemake/5.10.0 \
+             pigz/2.4
+
+- **6.3. Start snakemake** *(TODO: advice on number of jobs)*
+
+        $ snakemake --profile slurm -j 50
+
+- **6.4. Detach the screen session** (Ctrl-A + Ctrl-D)
+
+- **6.5. Monitor jobs with `jobinfo`**
+
+- **6.6. When finished, remember to exit the screen session.**
 
 ## Run time
 
