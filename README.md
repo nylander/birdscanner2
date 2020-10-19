@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: mån okt 19, 2020  11:29
+- Last modified: mån okt 19, 2020  11:32
 - Sign: JN
 
 ## Description
@@ -287,11 +287,12 @@ with your SNIC account number.
 
 - **6.4. Detach the screen session** (Ctrl-A + Ctrl-D)
 
-Jobs on the cluster can be monitored with command `jobinfo`.
-
 Re-attaching to the screen session is done with `screen -R birdscanner2`.
-When the workflow is finished, remember to exit the
-screen session!
+When the workflow is finished, remember to exit the screen session!
+
+Jobs on the cluster can be monitored with command `jobinfo`. Or, perhaps better:
+
+    $ squeue --user=$USER -M snowy,rackham --format="%.8i %.50j %.8u %.8T %.10M %.10l %.9P %.6D %.16R"
 
 ## Run time
 
