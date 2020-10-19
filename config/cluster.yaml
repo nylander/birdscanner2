@@ -1,5 +1,5 @@
 # Set defaults for birdscanner2 rules on cluster.
-# Last modified: mån okt 19, 2020  10:48
+# Last modified: mån okt 19, 2020  11:24
 # Sign: JN
 # Notes: Exceptions are specified below.
 # Threads are given per tool, and are specified in config/config.yaml
@@ -10,7 +10,7 @@ __default__:
   partition: core
   time: 14
   cpus-per-task: 1
-  otput: "slurm/stdout/{rule}.{wildcards}.out"
+  output: "slurm/stdout/{rule}.{wildcards}.out"
   error: "slurm/stderr/{rule}.{wildcards}.err"
 
 # This job takes between 0.01 and 10 secs
