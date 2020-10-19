@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: mån okt 19, 2020  11:32
+- Last modified: mån okt 19, 2020  11:42
 - Sign: JN
 
 ## Description
@@ -88,7 +88,6 @@ results/
 
     $ cd birdscanner2
     $ snakemake -j -p 
-    $ snakemake -j --report
 
 ## Data
 
@@ -199,7 +198,8 @@ pipeline with commands
 
     $ snakemake -j -p --use-conda
 
-Note that softwares 11, and 12 still needs to be installed separately
+Note: This requires conda, and is currently mostly untested.
+Furthermore, softwares 11, and 12 still needs to be installed separately
 (currently not in any conda channels). 
 
 ## Running birdscanner2 on [UPPMAX](https://www.uppmax.uu.se)
