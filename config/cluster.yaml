@@ -1,5 +1,5 @@
 # Set defaults for birdscanner2 rules on cluster.
-# Last modified: mån okt 19, 2020  11:24
+# Last modified: tis okt 20, 2020  12:01
 # Sign: JN
 # Notes: Exceptions are specified below.
 # Threads are given per tool, and are specified in config/config.yaml
@@ -8,7 +8,7 @@
 __default__:
   account: "#SNICACCOUNT#"
   partition: core
-  time: 14
+  time: 45
   cpus-per-task: 1
   output: "slurm/stdout/{rule}.{wildcards}.out"
   error: "slurm/stderr/{rule}.{wildcards}.err"
