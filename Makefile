@@ -1,5 +1,5 @@
 # Makefile for birdscanner2
-# Last modified: ons okt 14, 2020  05:46
+# Last modified: tis okt 20, 2020  12:57
 # Sign: JN
 
 #UPPNR :=
@@ -35,4 +35,4 @@ slurm-run:
 #	sed -i '/^UPPNR/ s/$$/ $(UPPNR)/' $(lastword $(MAKEFILE_LIST))
 
 clean:
-	rm -rf .snakemake run results birdscanner2-report.html
+	rm -rf .snakemake run results birdscanner2-report.html slurm/stderr slurm/stdout slurm/__pycache__
