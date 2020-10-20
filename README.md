@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: mån okt 19, 2020  11:42
+- Last modified: tis okt 20, 2020  05:26
 - Sign: JN
 
 ## Description
@@ -217,7 +217,7 @@ assuming `$HOME/bin` is in your `PATH`):
     # Alt. 1: Copy binary
     $ wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
     $ tar xvzf plastbinary_linux_v2.3.2.tar.gz
-    $ cp plastbinary_linux_v2.3.2/build/bin/plast ~/bin/plast
+    $ cp plastbinary_linux_v2.3.2/build/bin/plast $HOME/bin/plast
 
     # Alt. 2: Compile
     $ module load cmake doxygen
