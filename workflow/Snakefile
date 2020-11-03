@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: ons okt 14, 2020  05:51
+# Last modified: tis nov 03, 2020  05:27
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -243,13 +243,13 @@ rule O13_run_hmmer:
         temp("run/hmmer/{genome}.hmmer.out")
     params:
         hmmerprog = config["type"]["hmmerprog"],
-        notextw = config["hmmer"]["notextw"]
+        outfmt = config["hmmer"]["outfmt"]
     threads:
         config["hmmer"]["threads"]
     conda:
         "envs/hmmer.yaml"
     shell:
-        "{params.hmmerprog} {params.notextw} --cpu {threads} --tblout {output} {input.hmm} {input.query}"
+        "{params.hmmerprog} {params.outfmt} --cpu {threads} --tblout {output} {input.hmm} {input.query} > /dev/null"
 
 # 14. parse_hmmer
 rule O14_parse_hmmer:
