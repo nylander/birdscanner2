@@ -1,5 +1,5 @@
 # Set defaults for birdscanner2 rules on cluster.
-# Last modified: tis okt 20, 2020  12:01
+# Last modified: tis nov 03, 2020  09:15
 # Sign: JN
 # Notes: Exceptions are specified below.
 # Threads are given per tool, and are specified in config/config.yaml
@@ -59,9 +59,9 @@ OO7_run_plast:
 #O12_run_hmmpress:
 #    time: 10
 
-##### 100,000 secs
+##### Note: 2,000 mins was not enough on intron data
 O13_run_hmmer:
-    time: 2000
+    time: 4000
 
 #O14_parse_hmmer:
 #    time: 10
