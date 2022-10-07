@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: tis okt 20, 2020  05:26
+- Last modified: fre okt 07, 2022  01:06
 - Sign: JN
 
 ## Description
@@ -34,7 +34,7 @@ input for further processing with a multiple-sequence alignment software.
 
 2. Clone birdscanner2 from GitHub:
 
-        $ git clone https://github.com/Naturhistoriska/birdscanner2.git
+        $ git clone https://github.com/nylander/birdscanner2.git
 
 3. Optional: Download example data (636 MB) and test the installation
 
@@ -240,7 +240,7 @@ assuming `$HOME/bin` is in your `PATH`):
 
 ### 2. Clone birdscanner2
 
-    $ git clone https://github.com/Naturhistoriska/birdscanner2.git
+    $ git clone https://github.com/nylander/birdscanner2.git
 
 ### 3. Add your uppmax account number
 
@@ -320,7 +320,7 @@ currently in progress.
 
 ## License and Copyright
 
-Copyright (c) 2020 Johan Nylander
+Copyright (c) 2020-2022 Johan Nylander
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
