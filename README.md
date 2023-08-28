@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: lör okt 15, 2022  04:53
+- Last modified: mån aug 28, 2023  11:38
 - Sign: JN
 
 ## Description
@@ -292,7 +292,7 @@ When the workflow is finished, remember to exit the screen session!
 
 Jobs on the cluster can be monitored with command `jobinfo`. Or, perhaps better:
 
-    $ squeue --user=$USER -M snowy,rackham --format="%.8i %.50j %.8u %.8T %.10M %.10l %.9P %.6D %.16R"
+    $ squeue --user=$USER -M rackham --format="%.8i %.50j %.8u %.8T %.10M %.10l %.9P %.6D %.16R"
 
 ## Run time
 
