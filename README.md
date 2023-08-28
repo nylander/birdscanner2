@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: mån aug 28, 2023  01:10
+- Last modified: mån aug 28, 2023  01:12
 - Sign: JN
 
 ## Description
@@ -257,9 +257,10 @@ See [**Section Indata**](#indata)
 
 ### 5. Run the initial data conversion
 
-Note, this step is an ad-hoc step currently used to avoid submission
-of too many snakemake rules to slurm. Replace the "snic1234-56-78" below
-with your SNIC account number.
+Note, this step is an ad-hoc step currently used to avoid submission of too
+many snakemake rules to slurm. The expected output is a folder,
+`birdscanner2/run/tmp`, with fasta and Stockholm files. Please make sure to
+replace the "snic1234-56-78" below with your SNIC account number.
 
     $ sbatch -A snic1234-56-78 -t 60 workflow/scripts/bs2-convert.slurm.sh
 
