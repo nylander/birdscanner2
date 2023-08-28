@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: mån aug 28, 2023  11:38
+- Last modified: mån aug 28, 2023  01:10
 - Sign: JN
 
 ## Description
@@ -320,7 +320,7 @@ currently in progress.
 
 ## License and Copyright
 
-Copyright (c) 2020-2022 Johan Nylander
+Copyright (c) 2020-2023 Johan Nylander
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
