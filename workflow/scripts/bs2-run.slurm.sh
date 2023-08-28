@@ -4,7 +4,7 @@
 #SBATCH -t 48:00:00
 #SBATCH -p core
 #SBATCH -n 1
-#SBATCH -M rackham,snowy 
+#SBATCH -M rackham
 #SBATCH --output=bs2-run.err
 
 # Slurm script for birdscanner2-run
@@ -21,7 +21,7 @@
 #     scancel --state=pending -u $USER
 #
 # Monitor by using:
-#    jobinfo -u $USER -M snowy,rackham
+#    jobinfo -u $USER -M rackham
 #    sinfo -p devel
 #    squeue
 #

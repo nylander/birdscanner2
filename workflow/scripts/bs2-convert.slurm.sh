@@ -4,7 +4,7 @@
 #SBATCH -t 24:00:00
 #SBATCH -p core
 #SBATCH -n 10
-#SBATCH -M rackham,snowy 
+#SBATCH -M rackham
 #SBATCH --error=slurm/err/bs2-convert.err
 #SBATCH --output=slurm/logs/bs2-convert.out
 
@@ -22,7 +22,7 @@
 #     scancel --state=pending -u $USER
 #
 # Monitor by using:
-#    jobinfo -u $USER -M snowy,rackham
+#    jobinfo -u $USER -M rackham
 #    sinfo -p devel
 #    squeue
 #
