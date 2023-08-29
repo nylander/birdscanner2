@@ -1,4 +1,4 @@
-#!/usr/bin/env perl 
+#!/usr/bin/env perl
 #===============================================================================
 =pod
 
@@ -8,24 +8,24 @@
          FILE: bs2-gather-genes.pl
 
         USAGE: ./bs2-gather-genes.pl --outdir=out  inputfolders
-               ./bs2-gather-genes.pl --outdir=genes $(find out -mindepth 1 -type d)
+               ./bs2-gather-genes.pl -o genes  b1/results/genomes/Ainor_genome  b2/results/genomes/CcervF_genome
+               ./bs2-gather-genes.pl -o genes  $(find */results/genomes -mindepth 1 -type d)
 
   DESCRIPTION: Gather genes from parsed nhmmer output. The script takes
                folder names as input, where it expects fasta files named
                <genomename>.<geneid>.fas (e.g. AbucgeM.12236.fas).
                The script will then gather the same geneid from all
                genomes and concatenate them to files named <geneid>.fas.
-               These files are written in the current working directory,
-               unless --outdir option is used.
+               These files are written to the directory given by the
+               --outdir option.
 
-      OPTIONS: -o, --outdir=<dir>  Output directory (created if not present).
+      OPTIONS: -o, --outdir=<dir>  Output directory (created if not present). Mandatory.
 
  REQUIREMENTS: ---
 
          BUGS: ---
 
-        NOTES: Currently in birdscanner2, fas files are named <id>.fas, not
-               <genome>.<id>.fas
+        NOTES: ---
 
        AUTHOR: Johan Nylander (JN), johan.nylander@nrm.se
 
@@ -35,7 +35,7 @@
 
       CREATED: 2019-04-12 16:12:21
 
-     REVISION: ons 14 okt 2020 17:30:15
+     REVISION: tis 29 aug 2023 16:47:49
 
 =cut
 
@@ -67,8 +67,10 @@ if ($outdir) {
     }
     else {
         print "Adding files to directory $outdir.\n" if $VERBOSE;
-
     }
+}
+else {
+    die "Error: need a name for the output directory (-o name)\n";
 }
 
 my %gene_file_hash = ();
@@ -77,7 +79,7 @@ while (my $dir = shift(@ARGV)) {
     if ( ! -d $dir ) {
         die "Can not find directory $dir: $!\n";
     }
-    my @fasta_files = <$dir/*.fas>;
+    my @fasta_files = <$dir/*.fas>; # Assuming file ends in .fas
     foreach my $filename (@fasta_files) {
         my ($name, $path, $suffix) = fileparse($filename, '.fas');  # Assumes file named "n.geneid.fas"
         my ($n, $geneid) = split /\./, $name; # Assumes "n.geneid"
