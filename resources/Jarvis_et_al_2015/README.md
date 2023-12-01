@@ -1,6 +1,6 @@
 # Phylogenomic data for the Avian Phylogenomics project
 
-- Last modified: lör okt 15, 2022  04:56
+- Last modified: fre dec 01, 2023  02:53
 - Sign: JN
 
 ## Description of Data sets
@@ -11,16 +11,16 @@ polished into two sets; **Introns** and **Exons**.
 These two data sets are available for download here:
 
 - [Exons, compressed folder "references.tgz", 70
-  MB](https://owncloud.nrm.se/index.php/s/j3Hot6BWVafW21U): 8,253 fasta files
+  MB](https://nrmcloud.nrm.se/s/czsn8oz2SbrQCNF): 8,253 fasta files
   with 42--48 sequences per file, and seq length in the range of 99--15,777 bp.
 
-        $ wget -O references.tgz "https://owncloud.nrm.se/index.php/s/j3Hot6BWVafW21U/download"
+        $ wget -O references.tgz "https://nrmcloud.nrm.se/s/czsn8oz2SbrQCNF/download"
 
 - [Introns, compressed folder "references.tgz" 164
-  MB](https://owncloud.nrm.se/index.php/s/R4CHCmtIQUXab3t): 11,013 fasta files
+  MB](https://nrmcloud.nrm.se/s/AX83GZ5ABMe44bM): 11,013 fasta files
   with 38--48 sequences per file, and seq length in the range of 58--38,848 bp.
 
-        $ wget -O references.tgz "https://owncloud.nrm.se/index.php/s/R4CHCmtIQUXab3t/download"
+        $ wget -O references.tgz "https://nrmcloud.nrm.se/s/AX83GZ5ABMe44bM/download"
 
 Description of the original data can be found here
 [http://gigadb.org/dataset/101041](http://gigadb.org/dataset/101041), and here
@@ -35,16 +35,16 @@ containing sequences of lengths between 200 and 5,000 bp (see below), are also
 available here: 
 
 - [Length-filtered Exons, compressed folder "references.tgz", 60.3 
-  MB](https://owncloud.nrm.se/index.php/s/Z3w3TBebyyyFH27): 7,979 fasta files
+  MB](https://nrmcloud.nrm.se/s/d5DKPy8ApCZxfbf): 7,979 fasta files
   with 42--48 sequences per file, and seq length in the range of 201--4,989 bp.
 
-        $ wget -O references.tgz "https://owncloud.nrm.se/index.php/s/Z3w3TBebyyyFH27/download"
+        $ wget -O references.tgz "https://nrmcloud.nrm.se/s/d5DKPy8ApCZxfbf/download"
 
 - [Length-filtered Introns, compressed folder "references.tgz" 100.7
-  MB](https://owncloud.nrm.se/index.php/s/y35lLlvrf0pn8VR): 9,362 fasta files
+  MB](https://nrmcloud.nrm.se/s/PtDQkgJS2abE2RL): 9,362 fasta files
   with 38--48 sequences per file, and seq length in the range of 200--4,998 bp.
 
-        $ wget -O references.tgz "https://owncloud.nrm.se/index.php/s/y35lLlvrf0pn8VR/download"
+        $ wget -O references.tgz "https://nrmcloud.nrm.se/s/PtDQkgJS2abE2RL/download"
 
 ## How the Introns and Exons data sets were prepared
 

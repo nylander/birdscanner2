@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: mån aug 28, 2023  01:12
+- Last modified: fre dec 01, 2023  02:56
 - Sign: JN
 
 ## Description
@@ -39,7 +39,7 @@ input for further processing with a multiple-sequence alignment software.
 3. Optional: Download example data (636 MB) and test the installation
 
         $ cd birdscanner2
-        $ wget -O data.tgz "https://owncloud.nrm.se/index.php/s/d6EuUJSHlQwCN6X/download"
+        $ wget -O data.tgz "https://nrmcloud.nrm.se/s/2Z8MsQCMRfgterQ/download"
         $ tar xfz data.tgz && rm data.tgz
         $ snakemake -j -p --dry-run
         $ snakemake -j -p
@@ -55,8 +55,8 @@ Example set up:
 ```
 data/
 ├── genomes
-│   ├── Apa.gz
-│   └── Bpa.gz
+│   ├── Apa.gz
+│   └── Bpa.gz
 └── references
     ├── 1.fas
     └── 2.fas
@@ -70,15 +70,15 @@ Example output:
 ```
 results/
 ├── genes
-│   ├── 1.fas
-│   └── 2.fas
+│   ├── 1.fas
+│   └── 2.fas
 ├── genomes
-│   ├── Apa
-│   │   ├── Apa.1.fas
-│   │   └── Apa.2.fas
-│   └── Bpa
-│       ├── Bpa.1.fas
-│       └── Bpa.2.fas
+│   ├── Apa
+│   │   ├── Apa.1.fas
+│   │   └── Apa.2.fas
+│   └── Bpa
+│       ├── Bpa.1.fas
+│       └── Bpa.2.fas
 └── hmmer
     ├── Apa.hmmer.out.gz
     └── Bpa.hmmer.out.gz
@@ -200,7 +200,7 @@ pipeline with commands
 
 Note: This requires conda, and is currently mostly untested.
 Furthermore, softwares 11, and 12 still needs to be installed separately
-(currently not in any conda channels). 
+(currently not in any conda channels).
 
 ## Running birdscanner2 on [UPPMAX](https://www.uppmax.uu.se)
 
