@@ -169,7 +169,7 @@ sequences in the concatenated files may not be the same.
 The workflow is tested on GNU/Linux (Ubuntu 20.04), and uses standard Linux
 (bash) tools in addition to the main workflow manager `snakemake`. A list of
 tools (and tested version) are given below.
-See also section [**Running birdscanner2 on UPPMAX**](#running-birdscanner2-on-uppmax)
+See also section [**Installing and Running birdscanner2 on UPPMAX**](#installing-and-running-birdscanner2-on-uppmax)
 (where most of the required software are already available as modules).
 
 1. [bash](https://www.gnu.org/software/bash/) (5.0.17)
@@ -203,7 +203,7 @@ Note: This requires conda, and is currently mostly untested.
 Furthermore, softwares 11, and 12 still needs to be installed separately
 (currently not in any conda channels).
 
-## Running birdscanner2 on [UPPMAX](https://www.uppmax.uu.se)
+## Installing and Running birdscanner2 on [UPPMAX](https://www.uppmax.uu.se)
 
 ### 1. Install software
 
