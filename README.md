@@ -211,7 +211,7 @@ On UPPMAX, most software are available as modules. However, the `plast` and
 `splitfast` programs need to be installed manually. For example (tested on
 cluster
 ["Rackham"](https://uppmax.uu.se/support/user-guides/rackham-user-guide/), and
-assuming `$HOME/bin` is in your `PATH`):
+assuming that the folder `$HOME/bin` is present and in your `PATH`):
 
 #### 1.1. plast
 
