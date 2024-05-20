@@ -1,5 +1,5 @@
 # Makefile for birdscanner2
-# Last modified: tis May 20, 2024
+# Last modified: mån maj 20, 2024  09:36
 # Sign: JN
 
 #UPPNR :=
@@ -8,7 +8,7 @@
 #$(error UPPNR is not set. Please run \"make account UPPNR=snic1234-5-678\" \(use your account nr\) or edit the Makefile and the config/cluster.yaml files and add your uppmax compute account nr. )
 #endif
 
-.PHONY: all run debug dryrun report slurm-init slurm-run clean
+.PHONY: all run debug dryrun report slurm-init slurm-run clean distclean
 
 all: run
 
