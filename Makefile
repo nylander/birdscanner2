@@ -1,5 +1,5 @@
 # Makefile for birdscanner2
-# Last modified: tis okt 20, 2020  12:57
+# Last modified: tis May 20, 2024
 # Sign: JN
 
 #UPPNR :=
