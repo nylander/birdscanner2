@@ -35,4 +35,7 @@ slurm-run:
 #	sed -i '/^UPPNR/ s/$$/ $(UPPNR)/' $(lastword $(MAKEFILE_LIST))
 
 clean:
-	rm -rf .snakemake run results birdscanner2-report.html slurm/stderr slurm/stdout slurm/__pycache__
+	rm -rf .snakemake run slurm/stderr slurm/stdout slurm/__pycache__ slurm/err/bs2-convert.err slurm/logs/bs2-convert.out
+
+distclean:
+	rm -rf results data/genomes/*.gz data/references/*.fas .snakemake run birdscanner2-report.html slurm/stderr slurm/stdout slurm/__pycache__ slurm/err/bs2-convert.err slurm/logs/bs2-convert.out
