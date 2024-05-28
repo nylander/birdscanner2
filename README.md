@@ -294,7 +294,7 @@ When the workflow is finished, remember to exit the screen session!
 
 Jobs on the cluster can be monitored with command `jobinfo`. Or, perhaps better:
 
-    $ squeue --user=$USER -M rackham --format="%.8i %.50j %.8u %.8T %.10M %.10l %.9P %.6D %.16R"
+    $ squeue --user=$USER -M rackham --format="%.8i %.50j %.8u %.8T %.10M %.10l %.9P %.6C %.6D %.16R"
 
 ## Run time
 
