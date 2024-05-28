@@ -41,7 +41,7 @@ blastdbcmd:
 # Hmmer
 hmmer:
     outfmt: "--notextw --noali"
-    threads: 10
+    threads: 2
 
 # Parsehmmer
 parsehmmer:
