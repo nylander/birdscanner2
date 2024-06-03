@@ -1,4 +1,4 @@
-#!/usr/bin/env perl 
+#!/usr/bin/env perl
 #===============================================================================
 
 =pod
@@ -34,7 +34,7 @@
                Examples:
                1000.sate.default.pep2cds.removed.shortname.filtered
                14365.sate.removed.intron.noout.aligned-allgap.filtered.fas.degap
-               
+
                Output:
                Will write separate fasta files to output directory, one for each marker.
 
@@ -59,7 +59,7 @@
 
        AUTHOR: Johan Nylander (JN), Johan.Nylander@nrm.se
 
-      COMPANY: NBIS/NRM
+      COMPANY: NRM
 
       VERSION: 1.0
 
