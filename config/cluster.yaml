@@ -36,9 +36,9 @@ __default__:
 #OO6_make_genome_plast_db:
 #    time: 10
 
-##### 10,000 secs
+# May take hours
 OO7_run_plast:
-    time: 700
+    time: 14000
 
 # local rule?
 #OO8_get_scaffold_ids:
@@ -59,9 +59,9 @@ OO7_run_plast:
 #O12_run_hmmpress:
 #    time: 10
 
-##### Note: 2,000 mins was not enough on intron data
+# May take a very long time
 O13_run_hmmer:
-    time: 4000
+    time: 140000
 
 #O14_parse_hmmer:
 #    time: 10
