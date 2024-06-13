@@ -28,7 +28,7 @@ splitfast:
 plast:
     maxhitperquery: "1"
     bargraph: "-bargraph"
-    threads: 10
+    threads: 20
 
 # Makeblastdb
 makeblastdb:
