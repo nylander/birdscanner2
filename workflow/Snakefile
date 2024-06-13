@@ -1,34 +1,46 @@
 # Birdscanner v2.2
-# Last modified: mån jun 03, 2024  01:41
+# Last modified: mån jun 10, 2024  04:15
 # Sign: JN
+# Thanks to John Sundh
+# TODO: test locally and on slurm
+# TODO: define temp() files and folders
+# TODO: add log directives to process commands?
 
-configfile: "config/config.yaml"
-
-
-# Local rules are run on the submit node on a cluster
-#localrules: all, OO6_get_scaffold_ids, OO7_get_reference_ids, OO8_select_scaffolds, O11_select_hmms
-localrules: all
-
+from glob import glob
 
 # Input files
+configfile: "config/config.yaml"
 REFERENCES, = glob_wildcards("data/references/{ref}.fas")
 GENOMES, = glob_wildcards("data/genomes/{genome}.gz")
 
+# Local rules are run on the submit node on a cluster
+#localrules: all, OO8_get_scaffold_ids, OO9_get_reference_ids, O10_select_scaffolds, ...
+localrules: all
 
-# Function for providing list of reference files
-def convert_input(wildcards):
-    files = expand("data/references/{ref}.fas", ref=REFERENCES)
-    return files
+# Helper function gather_chunk_hmm_lists
+def gather_chunk_hmm_lists(wildcards):
+    """
+    Gather chunk lists of hmms
+    """
+    input = []
+    ck_output_folder = checkpoints.split_list_of_hmms.get(genome=wildcards.genome).output[0]
+    f = f"{ck_output_folder}/{wildcards.genome}.{wildcards.n}.txt"
+    with open(f, 'r') as fhin:
+        for line in fhin:
+            input.append(line.strip())
+    return input
 
-
-# Function for gathering hmmer.out files
-# TODO: rewrite for correct paths and checkpoints name
-def aggregate_input(wildcards):
-    checkpoint_output = checkpoints.split.get(**wildcards).output[0]
-    return expand("mytemp2/{genome}/{i}.out",
-           genome=wildcards.genome,
-           i=glob_wildcards(os.path.join(checkpoint_output, "{i}.in")).i)
-
+# Helper function gather_hmmer_out
+def gather_hmmer_out(wildcards):
+    """
+    Gather list of .hmmer.out files (run/hmmer/genome/genome.n.hmmer.out)
+    """
+    input = []
+    ck_output_folder = checkpoints.split_list_of_hmms.get(genome=wildcards.genome).output[0]
+    n = glob_wildcards(os.path.join(ck_output_folder, "{genome}.{n}.hmm")).n
+    input = expand("run/hmmer/{genome}/{genome}.{n}.hmmer.out",
+                   n=n, genome=wildcards.genome)
+    return input
 
 # 0. Rule for final output
 rule all:
@@ -40,19 +52,11 @@ rule all:
         expand("results/hmmer/{genome}.hmmer.out.gz", genome=GENOMES),
         "run/tmp/genes.done"
 
-
-# 19. When finished, remove run/ and .snakemake_timestamp from results/ when finished
-onsuccess:
+# 17. compress_hmmer_out
+# TODO: This rule has the same input as O15_parse_hmmer. Problem?
+rule O17_compress_hmmer_out:
     """
-    Remove run directory on succesful finish.
-    """
-    shell("rm -r run ; find ./results -type f -name .snakemake_timestamp -exec rm {{}} +")
-
-
-# 16. compress_hmmer_out
-rule O16_compress_hmmer_out:
-    """
-    Compress  and keep hmmer output.
+    Compress (and keep) hmmer output.
     """
     input:
         "run/hmmer/{genome}.hmmer.out"
@@ -63,11 +67,14 @@ rule O16_compress_hmmer_out:
     conda:
         "envs/pigz.yaml"
     shell:
-        "pigz -p {threads} -c {input} > {output}"
+        """
+        pigz \
+          -p {threads} \
+          -c {input} > {output}
+        """
 
-
-# 15. gather_genes
-rule O15_gather_genes:
+# 16. gather_genes
+rule O16_gather_genes:
     """
     Gather genes from parsed nhmmer output in genome folders.
     """
@@ -80,11 +87,14 @@ rule O15_gather_genes:
     conda:
         "envs/perl.yaml"
     shell:
-        "perl workflow/scripts/bs2-gather-genes.pl --outdir={output.dir} $(find results/genomes -type d)"
+        """
+        perl workflow/scripts/bs2-gather-genes.pl \
+          --outdir={output.dir} \
+          $(find results/genomes -type d)
+        """
 
-
-# 14. parse_hmmer
-rule O14_parse_hmmer:
+# 15. parse_hmmer
+rule O15_parse_hmmer:
     """
     Parse hmmer output.
     """
@@ -100,32 +110,39 @@ rule O14_parse_hmmer:
     conda:
         "envs/perl.yaml"
     shell:
-        "perl workflow/scripts/bs2-parse-nhmmer.pl -f {params.fastaheader} -p {params.prefix} -i {input.hmmer} -g {input.fas} -d {output} {params.stats}"
+        """
+        perl workflow/scripts/bs2-parse-nhmmer.pl \
+          -f {params.fastaheader} \
+          -p {params.prefix} \
+          -i {input.hmmer} \
+          -g {input.fas} \
+          -d {output} \
+          {params.stats}
+        """
 
-
-# 14b. concatenate genome.n.hmmer.out
-# TODO: write function aggregate_input.
-# Example (https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#data-dependent-conditional-execution):
-rule concatenate_hmmer_out:
+# 14. concatenate_hmmer_out
+rule O14_concatenate_hmmer_out:
+    """
+    Concatenate run/hmmer/genome/genome.n.hmmer.out to
+    run/hmmer/genome.hmmer.out
+    """
     input:
-        aggregate_input
+        gather_hmmer_out
     output:
         "run/hmmer/{genome}.hmmer.out"
     shell:
-        "cat {input} > {output}"
-
-
-####################################
+        """
+        cat {input} > {output}
+        """
 
 # 13. run_hmmer
-# TODO: Need to run nhmmer on {genome}.{n}.hmm files. n needs to be found.
 rule O13_run_hmmer:
     """
-    Run hmmer: the selected scaffolds against the selected hmms.
+    Run HMMer: the selected scaffolds against the selected hmms.
     """
     input:
-        "run/tmp/{genome}.{n}.hmmpress.done",
-        hmm = "run/hmmer/{genome}.{n}.hmm",
+        #"run/tmp/{genome}.{n}.hmmpress.done",
+        hmm = "run/hmmer/{genome}/{genome}.{n}.hmm",
         query = "run/plast/{genome}.plast.fas"
     output:
         "run/hmmer/{genome}.{n}.hmmer.out"
@@ -139,57 +156,65 @@ rule O13_run_hmmer:
     conda:
         "envs/hmmer.yaml"
     shell:
-        "{params.hmmerprog} {params.outfmt} --cpu {threads} --tblout {output} {input.hmm} {input.query} > /dev/null"
-
+        """
+        {params.hmmerprog} \
+          {params.outfmt} \
+          --cpu {threads} \
+          --tblout {output} \
+          {input.hmm} \
+          {input.query} > /dev/null
+        """
 
 # 12. run_hmmpress
-# TODO: need to hmmpress {genome}.{n}.hmm files. n needs to be found.
 rule O12_run_hmmpress:
     """
     Run hmmpress.
     """
     input:
-        expand("run/hmmer/{{genome}}.{n}.hmm", n=range(1,{params.chunks})) # 10 needs to be set or dynamic!
+        "run/hmmer/{genome}/{genome}.{n}.hmm"
     output:
-        touch("run/tmp/{genome}.{n}.hmmpress.done")
-        #temp(touch("run/tmp/{genome}.{n}.hmmpress.done"))
-    params:
-        chunks = config["split"]["chunks"]
+        expand("run/hmmer/{{genome}}/{{genome}}.{{n}}.hmm.h3{s}",
+               s=["f","i","m","p"])
+    log:
+        "logs/hmmer/{genome}.{n}.log"
     conda:
         "envs/hmmer.yaml"
     shell:
-        "hmmpress {input}"
+        """
+        hmmpress \
+          {input} > {log} 2>&1
+        """
 
-
-# 11. select_hmms
-# TODO: Need to create {genome}.{n}.hmm files. n needs to be specified(?)
-# Now (fre 31 maj 2024 20:51:10): for the split chunks created, we need to prepend
-# "run/tmp/" to each line?
-# How to write all chunks to run/hmmer/{genome}? Does the path as prefix work?
-# Do we really need hmms as input?
-rule O11_select_hmms:
+# 11. split_list_of_hmms
+# TODO: BUG: Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
+checkpoint O11_split_list_of_hmms:
     """
-    Select those hmm from tmp files that have matches in plast, and concatenate them.
+    Split the list of hmm files in chunks.
+    Input: a file run/tmp/Apa.ref.ids with file paths
+    Output: run/hmmer/Apa/Apa.00.txt, ..., run/hmmer/Apa/Apa.N.txt.
+            N files according to int chunks.
+            txt files contain paths of files.
     """
     input:
-        refids = "run/tmp/{genome}.ref.ids",
-        hmms = expand("run/tmp/{ref}.hmm", ref=REFERENCES)
+        "run/tmp/{genome}.ref.ids"
     output:
-        directory("run/hmmer/{genome}")
-        #temp("run/hmmer/{genome}.hmm")
+        directory(expand("run/hmmer/{genome}", genome=GENOMES))
+        #directory("run/hmmer/{genome}")
     params:
         chunks = config["split"]["chunks"]
     shell:
-        #"""
-        #while IFS= read -r line; do cat run/tmp/$line >> {output}; done < {input.refids}
-        #"""
         """
-        mkdir run/hmmer/{wildcards.genome} ; \
-        split --number={params.chunks} --elide-empty-files -d {input.refids} 'run/hmmer/{wildcards.genome}/{wildcards.genome}.'
+        mkdir {output}
+        n_lines_refids=$(wc -l < {input})
+        split \
+          -d \
+          --number=l/{params.chunks} \
+          --elide-empty-files \
+          --additional-suffix='.txt' \
+          {input} \
+          'run/hmmer/{wildcards.genome}/{wildcards.genome}.'
         """
 
-
-####################################
 # 10. select_scaffolds
 rule O10_select_scaffolds:
     """
@@ -207,43 +232,59 @@ rule O10_select_scaffolds:
     conda:
         "envs/blast.yaml"
     shell:
-        "blastdbcmd -db {input.db} -dbtype {params.dbtype} -entry_batch {input.idfile} -outfmt {params.outfmt} -out {output}"
-
+        """
+        blastdbcmd \
+          -db {input.db} \
+          -dbtype {params.dbtype} \
+          -entry_batch {input.idfile} \
+          -outfmt {params.outfmt} \
+          -out {output}
+        """
 
 # 9. get_reference_ids
-# TODO: change file suffix from .hmm to .hm (4th line in shell script) in order to later use *.hmm?
+# TODO: BUG: Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
 rule OO9_get_reference_ids:
     """
-    Get IDs (file names) for those reference gene files that have a best plast hit with length above minlen.
+    Get IDs (file names) for those reference gene files that have a best plast hit
+    with length above minlen.
     NOTE: Room here for more filtering if needed.
-    Note: The awk step is dependent on finding the '__', which was introduced in rule convert_fas, to work.
+    NOTE: The awk step is dependent on finding the '__', which was introduced in
+    rule convert_fas, to work.
     """
     input:
         "run/plast/{genome}.plast.tab"
     output:
-        "run/tmp/{genome}.ref.ids"
+        expand("run/tmp/{genome}.ref.ids", genome=GENOMES)
+        #"run/tmp/{genome}.ref.ids"
         #temp("run/tmp/{genome}.ref.ids")
     params:
         minlen = config["lengthfilter"]["min"]
     shell:
         """
         awk '$4>{params.minlen}' {input} | \
-        sort -t$'\t' -k1g -k12rg | \
-        awk -F $'\t' '!x[$1]++' | \
-        awk -F $'__' '{{print $1 ".hmm"}}' | \
-        sort -u > {output}
+          sort -t$'\t' -k1g -k12rg | \
+          awk -F $'\t' '!x[$1]++' | \
+          awk -F $'__' '{{print $1 ".hmm"}}' | \
+          sort -u > {output}
         """
-
 
 # 8. get_scaffold_ids
 rule OO8_get_scaffold_ids:
     """
-    The idea is that for each species, we would expect one best hit, and we wish to see which of the scaffolds that most often provides the best hit.
-    We wish to search with hmms only against the scaffolds having sufficiently long hits in the plast search.
+    The idea is that for each species, we would expect one best hit, and we wish to
+    see which of the scaffolds that most often provides the best hit.  We wish to
+    search with hmms only against the scaffolds having sufficiently long hits in
+    the plast search.
+
     Plast outfmt 1:
-    query ID, subject ID, percent identities, alignment length, nb. misses, nb. gaps, query begin, query end, subject begin, subject end, e-value, bit score
-    We will extract hits where ('alignment length' > minlen), and then we first sort the table on query ID, then sort the table on 'bit score' in descending order, and finally go down
-    the list and keep unique 'subject ID'. Note: There is room here to include a scaffold only if having some bit score or e-value.
+    query ID, subject ID, percent identities, alignment length, nb. misses,
+    nb. gaps, query begin, query end, subject begin, subject end, e-value, bit score
+
+    We will extract hits where ('alignment length' > minlen), and then we first
+    sort the table on query ID, then sort the table on 'bit score' in descending
+    order, and finally go down the list and keep unique 'subject ID'. Note: There
+    is room here to include a scaffold only if having some bit score or e-value.
+
     """
     input:
         "run/plast/{genome}.plast.tab"
@@ -255,14 +296,14 @@ rule OO8_get_scaffold_ids:
     shell:
         """
         awk '$4>{params.minlen}' {input} | \
-        sort -t$'\t' -k1,1 -k12rg | \
-        awk -F $'\t' '!x[$1]++' | \
-        awk -F $'\t' '{{print $2}}' | \
-        sort -u > {output}
+          sort -t$'\t' -k1,1 -k12rg | \
+          awk -F $'\t' '!x[$1]++' | \
+          awk -F $'\t' '{{print $2}}' | \
+          sort -u > {output}
         """
 
-
 # 7. run_plast
+# TODO: BUG: Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
 rule OO7_run_plast:
     """
     Run plast with all concatenated reference sequences as query,
@@ -272,7 +313,8 @@ rule OO7_run_plast:
         db_done = "run/tmp/{genome}.makeblastdb.done",
         query = "run/tmp/reference.fas"
     output:
-        "run/plast/{genome}.plast.tab"
+        expand("run/plast/{genome}.plast.tab", genome=GENOMES)
+        #"run/plast/{genome}.plast.tab"
         #temp("run/plast/{genome}.plast.tab")
     threads:
         config["plast"]["threads"]
@@ -281,10 +323,19 @@ rule OO7_run_plast:
         bargraph = config["plast"]["bargraph"],
         plastprog = config["type"]["plastprog"]
     shell:
-        "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
-
+        """
+        plast \
+          -p {params.plastprog} \
+          -i {input.query} \
+          -d run/plast/{wildcards.genome}.split.fas \
+          -o {output} \
+          -a {threads} \
+          -max-hit-per-query {params.maxhitperquery} \
+          {params.bargraph}
+        """
 
 # 6. make_genome_plast_db
+# TODO: BUG: Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
 rule OO6_make_genome_plast_db:
     """
     Make plast database.
@@ -300,18 +351,25 @@ rule OO6_make_genome_plast_db:
     conda:
         "envs/blast.yaml"
     shell:
-        "makeblastdb -in {input} -dbtype {params.dbtype} {params.parse_seqids}"
-
+        """
+        makeblastdb \
+          -in {input} \
+          -dbtype {params.dbtype} \
+          {params.parse_seqids}
+        """
 
 # 5. split_genome_fasta
+# TODO: BUG: output is now run/plast/Apa.hmmer.out.split.fas. Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
 rule OO5_split_genome_fasta:
     """
-    Split fasta sequences longer than length=100,000. Note that 100,000 is the maximum length for plast.
+    Split fasta sequences longer than length=100,000.
+    Note that 100,000 is the maximum length for plast.
     """
-    input: 
+    input:
         "data/genomes/{genome}.gz"
     output:
-        "run/plast/{genome}.split.fas"
+        expand("run/plast/{genome}.split.fas", genome=GENOMES)
+        #"run/plast/{genome}.split.fas"
         #temp("run/plast/{genome}.split.fas")
     threads:
         config["pigz"]["threads"]
@@ -320,8 +378,11 @@ rule OO5_split_genome_fasta:
     conda:
         "envs/pigz.yaml"
     shell:
-        "splitfast -m {params.length} <(pigz -p {threads} -d -c {input}) > {output}"
-
+        """
+        splitfast \
+          -m {params.length} \
+          <(pigz -p {threads} -d -c {input}) > {output}
+        """
 
 # 4. cat_reference_fas
 rule OO4_cat_reference_fas:
@@ -334,8 +395,13 @@ rule OO4_cat_reference_fas:
         "run/tmp/reference.fas"
         #temp("run/tmp/reference.fas")
     shell:
-        "find run/tmp -type f -name \*.fasta -exec cat {{}} \+ > {output}"
-
+        """
+        find \
+          run/tmp \
+          -type f \
+          -name '*.fasta' \
+          -exec cat {{}} \\+ > {output}
+        """
 
 # 3. create_hmms
 rule OO3_create_hmms:
@@ -352,8 +418,12 @@ rule OO3_create_hmms:
     conda:
         "envs/hmmer.yaml"
     shell:
-        "hmmbuild {params.hmmbuildtype} {output} {input}"
-
+        """
+        hmmbuild \
+          {params.hmmbuildtype} \
+          {output} \
+          {input}
+        """
 
 # 2. fasta_to_stockholm
 rule OO2_fasta_to_stockholm:
@@ -368,13 +438,16 @@ rule OO2_fasta_to_stockholm:
     conda:
         "envs/perl.yaml"
     shell:
-        "perl workflow/scripts/bs2-fas-to-sto.pl {input} > {output}"
-
+        """
+        perl workflow/scripts/bs2-fas-to-sto.pl \
+          {input} > {output}
+        """
 
 # 1. Convert fasta
 rule OO1_convert_fas:
     """
-    Relabel fasta headers to '>filename__i', where i is an iterator. The '__' is important and used later in rule get_reference_ids.
+    Relabel fasta headers to '>filename__i', where i is an iterator.
+    The '__' is important and used later in rule get_reference_ids.
     """
     input:
         "data/references/{ref}.fas"
@@ -382,84 +455,36 @@ rule OO1_convert_fas:
         "run/tmp/{ref}.fasta"
         #temp("run/tmp/{ref}.fasta")
     shell:
-        "awk -v a=$(basename {input} .fas) '/>/{{$0=\">\"a\"__\"++i}}1' {input} > {output}"
+        """
+        awk -v a=$(basename {input} .fas) \
+          '/>/{{$0=\">\"a\"__\"++i}}1' \
+          {input} > {output}
+        """
 
-
-## 12. run_hmmpress
-## TODO: need to hmmpress {genome}.{n}.hmm files. n needs to be found.
-#rule O12_run_hmmpress:
-#    """
-#    Run hmmpress.
-#    """
-#    input:
-#        "run/hmmer/{genome}.hmm"
-#    output:
-#        temp(touch("run/tmp/{genome}.hmmpress.done"))
-#    conda:
-#        "envs/hmmer.yaml"
-#    shell:
-#        "hmmpress {input}"
-#
-
-
-## 13. run_hmmer
-## TODO: Need to run nhmmer on {genome}.{n}.hmm files. n needs to be found.
-#rule O13_run_hmmer:
-#    """
-#    Run hmmer: the selected scaffolds against the selected hmms.
-#    """
-#    input:
-#        "run/tmp/{genome}.hmmpress.done",
-#        hmm = "run/hmmer/{genome}.hmm",
-#        query = "run/plast/{genome}.plast.fas"
-#    output:
-#        temp("run/hmmer/{genome}.hmmer.out")
-#    params:
-#        hmmerprog = config["type"]["hmmerprog"],
-#        outfmt = config["hmmer"]["outfmt"]
-#    threads:
-#        config["hmmer"]["threads"]
-#    conda:
-#        "envs/hmmer.yaml"
-#    shell:
-#        "{params.hmmerprog} {params.outfmt} --cpu {threads} --tblout {output} {input.hmm} {input.query} > /dev/null"
-
-
-
-# 13b. Concatenate .hmmer.out
-#rule O13b_concatenate_hmmer_output:
-#    """
-#    Concatenate all {genome}.{n}.hmmer.out to one {genome}.hmmer.out
-#    """
-#    input:
-#         expand("run/hmmer/{{genome}}.{n}.hmmer.out", n=range(1,10)) # 10 needs to be set or dynamic!
-#    output:
-#        temp("run/hmmer/{genome}.hmmer.out")
-#    shell:
-#        ""
-
-
-
-
-
-
-
-########################################################
-# 17. Remove output, keep results
+# Helper rule clean
 rule clean:
     """
     Remove run directory.
     """
     shell:
-        "rm -rf run/"
+        """
+        rm -rf run/
+        """
 
-
-# 18. Remove all output, including results.
+# Helper rule distclean
 rule distclean:
     """
     Remove run and results directories.
     """
     shell:
-        "rm -rf run/ results/"
+        """
+        rm -rf run/ results/
+        """
 
+# On success, remove files
+onsuccess:
+    """
+    Remove run directory on succesful finish.
+    """
+    shell("rm -r run ; find ./results -type f -name .snakemake_timestamp -exec rm {{}} +")
 

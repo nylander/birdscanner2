@@ -1,5 +1,5 @@
 # Makefile for birdscanner2
-# Last modified: mån maj 20, 2024  09:36
+# Last modified: mån jun 10, 2024  03:35
 # Sign: JN
 
 #UPPNR :=
@@ -13,13 +13,13 @@
 all: run
 
 run:
-	snakemake --jobs
+	snakemake --jobs 4
 
 debug:
-	snakemake --jobs --printshellcmds --notemp --reason
+	snakemake --jobs 4 --printshellcmds --debug-dag --notemp --reason
 
 dryrun:
-	snakemake --jobs --printshellcmds --dry-run
+	snakemake --jobs 4 --printshellcmds --debug-dag --dry-run
 
 report:
 	snakemake --report birdscanner2-report.html
