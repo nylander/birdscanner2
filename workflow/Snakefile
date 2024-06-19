@@ -1,5 +1,5 @@
 # Birdscanner v2.2
-# Last modified: mån jun 17, 2024  07:29
+# Last modified: ons jun 19, 2024  04:54
 # Sign: JN
 # Thanks to John Sundh
 # TODO: [ ] Test locally and on slurm
@@ -45,11 +45,13 @@ def gather_hmmer_out(wildcards):
 # 0. Rule for final output
 rule all:
     """
-    TODO: Figure out which lines that should be kept
+    TODO: Figure out which lines that should be kept. 
+    The expansion of .hmm seems undesired (but will trigger rules 2 & 3.
     """
     input:
         expand("results/genomes/{genome}", genome=GENOMES),
         expand("results/hmmer/{genome}.hmmer.out.gz", genome=GENOMES),
+        expand("run/tmp/{ref}.hmm", ref=REFERENCES),
         "run/tmp/genes.done"
 
 # 17. compress_hmmer_out
@@ -134,6 +136,7 @@ rule O14_concatenate_hmmer_out:
         cat {input} > {output}
         """
 
+#######################################################################
 # 13. run_hmmer
 rule O13_run_hmmer:
     """
@@ -200,6 +203,7 @@ rule O11b_concatente_chunk_hmms:
         cat {input} > {output}
         """
 
+#######################################################################
 # 11. split_list_of_hmms
 checkpoint O11_split_list_of_hmms:
     """
@@ -428,7 +432,8 @@ rule OO3_create_hmms:
         hmmbuild \
           {params.hmmbuildtype} \
           {output} \
-          {input}
+          {input} > /dev/null 2>&1
+
         """
 
 # 2. fasta_to_stockholm
