@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: mån maj 06, 2024  11:16
+- Last modified: ons jun 19, 2024  01:48
 - Sign: JN
 
 ## Description
@@ -22,7 +22,10 @@ input for further processing with a multiple-sequence alignment software.
 
 ## Installation and testing
 
-### Alt. 1: Manual installation
+### Local installation
+
+**Note:** For installing and running on the Rackham cluster, skip to
+[**relevant section below**.](#installing-and-running-birdscanner2-on-rackham)
 
 1. Install prerequisites (see section [**Software
    prerequisites**](#software-prerequisites) for details). On a Debian-based
@@ -203,13 +206,13 @@ Note: This requires conda, and is currently mostly untested.
 Furthermore, softwares 11, and 12 still needs to be installed separately
 (currently not in any conda channels).
 
-## Installing and Running birdscanner2 on [UPPMAX](https://www.uppmax.uu.se)
+## Installing and Running birdscanner2 on Rackham
 
 ### 1. Install software
 
-On UPPMAX, most software are available as modules. However, the `plast` and
-`splitfast` programs need to be installed manually. For example (tested on
-cluster
+On [Rackham](https://www.uu.se/centrum/uppmax/resurser/kluster/rackham), most
+software are available as modules. However, the `plast` and `splitfast`
+programs need to be installed manually. For example (tested on cluster
 ["Rackham"](https://uppmax.uu.se/support/user-guides/rackham-user-guide/), and
 assuming that the folder `$HOME/bin` is present and in your `PATH`):
 
