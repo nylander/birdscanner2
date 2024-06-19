@@ -1,5 +1,5 @@
 # Set defaults for birdscanner2 rules on cluster.
-# Last modified: tis nov 03, 2020  09:15
+# Last modified: ons jun 19, 2024  12:14
 # Sign: JN
 # Notes: Exceptions are specified below.
 # Threads are given per tool, and are specified in config/config.yaml
@@ -39,6 +39,7 @@ __default__:
 # May take hours
 OO7_run_plast:
     time: 14000
+    n: 20
 
 # local rule?
 #OO8_get_scaffold_ids:
