@@ -1,11 +1,13 @@
 # Config file for birdscanner2
-# Last modified: mån jun 03, 2024  01:10
+# Last modified: ons jun 19, 2024  01:37
 # Sign: JN
 
 # Reference input is DNA (True) or Protein (False).
 #Reference_is_DNA: True
+
 # Genome input is DNA (True) or Protein (False)
 #Genome_is_DNA: True
+
 # Ad hoc setting of type-specific variables
 type:
     dbtype: "nucl"
@@ -32,7 +34,7 @@ split:
 plast:
     maxhitperquery: "1"
     bargraph: "-bargraph"
-    threads: 10
+    threads: 20
 
 # Makeblastdb
 makeblastdb:

@@ -1,5 +1,5 @@
 # Set defaults for birdscanner2 rules on cluster.
-# Last modified: tis nov 03, 2020  09:15
+# Last modified: ons jun 19, 2024  01:35
 # Sign: JN
 # Notes: Exceptions are specified below.
 # Threads are given per tool, and are specified in config/config.yaml
@@ -28,7 +28,7 @@ __default__:
 #    time: 10
 #
 #OO4_cat_reference_fas:
-#    time: 10   
+#    time: 10
 
 #OO5_split_genome_fasta:
 #    time: 10
@@ -36,9 +36,10 @@ __default__:
 #OO6_make_genome_plast_db:
 #    time: 10
 
-##### 10,000 secs
+# Long running job! On rackham: add n if oom
 OO7_run_plast:
-    time: 700
+    time: 14000
+    n: 20
 
 # local rule?
 #OO8_get_scaffold_ids:
@@ -59,9 +60,11 @@ OO7_run_plast:
 #O12_run_hmmpress:
 #    time: 10
 
-##### Note: 2,000 mins was not enough on intron data
+# Long running job!
+# Apparently, nhhmer is not efficient with many cores.
 O13_run_hmmer:
-    time: 4000
+    time: 14000
+    n: 2
 
 #O14_parse_hmmer:
 #    time: 10
