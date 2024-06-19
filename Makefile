@@ -1,5 +1,5 @@
 # Makefile for birdscanner2
-# Last modified: mån jun 10, 2024  03:35
+# Last modified: ons jun 19, 2024  10:00
 # Sign: JN
 
 #UPPNR :=
@@ -8,7 +8,7 @@
 #$(error UPPNR is not set. Please run \"make account UPPNR=snic1234-5-678\" \(use your account nr\) or edit the Makefile and the config/cluster.yaml files and add your uppmax compute account nr. )
 #endif
 
-.PHONY: all run debug dryrun report slurm-init slurm-run clean distclean
+.PHONY: all run debug dryrun test report slurm-init slurm-run clean distclean
 
 all: run
 
@@ -16,10 +16,12 @@ run:
 	snakemake --jobs 4
 
 debug:
-	snakemake --jobs 4 --printshellcmds --debug-dag --notemp --reason
+	snakemake --jobs 4 --printshellcmds --debug-dag --notemp
 
 dryrun:
-	snakemake --jobs 4 --printshellcmds --debug-dag --dry-run
+	snakemake --jobs 4 --printshellcmds --debug-dag --notemp --dry-run
+
+test: dryrun
 
 report:
 	snakemake --report birdscanner2-report.html
@@ -27,12 +29,11 @@ report:
 convert:
 	bash workflow/scripts/bs2-convert.sh
 
-slurm-run:
-	snakemake --profile slurm -j 100
+slurm-test:
+	snakemake --dry-run --printshellcmds --use-conda --profile rackham -j 200
 
-#account:
-#	sed -i 's/#SNICACCOUNT#/$(UPPNR)/' config/cluster.yaml ; \
-#	sed -i '/^UPPNR/ s/$$/ $(UPPNR)/' $(lastword $(MAKEFILE_LIST))
+slurm-run:
+	snakemake  --use-conda --profile rackham -j 200
 
 clean:
 	rm -rf .snakemake run slurm/stderr slurm/stdout slurm/__pycache__ slurm/err/bs2-convert.err slurm/logs/bs2-convert.out

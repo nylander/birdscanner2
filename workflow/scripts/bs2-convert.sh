@@ -2,11 +2,11 @@
 
 # File: bs2-convert.sh
 #
-# Last modified: ons okt 14, 2020  05:51
+# Last modified: mån jun 17, 2024  07:08
 #
 # Sign: JN
 #
-# Usage: ./bs2-convert.sh
+# Usage: ./workflow/scripts/bs2-convert.sh
 #
 # Description: Convert and concatenate fasta, create hmms.
 # To be used with birdscanner2 workflow as an ad-hoc script to
@@ -18,7 +18,7 @@
 # and softwares awk, bs2-fas-to-sto.pl, hmmbuild, and gnuparallel.
 #
 # Copyright (C) 2020 Johan Nylander <johan.nylander@nrm.se>
-# Distributed under terms of the MIT license. 
+# Distributed under terms of the MIT license.
 
 set -euo pipefail
 
@@ -33,8 +33,6 @@ if [ -e run/tmp/reference.fas ] ; then
     echo "Warning: file run/tmp/reference.fas already exists. Will not concatenate fasta files."
 fi
 
-mkdir -p run/tmp
-
 do_parallel() {
     input="$1"
     f2s="$2"
@@ -48,6 +46,8 @@ do_parallel() {
 }
 export -f do_parallel
 
+mkdir -p run/tmp
+
 find data/references -type f -name \*.fas | \
     parallel do_parallel {} "${f2s}"
 
@@ -59,3 +59,4 @@ if [ ! -e run/tmp/reference.fas ] ; then
 fi
 
 echo "End of script init.sh"
+

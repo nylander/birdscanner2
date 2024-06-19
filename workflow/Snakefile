@@ -1,10 +1,10 @@
 # Birdscanner v2.2
-# Last modified: mån jun 10, 2024  04:15
+# Last modified: mån jun 17, 2024  07:29
 # Sign: JN
 # Thanks to John Sundh
-# TODO: test locally and on slurm
-# TODO: define temp() files and folders
-# TODO: add log directives to process commands?
+# TODO: [ ] Test locally and on slurm
+# TODO: [ ] Define temp() files and folders
+# TODO: [ ] Add log directives to process commands?
 
 from glob import glob
 
@@ -23,7 +23,7 @@ def gather_chunk_hmm_lists(wildcards):
     Gather chunk lists of hmms
     """
     input = []
-    ck_output_folder = checkpoints.split_list_of_hmms.get(genome=wildcards.genome).output[0]
+    ck_output_folder = checkpoints.O11_split_list_of_hmms.get(genome=wildcards.genome).output[0]
     f = f"{ck_output_folder}/{wildcards.genome}.{wildcards.n}.txt"
     with open(f, 'r') as fhin:
         for line in fhin:
@@ -36,10 +36,10 @@ def gather_hmmer_out(wildcards):
     Gather list of .hmmer.out files (run/hmmer/genome/genome.n.hmmer.out)
     """
     input = []
-    ck_output_folder = checkpoints.split_list_of_hmms.get(genome=wildcards.genome).output[0]
-    n = glob_wildcards(os.path.join(ck_output_folder, "{genome}.{n}.hmm")).n
+    ck_output_folder = checkpoints.O11_split_list_of_hmms.get(genome=wildcards.genome).output[0]
+    N = glob_wildcards(os.path.join(ck_output_folder, "{genome}.{n}.hmm")).n
     input = expand("run/hmmer/{genome}/{genome}.{n}.hmmer.out",
-                   n=n, genome=wildcards.genome)
+                   n=N, genome=wildcards.genome)
     return input
 
 # 0. Rule for final output
@@ -53,7 +53,6 @@ rule all:
         "run/tmp/genes.done"
 
 # 17. compress_hmmer_out
-# TODO: This rule has the same input as O15_parse_hmmer. Problem?
 rule O17_compress_hmmer_out:
     """
     Compress (and keep) hmmer output.
@@ -166,6 +165,7 @@ rule O13_run_hmmer:
         """
 
 # 12. run_hmmpress
+# TODO: which rule is creating "run/hmmer/{genome}/{genome}.{n}.hmm" (the input for this rule)?
 rule O12_run_hmmpress:
     """
     Run hmmpress.
@@ -185,8 +185,22 @@ rule O12_run_hmmpress:
           {input} > {log} 2>&1
         """
 
+# X
+rule O11b_concatente_chunk_hmms:
+    """
+    Concatenate lists of hmms to chunk hmms.
+    The path to the files are written inside the run/hmmer/{genome}/{genome}.{n}.txt files
+    """
+    input:
+        gather_chunk_hmm_lists
+    output:
+        "run/hmmer/{genome}/{genome}.{n}.hmm"
+    shell:
+        """
+        cat {input} > {output}
+        """
+
 # 11. split_list_of_hmms
-# TODO: BUG: Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
 checkpoint O11_split_list_of_hmms:
     """
     Split the list of hmm files in chunks.
@@ -198,8 +212,7 @@ checkpoint O11_split_list_of_hmms:
     input:
         "run/tmp/{genome}.ref.ids"
     output:
-        directory(expand("run/hmmer/{genome}", genome=GENOMES))
-        #directory("run/hmmer/{genome}")
+        directory("run/hmmer/{genome}/")
     params:
         chunks = config["split"]["chunks"]
     shell:
@@ -212,7 +225,7 @@ checkpoint O11_split_list_of_hmms:
           --elide-empty-files \
           --additional-suffix='.txt' \
           {input} \
-          'run/hmmer/{wildcards.genome}/{wildcards.genome}.'
+          "run/hmmer/{wildcards.genome}/{wildcards.genome}."
         """
 
 # 10. select_scaffolds
@@ -242,7 +255,6 @@ rule O10_select_scaffolds:
         """
 
 # 9. get_reference_ids
-# TODO: BUG: Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
 rule OO9_get_reference_ids:
     """
     Get IDs (file names) for those reference gene files that have a best plast hit
@@ -254,8 +266,7 @@ rule OO9_get_reference_ids:
     input:
         "run/plast/{genome}.plast.tab"
     output:
-        expand("run/tmp/{genome}.ref.ids", genome=GENOMES)
-        #"run/tmp/{genome}.ref.ids"
+        "run/tmp/{genome}.ref.ids"
         #temp("run/tmp/{genome}.ref.ids")
     params:
         minlen = config["lengthfilter"]["min"]
@@ -303,7 +314,6 @@ rule OO8_get_scaffold_ids:
         """
 
 # 7. run_plast
-# TODO: BUG: Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
 rule OO7_run_plast:
     """
     Run plast with all concatenated reference sequences as query,
@@ -313,8 +323,7 @@ rule OO7_run_plast:
         db_done = "run/tmp/{genome}.makeblastdb.done",
         query = "run/tmp/reference.fas"
     output:
-        expand("run/plast/{genome}.plast.tab", genome=GENOMES)
-        #"run/plast/{genome}.plast.tab"
+        "run/plast/{genome}.plast.tab"
         #temp("run/plast/{genome}.plast.tab")
     threads:
         config["plast"]["threads"]
@@ -335,7 +344,6 @@ rule OO7_run_plast:
         """
 
 # 6. make_genome_plast_db
-# TODO: BUG: Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
 rule OO6_make_genome_plast_db:
     """
     Make plast database.
@@ -359,7 +367,6 @@ rule OO6_make_genome_plast_db:
         """
 
 # 5. split_genome_fasta
-# TODO: BUG: output is now run/plast/Apa.hmmer.out.split.fas. Wildcards in this rule is "genome=Apa.hmmer.out". I was aiming for "genome=Apa".
 rule OO5_split_genome_fasta:
     """
     Split fasta sequences longer than length=100,000.
@@ -368,8 +375,7 @@ rule OO5_split_genome_fasta:
     input:
         "data/genomes/{genome}.gz"
     output:
-        expand("run/plast/{genome}.split.fas", genome=GENOMES)
-        #"run/plast/{genome}.split.fas"
+        "run/plast/{genome}.split.fas"
         #temp("run/plast/{genome}.split.fas")
     threads:
         config["pigz"]["threads"]
