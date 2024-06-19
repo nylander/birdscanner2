@@ -1,50 +1,84 @@
-# Cluster config file for fastp-cleaning for use on UPPMAX Rackham
+# Cluster config file for birdscanner2 for use on UPPMAX Rackham
 # IMPORTANT: Adjust the account number below!
 # Furthermore, the time required may have to adjusted.
+# Time units for slurm: "0-00:10:00" = "00:10:00" = "10:00" = "10"
 __default__:
-    account: "snic1234-56-789"
+    account: "#SNICACCOUNT#"
     partition: "core"
     extra: ""
     time: "00:30:00"
+    cpus-per-task: 1
     n: 4
-    stderr: "output/logs/slurm/slurm-{rule}-{wildcards}.stderr"
-    stdout: "output/logs/slurm/slurm-{rule}-{wildcards}.stdout"
+    stderr: "slurm/slurm-{rule}-{wildcards}.stderr"
+    stdout: "slurm/slurm-{rule}-{wildcards}.stdout"
     jobname: "[{rule}]: {wildcards}"
 
 # Settings for rules
 
-# fastp/fastp_merge using fastp
-fastp:
-    n: 4
-    time: "00:30:00"
+# This job takes between 0.01 and 10 secs
+# and the software runs on a single cpu (not multi-threading).
+# The job will be repeated, however, for thousands of files.
+#OO1_convert_fas:
+#    time: 10
+#
+### repeated thousands of times
+#OO2_fasta_to_stockholm:
+#    time: 10
+#
+### repeated thousands of times
+#OO3_create_hmms:
+#    time: 10
+#
+#OO4_cat_reference_fas:
+#    time: 10
 
-# fastq_to_fasta using seqtk seq
-fastq_to_fasta:
-    n: 1
-    time: "00:10:00"
+#OO5_split_genome_fasta:
+#    time: 10
 
-# tab_to_fasta using seqkit tab2fx
-tab_to_fasta:
-    n: 1
-    time: "00:10:00"
+#OO6_make_genome_plast_db:
+#    time: 10
 
-# bwa_index using bwa index
-bwa_index:
-    n: 4
-    time: "00:10:00"
+# Long running job! On rackham: add n if oom
+OO7_run_plast:
+    time: "04:00:00"
+    n: 20
 
-# bwa_mem using bwa mem
-bwa_mem:
-    n: 4
-    time: "00:30:00"
+# local rule?
+#OO8_get_scaffold_ids:
+#    time: 10
 
-# samtools_index using samtools index
-samtools_index:
-    n: 4
-    time: "00:10:00"
+# local rule?
+#OO9_get_reference_ids:
+#    time: 10
 
-# parse_bam using parse.py
-#parse_bam:
-#    n: 4
-#    time: "00:10:00"
+# local rule?
+#O10_select_scaffolds:
+#    time: 10
+
+# O11_split_list_of_hmms
+#    time: 10
+
+# O11b_concatente_chunk_hmms:
+#    time: 10
+
+#O12_run_hmmpress:
+#    time: 10
+
+# Long running job!
+# Apparently, nhhmer is not efficient with many cores.
+O13_run_hmmer:
+    time: "04:00:00"
+    n: 2
+
+#O14_concatenate_hmmer_out:
+#   time: 10
+
+#O15_parse_hmmer:
+#    time: 10
+
+#O16_gather_genes:
+#    time: 10
+
+#O17_compress_hmmer_out:
+#    time: 10
 
