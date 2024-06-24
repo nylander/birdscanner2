@@ -1,5 +1,5 @@
 # Set defaults for birdscanner2 rules on cluster.
-# Last modified: ons jun 19, 2024  01:29
+# Last modified: mån jun 24, 2024  10:44
 # Sign: JN
 # Notes: Exceptions are specified below.
 # Threads are given per tool, and are specified in config/config.yaml
@@ -28,7 +28,7 @@ __default__:
 #    time: 10
 #
 #OO4_cat_reference_fas:
-#    time: 10   
+#    time: 10
 
 #OO5_split_genome_fasta:
 #    time: 10
@@ -39,7 +39,7 @@ __default__:
 # May take hours
 OO7_run_plast:
     time: 14000
-    n: 20
+    cpus-per-task: 20
 
 # local rule?
 #OO8_get_scaffold_ids:
@@ -63,7 +63,7 @@ OO7_run_plast:
 # May take a very long time
 O13_run_hmmer:
     time: 140000
-    n: 2
+    cpus-per-task: 2
 
 #O14_parse_hmmer:
 #    time: 10
