@@ -1,6 +1,8 @@
 # Config file for birdscanner2
-# Last modified: ons jun 19, 2024  01:37
+# Last modified: tor jun 27, 2024  05:27
 # Sign: JN
+# Note: if run on slurm, make sure threads are matched
+# with the settings in the slurm/config.yaml file.
 
 # Reference input is DNA (True) or Protein (False).
 #Reference_is_DNA: True
@@ -8,52 +10,56 @@
 # Genome input is DNA (True) or Protein (False)
 #Genome_is_DNA: True
 
-# Ad hoc setting of type-specific variables
-type:
-    dbtype: "nucl"
-    plastprog: "plastn"
-    hmmbuildtype: "--dna"
-    hmmerprog: "nhmmer"
-
 # Gather genes in the end (if more than one genome)
 #Gathergenes: True
 
-# Length filter for rule OO6_get_scaffold_ids, OO7_get_reference_ids
-lengthfilter:
-    min: "50"
+# Ad hoc setting of type-specific variables
+type:
+  dbtype: "nucl"
+  plastprog: "plastn"
+  hmmbuildtype: "--dna"
+  hmmerprog: "nhmmer"
 
-# Splitfast. 100000 is maximum for plast.
+# Length filter for rule OO8_get_scaffold_ids, OO9_get_reference_ids
+lengthfilter:
+  min: "50"
+
+# Max length (-m) for splitfast. 100000 is maximum for plast.
 splitfast:
-    max: "1000000"
+  max: "1000000"
 
 # Split hmms in chunks of size chunks
 split:
-    chunks: "50"
+  chunks: "50"
 
 # Plast
 plast:
-    maxhitperquery: "1"
-    bargraph: "-bargraph"
-    threads: 20
+  maxhitperquery: "1"
+  bargraph: "-bargraph"
+  threads: 20
 
 # Makeblastdb
 makeblastdb:
-    parseseqids: "-parse_seqids"
+  parseseqids: "-parse_seqids"
 
 # Blastcmd
 blastdbcmd:
-    outfmt: "%f"
+  outfmt: "%f"
+
+# Hmmerbuild. Could potentially set threads to higher.
+hmmbuild:
+  threads: 1
 
 # Hmmer
 hmmer:
-    outfmt: "--notextw --noali"
-    threads: 2
+  outfmt: "--notextw --noali"
+  threads: 2
 
 # Parsehmmer
 parsehmmer:
-    stats: "--stats"
+  stats: "--stats"
 
 # Pigz
 pigz:
-    threads: 8
+  threads: 8
 

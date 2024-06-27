@@ -1,12 +1,12 @@
 name: birdscanner2
 channels:
-    - bioconda
-    - conda-forge
+  - bioconda
+  - conda-forge
 dependencies:
-    - bash=5.0.018
-    - blast=2.10.1
-    - hmmer=3.3.1
-    - perl=5.26.2
-    - pigz=2.3.4
-    - python=3.8.5
-    - snakemake=5.10.0
+  - bash
+  - blast=2.12
+  - hmmer=3.3.2
+  - perl=5.16
+  - pigz
+  - snakemake=8.14.0
+  - snakemake-executor-plugin-slurm

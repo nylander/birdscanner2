@@ -1,4 +1,4 @@
 channels:
   - conda-forge
 dependencies:
-  - pigz=2.3.4
+  - pigz

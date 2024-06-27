@@ -1,10 +1,15 @@
-# Birdscanner v2.2
-# Last modified: ons jun 19, 2024  04:54
+# Birdscanner v2.2.slurm
+# Last modified: tor jun 27, 2024  05:42
 # Sign: JN
 # Thanks to John Sundh
-# TODO: [ ] Test locally and on slurm
+
+# TODO: [ ] Test locally
+# TODO: [ ] Test on rackham using slurm
+# TODO: [ ] Which are local rules?
+# TODO: [ ] Can we group rules?
 # TODO: [ ] Define temp() files and folders
-# TODO: [ ] Add log directives to process commands?
+# TODO: [ ] Add log directives: https://snakemake.readthedocs.io/en/stable/snakefiles/rules.html#log-files
+# TODO: [ ] Install plast and splitfast with conda?
 
 from glob import glob
 
@@ -14,8 +19,8 @@ REFERENCES, = glob_wildcards("data/references/{ref}.fas")
 GENOMES, = glob_wildcards("data/genomes/{genome}.gz")
 
 # Local rules are run on the submit node on a cluster
-#localrules: all, OO8_get_scaffold_ids, OO9_get_reference_ids, O10_select_scaffolds, ...
-localrules: all
+# localrules: all
+localrules: all, OO1_convert_fas, OO2_fasta_to_stockholm, OO4_cat_reference_fas, OO8_get_scaffold_ids, OO9_get_reference_ids, O10_select_scaffolds, O12_concatente_chunk_hmms, O15_concatenate_hmmer_out, 
 
 # Helper function gather_chunk_hmm_lists
 def gather_chunk_hmm_lists(wildcards):
@@ -54,8 +59,8 @@ rule all:
         expand("run/tmp/{ref}.hmm", ref=REFERENCES),
         "run/tmp/genes.done"
 
-# 17. compress_hmmer_out
-rule O17_compress_hmmer_out:
+# 18. compress hmmer out
+rule O18_compress_hmmer_out:
     """
     Compress (and keep) hmmer output.
     """
@@ -74,8 +79,8 @@ rule O17_compress_hmmer_out:
           -c {input} > {output}
         """
 
-# 16. gather_genes
-rule O16_gather_genes:
+# 17. gather genes
+rule O17_gather_genes:
     """
     Gather genes from parsed nhmmer output in genome folders.
     """
@@ -94,8 +99,8 @@ rule O16_gather_genes:
           $(find results/genomes -type d)
         """
 
-# 15. parse_hmmer
-rule O15_parse_hmmer:
+# 16. parse_hmmer
+rule O16_parse_hmmer:
     """
     Parse hmmer output.
     """
@@ -121,8 +126,8 @@ rule O15_parse_hmmer:
           {params.stats}
         """
 
-# 14. concatenate_hmmer_out
-rule O14_concatenate_hmmer_out:
+# 15. concatenate hmmer out
+rule O15_concatenate_hmmer_out:
     """
     Concatenate run/hmmer/genome/genome.n.hmmer.out to
     run/hmmer/genome.hmmer.out
@@ -131,19 +136,20 @@ rule O14_concatenate_hmmer_out:
         gather_hmmer_out
     output:
         "run/hmmer/{genome}.hmmer.out"
+    conda:
+        "envs/conda.yaml"
     shell:
         """
         cat {input} > {output}
         """
 
-#######################################################################
-# 13. run_hmmer
-rule O13_run_hmmer:
+# 14. run_hmmer
+rule O14_run_hmmer:
     """
     Run HMMer: the selected scaffolds against the selected hmms.
     """
     input:
-        #"run/tmp/{genome}.{n}.hmmpress.done",
+        "run/tmp/{genome}.{n}.hmmpress.done",
         hmm = "run/hmmer/{genome}/{genome}.{n}.hmm",
         query = "run/plast/{genome}.plast.fas"
     output:
@@ -167,9 +173,9 @@ rule O13_run_hmmer:
           {input.query} > /dev/null
         """
 
-# 12. run_hmmpress
+# 13. run_hmmpress
 # TODO: which rule is creating "run/hmmer/{genome}/{genome}.{n}.hmm" (the input for this rule)?
-rule O12_run_hmmpress:
+rule O13_run_hmmpress:
     """
     Run hmmpress.
     """
@@ -177,7 +183,8 @@ rule O12_run_hmmpress:
         "run/hmmer/{genome}/{genome}.{n}.hmm"
     output:
         expand("run/hmmer/{{genome}}/{{genome}}.{{n}}.hmm.h3{s}",
-               s=["f","i","m","p"])
+               s=["f","i","m","p"]),
+        done = "run/tmp/{genome}.{n}.hmmpress.done"
     log:
         "logs/hmmer/{genome}.{n}.log"
     conda:
@@ -185,11 +192,12 @@ rule O12_run_hmmpress:
     shell:
         """
         hmmpress \
-          {input} > {log} 2>&1
+          {input} > {log} 2>&1 \
+        touch {output.done}
         """
 
-# X
-rule O11b_concatente_chunk_hmms:
+# 12. concatente chunk hmms
+rule O12_concatente_chunk_hmms:
     """
     Concatenate lists of hmms to chunk hmms.
     The path to the files are written inside the run/hmmer/{genome}/{genome}.{n}.txt files
@@ -198,12 +206,13 @@ rule O11b_concatente_chunk_hmms:
         gather_chunk_hmm_lists
     output:
         "run/hmmer/{genome}/{genome}.{n}.hmm"
+    conda:
+        "envs/conda.yaml"
     shell:
         """
         cat {input} > {output}
         """
 
-#######################################################################
 # 11. split_list_of_hmms
 checkpoint O11_split_list_of_hmms:
     """
@@ -217,6 +226,8 @@ checkpoint O11_split_list_of_hmms:
         "run/tmp/{genome}.ref.ids"
     output:
         directory("run/hmmer/{genome}/")
+    conda:
+        "envs/conda.yaml"
     params:
         chunks = config["split"]["chunks"]
     shell:
@@ -272,6 +283,8 @@ rule OO9_get_reference_ids:
     output:
         "run/tmp/{genome}.ref.ids"
         #temp("run/tmp/{genome}.ref.ids")
+    conda:
+        "envs/conda.yaml"
     params:
         minlen = config["lengthfilter"]["min"]
     shell:
@@ -306,6 +319,8 @@ rule OO8_get_scaffold_ids:
     output:
         "run/tmp/{genome}.scaffolds.ids"
         #temp("run/tmp/{genome}.scaffolds.ids")
+    conda:
+        "envs/conda.yaml"
     params:
         minlen = config["lengthfilter"]["min"]
     shell:
@@ -329,6 +344,8 @@ rule OO7_run_plast:
     output:
         "run/plast/{genome}.plast.tab"
         #temp("run/plast/{genome}.plast.tab")
+    conda:
+        "envs/conda.yaml"
     threads:
         config["plast"]["threads"]
     params:
@@ -381,6 +398,8 @@ rule OO5_split_genome_fasta:
     output:
         "run/plast/{genome}.split.fas"
         #temp("run/plast/{genome}.split.fas")
+    conda:
+        "envs/conda.yaml"
     threads:
         config["pigz"]["threads"]
     params:
@@ -404,6 +423,8 @@ rule OO4_cat_reference_fas:
     output:
         "run/tmp/reference.fas"
         #temp("run/tmp/reference.fas")
+    conda:
+        "envs/conda.yaml"
     shell:
         """
         find \
@@ -423,6 +444,10 @@ rule OO3_create_hmms:
     output:
         "run/tmp/{ref}.hmm"
         #temp("run/tmp/{ref}.hmm")
+    group:
+        "convert"
+    threads:
+        config["hmmbuild"]["threads"]
     params:
         hmmbuildtype = config["type"]["hmmbuildtype"]
     conda:
@@ -431,6 +456,7 @@ rule OO3_create_hmms:
         """
         hmmbuild \
           {params.hmmbuildtype} \
+          --cpu {threads} \
           {output} \
           {input} > /dev/null 2>&1
 
@@ -446,6 +472,8 @@ rule OO2_fasta_to_stockholm:
     output:
         "run/tmp/{ref}.sto"
         #temp("run/tmp/{ref}.sto")
+    group:
+        "convert"
     conda:
         "envs/perl.yaml"
     shell:
@@ -465,6 +493,10 @@ rule OO1_convert_fas:
     output:
         "run/tmp/{ref}.fasta"
         #temp("run/tmp/{ref}.fasta")
+    group:
+        "convert"
+    conda:
+        "envs/conda.yaml"
     shell:
         """
         awk -v a=$(basename {input} .fas) \

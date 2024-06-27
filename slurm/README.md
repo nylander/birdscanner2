@@ -1,8 +1,8 @@
 # README
 
-- Last modified: tis okt 13, 2020  12:53
+- Last modified: tor jun 27, 2024  03:00
 - Sign: nylander
 
 ## Description
 
-Adapted from <https://github.com/NBISweden/nbis-meta>
+Adapted from <https://github.com/NBISweden/GenErode>
