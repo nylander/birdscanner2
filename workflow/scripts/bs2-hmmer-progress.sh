@@ -24,7 +24,8 @@ if ls "${hmmer_dir}"/*.hmm &> /dev/null ; then
         now_date=$EPOCHSECONDS
         runtime=$((now_date-birth_date))
         echo -n "${genome}: ${n_done}/${n_hmms} "
-        eval "echo  After $(date -ud "@$runtime" +'$((%s/3600/24)) days %H hours %M minutes %S seconds')"
+        printf '%dd:%dh:%dm:%ds\n' $((runtime/86400)) $((runtime%86400/3600)) $((runtime%3600/60)) $((runtime%60))
+        #eval "echo  After $(date -ud "@$runtime" +'$((%s/3600/24)) days %H hours %M minutes %S seconds')"
     fi
   done
 else
