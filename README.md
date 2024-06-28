@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: ons jun 19, 2024  01:48
+- Last modified: fre jun 28, 2024  02:14
 - Sign: JN
 
 ## Description
@@ -90,7 +90,7 @@ results/
 ## Run
 
     $ cd birdscanner2
-    $ snakemake -j -p 
+    $ snakemake -j -p
 
 ## Data
 
@@ -218,12 +218,8 @@ assuming that the folder `$HOME/bin` is present and in your `PATH`):
 
 #### 1.1. plast
 
-    # Alt. 1: Copy binary
-    $ wget https://github.com/PLAST-software/plast-library/releases/download/v2.3.2/plastbinary_linux_v2.3.2.tar.gz
-    $ tar xvzf plastbinary_linux_v2.3.2.tar.gz
-    $ cp plastbinary_linux_v2.3.2/build/bin/plast $HOME/bin/plast
+Note: I recommend compiling (there might be memory errors otherwise):
 
-    # Alt. 2: Compile
     $ module load cmake doxygen
     $ git clone https://github.com/PLAST-software/plast-library.git
     $ cd plast-library
