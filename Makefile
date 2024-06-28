@@ -1,5 +1,5 @@
 # Makefile for birdscanner2
-# Last modified: ons jun 19, 2024  10:00
+# Last modified: fre jun 28, 2024  02:39
 # Sign: JN
 
 #UPPNR :=
@@ -33,7 +33,7 @@ slurm-test:
 	snakemake --dry-run --printshellcmds --use-conda --profile rackham -j 200
 
 slurm-run:
-	snakemake  --use-conda --profile rackham -j 200
+	snakemake --use-conda --profile rackham -j 200
 
 clean:
 	rm -rf .snakemake run slurm/stderr slurm/stdout slurm/__pycache__ slurm/err/bs2-convert.err slurm/logs/bs2-convert.out
