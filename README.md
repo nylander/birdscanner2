@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: fre jun 28, 2024  02:14
+- Last modified: fre jun 28, 2024  08:34
 - Sign: JN
 
 ## Description
@@ -42,10 +42,9 @@ input for further processing with a multiple-sequence alignment software.
 3. Optional: Download example data (636 MB) and test the installation
 
         $ cd birdscanner2
-        $ wget -O data.tgz "https://nrmcloud.nrm.se/s/2Z8MsQCMRfgterQ/download"
-        $ tar xfz data.tgz && rm data.tgz
-        $ snakemake -j -p --dry-run
-        $ snakemake -j -p
+        $ wget -c "https://nrmcloud.nrm.se/s/2Z8MsQCMRfgterQ/download" -O - | tar xvz
+        $ snakemake --debug-dag --printshellcmds --cores all --dry-run
+        $ snakemake --debug-dag --printshellcmds --cores all
 
 ## Input
 
@@ -181,15 +180,15 @@ See also section [**Installing and Running birdscanner2 on UPPMAX**](#installing
     - find (4.7.0)
     - grep (3.4)
     - sort (8.30)
-2. [python](https://www.python.org/downloads/) (3.8.2)
-3. [snakemake](https://snakemake.github.io/) (5.10.0)
-4. [pigz](https://zlib.net/pigz/) (2.4)
-5. [makeblastdb](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
-6. [blastdbcmd](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.9.0+)
-7. [hmmbuild](http://hmmer.org/download.html) (3.3)
-8. [hmmpress](http://hmmer.org/download.html) (3.3)
-9. [nhmmer](http://hmmer.org/download.html) (3.3)
-10. [perl](https://www.perl.org/get.html) (5.30.0)
+2. [python](https://www.python.org/downloads/) (3.10.12)
+3. [snakemake](https://snakemake.github.io/) (8.14.0)
+4. [pigz](https://zlib.net/pigz/) (2.6)
+5. [makeblastdb](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.12.0+)
+6. [blastdbcmd](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.12.0+)
+7. [hmmbuild](http://hmmer.org/download.html) (3.3.2)
+8. [hmmpress](http://hmmer.org/download.html) (3.3.2)
+9. [nhmmer](http://hmmer.org/download.html) (3.3.2)
+10. [perl](https://www.perl.org/get.html) (5.34.0)
 11. [plast](https://github.com/PLAST-software/plast-library) (2.3.2)
 12. [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
 13. [bs2-fas-to-sto.pl](workflow/scripts/bs2-fas-to-sto.pl) (1.0)
@@ -200,7 +199,7 @@ Softwares 13-15 are provided. Software requirements 1-10 can also be
 taken care of by the [conda system](https://docs.conda.io/) by running the
 pipeline with commands
 
-    $ snakemake -j -p --use-conda
+    $ snakemake --use-conda
 
 Note: This requires conda, and is currently mostly untested.
 Furthermore, softwares 11, and 12 still needs to be installed separately
@@ -266,9 +265,7 @@ replace the "snic1234-56-78" below with your SNIC account number.
 
 ### 6. Run the rest of the workflow
 
-~~Replace the "snic1234-56-78" below with your SNIC account number.~~
-
-~~$ sbatch -A snic1234-56-78 workflow/scripts/bs2-run.slurm.sh~~
+Allow the previous slurm job to finish, and then procede below.
 
 - **6.1. Launch a screen session**
 
@@ -277,14 +274,14 @@ replace the "snic1234-56-78" below with your SNIC account number.
 - **6.2. Load modules**
 
        $ module load bioinfo-tools \
-             hmmer/3.2.1-intel \
-             blast/2.9.0+ \
-             snakemake/5.10.0 \
-             pigz/2.4
+             hmmer/3.3.2 \
+             blast/2.15.0+ \
+             snakemake/7.25.0 \
+             pigz/2.8
 
 - **6.3. Start snakemake** *(TODO: advice on number of jobs)*
 
-        $ snakemake --profile slurm -j 50
+        $ snakemake --profile slurm -j 200
 
 - **6.4. Detach the screen session** (Ctrl-A + Ctrl-D)
 
