@@ -1,5 +1,5 @@
 # Birdscanner v2.2.slurm
-# Last modified: fre jun 28, 2024  06:23
+# Last modified: fre jun 28, 2024  06:30
 # Sign: JN
 # Thanks to John Sundh
 
@@ -431,7 +431,7 @@ rule OO4_cat_reference_fas:
           run/tmp \
           -type f \
           -name '*.fasta' \
-          -exec cat {{}} \+ > {output}
+          -exec cat {{}} \\+ > {output}
         """
 
 # 3. create_hmms
