@@ -1,5 +1,5 @@
 # Birdscanner v2.2.slurm
-# Last modified: tor jun 27, 2024  05:42
+# Last modified: fre jun 28, 2024  06:23
 # Sign: JN
 # Thanks to John Sundh
 
@@ -431,7 +431,7 @@ rule OO4_cat_reference_fas:
           run/tmp \
           -type f \
           -name '*.fasta' \
-          -exec cat {{}} \\+ > {output}
+          -exec cat {{}} \+ > {output}
         """
 
 # 3. create_hmms
@@ -500,7 +500,7 @@ rule OO1_convert_fas:
     shell:
         """
         awk -v a=$(basename {input} .fas) \
-          '/>/{{$0=\">\"a\"__\"++i}}1' \
+          '/>/{{$0=">"a"__"++i}}1' \
           {input} > {output}
         """
 
