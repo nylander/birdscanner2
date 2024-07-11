@@ -1,5 +1,5 @@
 # Birdscanner v2.2.slurm
-# Last modified: fre jun 28, 2024  06:30
+# Last modified: tor jul 11, 2024  04:26
 # Sign: JN
 # Thanks to John Sundh
 
@@ -22,6 +22,9 @@ GENOMES, = glob_wildcards("data/genomes/{genome}.gz")
 # localrules: all
 localrules: all, OO1_convert_fas, OO2_fasta_to_stockholm, OO4_cat_reference_fas, OO8_get_scaffold_ids, OO9_get_reference_ids, O10_select_scaffolds, O12_concatente_chunk_hmms, O15_concatenate_hmmer_out, 
 
+wildcard_constraints:
+    n="\d+"
+
 # Helper function gather_chunk_hmm_lists
 def gather_chunk_hmm_lists(wildcards):
     """
@@ -42,9 +45,22 @@ def gather_hmmer_out(wildcards):
     """
     input = []
     ck_output_folder = checkpoints.O11_split_list_of_hmms.get(genome=wildcards.genome).output[0]
-    N = glob_wildcards(os.path.join(ck_output_folder, "{genome}.{n}.hmm")).n
+    n = glob_wildcards(os.path.join(ck_output_folder, "{genome}.{n}.hmm")).n
     input = expand("run/hmmer/{genome}/{genome}.{n}.hmmer.out",
-                   n=N, genome=wildcards.genome)
+                   n=n, genome=wildcards.genome)
+    return input
+
+# Helper function to provide input to rule collate_genome_hmmpress
+def aggregate_hmmpress(wildcards):
+    """
+    This aggregate function has one known wildcard: genome
+    The n variable is unknown, but is derived from the number of chunk files generated
+    from the checkpoint rule
+    """
+    input = []
+    ck_output_folder = checkpoints.O11_split_list_of_hmms.get(genome=wildcards.genome).output[0]
+    n = glob_wildcards(os.path.join(ck_output_folder, "{genome}.{n}.txt")).n
+    input = expand("run/hmmer/{genome}/{genome}.{n}.hmm.h3p", n=n, genome=wildcards.genome)
     return input
 
 # 0. Rule for final output
@@ -57,6 +73,10 @@ rule all:
         expand("results/genomes/{genome}", genome=GENOMES),
         expand("results/hmmer/{genome}.hmmer.out.gz", genome=GENOMES),
         expand("run/tmp/{ref}.hmm", ref=REFERENCES),
+        expand("run/hmmer/{genome}.hmmchunks.done", genome=GENOMES),
+        expand("run/hmmer/{genome}.hmmpress.done", genome=GENOMES),
+        expand("run/hmmer/{genome}.nhmmer.done", genome=GENOMES),
+        expand("run/hmmer/{genome}.hmmer.out", genome=GENOMES),
         "run/tmp/genes.done"
 
 # 18. compress hmmer out
@@ -143,13 +163,25 @@ rule O15_concatenate_hmmer_out:
         cat {input} > {output}
         """
 
+# 14b. Pseudo rule
+rule O14b_collate_genome_nhmmer:
+    """
+    Pseudo rule that gathers all nmmher out and touches a flag file for each genome
+    """
+    input:
+        gather_hmmer_out
+    output:
+        touch("run/hmmer/{genome}.nhmmer.done")
+
 # 14. run_hmmer
 rule O14_run_hmmer:
     """
     Run HMMer: the selected scaffolds against the selected hmms.
     """
+    wildcard_constraints:
+        n="\d+"
     input:
-        "run/tmp/{genome}.{n}.hmmpress.done",
+        "run/hmmer/{genome}.hmmpress.done",
         hmm = "run/hmmer/{genome}/{genome}.{n}.hmm",
         query = "run/plast/{genome}.plast.fas"
     output:
@@ -173,6 +205,16 @@ rule O14_run_hmmer:
           {input.query} > /dev/null
         """
 
+# 13b. Johns pseudorule
+rule O13b_collate_genome_hmmpress:
+    """
+    Pseudo rule that gathers all hmmpressed chunks and touches a flag file for each genome
+    """
+    input:
+        aggregate_hmmpress
+    output:
+        touch("run/hmmer/{genome}.hmmpress.done")
+
 # 13. run_hmmpress
 # TODO: which rule is creating "run/hmmer/{genome}/{genome}.{n}.hmm" (the input for this rule)?
 rule O13_run_hmmpress:
@@ -183,18 +225,25 @@ rule O13_run_hmmpress:
         "run/hmmer/{genome}/{genome}.{n}.hmm"
     output:
         expand("run/hmmer/{{genome}}/{{genome}}.{{n}}.hmm.h3{s}",
-               s=["f","i","m","p"]),
-        done = "run/tmp/{genome}.{n}.hmmpress.done"
+               s=["f","i","m","p"])
     log:
         "logs/hmmer/{genome}.{n}.log"
     conda:
         "envs/hmmer.yaml"
     shell:
         """
-        hmmpress \
-          {input} > {log} 2>&1 \
-        touch {output.done}
+        hmmpress {input} > {log} 2>&1
         """
+
+# 12b 
+rule O12b_collate_genome_chunk_hmms:
+    """
+    Pseudo rule that gathers all hmmpressed chunks and touches a flag file for each genome
+    """
+    input:
+        gather_chunk_hmm_lists
+    output:
+        touch("run/hmmer/{genome}.hmmchunks.done")
 
 # 12. concatente chunk hmms
 rule O12_concatente_chunk_hmms:
