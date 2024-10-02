@@ -41,7 +41,7 @@ def gather_chunk_hmm_lists(wildcards):
 # Helper function gather_hmmer_out
 def gather_hmmer_out(wildcards):
     """
-    Gather list of .hmmer.out files (run/hmmer/genome/genome.n.hmmer.out)
+    Gather list of .n.hmmer.out files (run/hmmer/genome/genome.n.hmmer.out)
     """
     input = []
     ck_output_folder = checkpoints.O11_split_list_of_hmms.get(genome=wildcards.genome).output[0]
@@ -73,7 +73,7 @@ rule all:
         expand("results/genomes/{genome}", genome=GENOMES),
         expand("results/hmmer/{genome}.hmmer.out.gz", genome=GENOMES),
         expand("run/tmp/{ref}.hmm", ref=REFERENCES),
-        expand("run/hmmer/{genome}.hmmchunks.done", genome=GENOMES),
+        #expand("run/hmmer/{genome}.hmmchunks.done", genome=GENOMES),
         expand("run/hmmer/{genome}.hmmpress.done", genome=GENOMES),
         expand("run/hmmer/{genome}.nhmmer.done", genome=GENOMES),
         expand("run/hmmer/{genome}.hmmer.out", genome=GENOMES),
@@ -235,15 +235,15 @@ rule O13_run_hmmpress:
         hmmpress {input} > {log} 2>&1
         """
 
-# 12b 
-rule O12b_collate_genome_chunk_hmms:
-    """
-    Pseudo rule that gathers all hmmpressed chunks and touches a flag file for each genome
-    """
-    input:
-        gather_chunk_hmm_lists
-    output:
-        touch("run/hmmer/{genome}.hmmchunks.done")
+# # 12b 
+# rule O12b_collate_genome_chunk_hmms:
+#     """
+#     Pseudo rule that gathers all hmmpressed chunks and touches a flag file for each genome
+#     """
+#     input:
+#         gather_chunk_hmm_lists
+#     output:
+#         touch("run/hmmer/{genome}.hmmchunks.done")
 
 # 12. concatente chunk hmms
 rule O12_concatente_chunk_hmms:
@@ -328,6 +328,7 @@ rule OO9_get_reference_ids:
     rule convert_fas, to work.
     """
     input:
+        #expand("run/plast/{genome}.plast.tab", genome=GENOMES)
         "run/plast/{genome}.plast.tab"
     output:
         "run/tmp/{genome}.ref.ids"
