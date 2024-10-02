@@ -1,5 +1,5 @@
 # Birdscanner v2
-# Last modified: tis nov 03, 2020  05:27
+# Last modified: ons okt 02, 2024  12:08
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -283,7 +283,7 @@ rule O15_gather_genes:
     conda:
         "envs/perl.yaml"
     shell:
-        "perl workflow/scripts/bs2-gather-genes.pl --outdir={output.dir} $(find results/genomes -type d)"
+        "perl workflow/scripts/bs2-gather-genes.pl --outdir={output.dir} $(find results/genomes -mindepth 1  -type d)"
 
 # 16. compress_hmmer_out
 rule O16_compress_hmmer_out:
