@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: ons nov 27, 2024  09:19
+- Last modified: ons nov 27, 2024  09:21
 - Sign: JN
 
 ## Description
@@ -126,9 +126,9 @@ the same in all files.
 
 ##### 2.2 Jarvis bird data
 
-We also provide filtered versions of the "Jarvis data" ([Jarvis *et al*.
-2015](resources/Jarvis_et_al_2015/Jarvis_et_al_2015.pdf)). If you wish to use any of
-these data sets, it is recommend to download and uncompress the data
+We also provide filtered versions of the "Jarvis data"
+([Jarvis *et al*.2015](resources/Jarvis_et_al_2015/Jarvis_et_al_2015.pdf)).
+If you wish to use any of these data sets, it is recommend to download and uncompress the data
 (`references.tgz`) directly inside the `birdscanner2/data/` folder. Please see
 the file
 [`resources/Jarvis_et_al_2015/README.md`](resources/Jarvis_et_al_2015/README.md)
