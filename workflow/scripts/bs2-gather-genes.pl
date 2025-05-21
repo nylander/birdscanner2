@@ -35,7 +35,7 @@
 
       CREATED: 2019-04-12 16:12:21
 
-     REVISION: tis 29 aug 2023 16:47:49
+     REVISION: ons 21 maj 2025 09:50:00
 
 =cut
 
@@ -80,14 +80,23 @@ while (my $dir = shift(@ARGV)) {
         die "Can not find directory $dir: $!\n";
     }
     my @fasta_files = <$dir/*.fas>; # Assuming file ends in .fas
+    if ( ! @fasta_files ) {
+        die "Error: could not find .fas files in $dir\n";
+    }
+    my $bn = basename($dir);
+    print "Looking for .fas files in $bn\n" if $VERBOSE;
     foreach my $filename (@fasta_files) {
         my ($name, $path, $suffix) = fileparse($filename, '.fas');  # Assumes file named "n.geneid.fas"
         my ($n, $geneid) = split /\./, $name; # Assumes "n.geneid"
+        if ( ! $geneid ) {
+            die "Error: could not extract gene id from file $filename in dir $dir. Assuming format label.geneid.fas\n";
+        }
         push @{$gene_file_hash{$geneid}}, $filename;
     }
 }
 
 foreach my $gene (keys %gene_file_hash) {
+    print "Writing .fas file for $gene\n" if $VERBOSE;
     my $outfile = $outdir . '/' . $gene . '.fas';
     open my $OUTFILE, ">", $outfile or die "Could not open file $outfile for writing $!\n";
     foreach my $infile (@{$gene_file_hash{$gene}}) {
