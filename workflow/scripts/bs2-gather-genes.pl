@@ -86,10 +86,17 @@ while (my $dir = shift(@ARGV)) {
     my $bn = basename($dir);
     print "Looking for .fas files in $bn\n" if $VERBOSE;
     foreach my $filename (@fasta_files) {
-        my ($name, $path, $suffix) = fileparse($filename, '.fas');  # Assumes file named "n.geneid.fas"
-        my ($n, $geneid) = split /\./, $name; # Assumes "n.geneid"
-        if ( ! $geneid ) {
-            die "Error: could not extract gene id from file $filename in dir $dir. Assuming format label.geneid.fas\n";
+        my ($name, $path, $suffix) = fileparse($filename, '.fas'); # Assuming n.geneid.fas or geneid.fas
+        my (@parts) = split /\./, $name;
+        my $geneid = q{};
+        if (scalar @parts == 2) {
+            $geneid = $parts[1];
+        }
+        elsif (scalar @parts == 1) {
+            $geneid = $parts[0];
+        }
+        else {
+           die "Error: could not extract gene id from file $filename in dir $dir. Assuming format label.geneid.fas or geneid.fas\n";
         }
         push @{$gene_file_hash{$geneid}}, $filename;
     }
