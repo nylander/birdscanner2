@@ -1,4 +1,4 @@
-#!/usr/bin/env perl 
+#!/usr/bin/env perl
 #===============================================================================
 
 =pod
@@ -34,7 +34,7 @@
                Examples:
                1000.sate.default.pep2cds.removed.shortname.filtered
                14365.sate.removed.intron.noout.aligned-allgap.filtered.fas.degap
-               
+
                Output:
                Will write separate fasta files to output directory, one for each marker.
 
@@ -59,13 +59,13 @@
 
        AUTHOR: Johan Nylander (JN), Johan.Nylander@nrm.se
 
-      COMPANY: NBIS/NRM
+      COMPANY: NRM
 
       VERSION: 1.0
 
       CREATED: 09/17/2015 11:06:04 PM
 
-     REVISION: ons 14 okt 2020 17:31:49
+     REVISION: 26 May 2025 10:24:33
 
 =cut
 
@@ -162,7 +162,7 @@ while (<$FASTA>) {
                 $outfastafile = $prefix . ".$geneid.fas";
             }
             else {
-                $outfastafile =  "$geneid.fas";
+                $outfastafile = "$geneid.fas";
             }
             open my $OUTFILE, ">", "$directory/$outfastafile"
               or die "Could not open fasta file for writing: $! \n";
