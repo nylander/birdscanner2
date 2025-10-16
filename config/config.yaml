@@ -1,5 +1,5 @@
 # Config file for birdscanner2
-# Last modified: tis nov 03, 2020  05:27
+# Last modified: tor okt 16, 2025  07:04
 # Sign: JN
 
 # Reference input is DNA (True) or Protein (False).
@@ -22,7 +22,7 @@ lengthfilter:
 
 # Splitfast. 100000 is maximum for plast.
 splitfast:
-    max: "1000000"
+    max: "100000"
 
 # Plast
 plast:
