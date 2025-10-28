@@ -1,5 +1,5 @@
 # Makefile for birdscanner2
-# Last modified: mån maj 20, 2024  09:36
+# Last modified: tis okt 28, 2025  03:32
 # Sign: JN
 
 #UPPNR :=
@@ -28,7 +28,7 @@ convert:
 	bash workflow/scripts/bs2-convert.sh
 
 slurm-run:
-	snakemake --profile slurm -j 100
+	snakemake --profile slurm -j 200
 
 #account:
 #	sed -i 's/#SNICACCOUNT#/$(UPPNR)/' config/cluster.yaml ; \
