@@ -1,6 +1,6 @@
-# Birdscanner version 2 (Snakemake version)
+# Birdscanner version 2\_rackham (Snakemake version)
 
-- Last modified: ons nov 27, 2024  09:21
+- Last modified: 2025-11-03 19:03:19
 - Sign: JN
 
 ## Description
@@ -22,14 +22,14 @@ input for further processing with a multiple-sequence alignment software.
 
 ## Installation and testing
 
-### Local installation
-
 **Note:** For installing and running on the Rackham cluster, skip to
 [**relevant section below**.](#installing-and-running-birdscanner2-on-rackham)
 
+### Local installation
+
 1. Install prerequisites (see section [**Software
    prerequisites**](#software-prerequisites) for details). On a Debian-based
-   GNU/Linux system (tested on Ubuntu Linux 20.04), this can be done using
+   GNU/Linux system (tested on Ubuntu Linux 24.04), this can be done using
 
         $ sudo apt install build-essential git hmmer ncbi-blast+ pigz plast snakemake
         $ git clone https://github.com/nylander/split-fasta-seq.git
@@ -168,26 +168,27 @@ sequences in the concatenated files may not be the same.
 
 ## Software prerequisites
 
-The workflow is tested on GNU/Linux (Ubuntu 20.04), and uses standard Linux
-(bash) tools in addition to the main workflow manager `snakemake`. A list of
-tools (and tested version) are given below.
-See also section [**Installing and Running birdscanner2 on UPPMAX**](#installing-and-running-birdscanner2-on-uppmax)
-(where most of the required software are already available as modules).
+The workflow is tested on GNU/Linux (Ubuntu 22.04), and uses standard Linux
+(bash) tools in addition to the main workflow manager `snakemake` (**v.7**). A
+list of tools (and tested version) are given below.  See also section
+[**Installing and Running birdscanner2 on
+UPPMAX**](#installing-and-running-birdscanner2-on-uppmax) (where most of the
+required software are already available as modules).
 
-1. [bash](https://www.gnu.org/software/bash/) (5.0.17)
+1. [bash](https://www.gnu.org/software/bash/) (5.0.18)
     - awk (5.0.1)
     - cat (8.30)
     - find (4.7.0)
     - grep (3.4)
     - sort (8.30)
 2. [python](https://www.python.org/downloads/) (3.10.12)
-3. [snakemake](https://snakemake.github.io/) (8.14.0)
-4. [pigz](https://zlib.net/pigz/) (2.6)
-5. [makeblastdb](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.12.0+)
-6. [blastdbcmd](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.12.0+)
-7. [hmmbuild](http://hmmer.org/download.html) (3.3.2)
-8. [hmmpress](http://hmmer.org/download.html) (3.3.2)
-9. [nhmmer](http://hmmer.org/download.html) (3.3.2)
+3. [snakemake](https://snakemake.github.io/) (7.25.0)
+4. [pigz](https://zlib.net/pigz/) (2.8)
+5. [makeblastdb](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.16.0+)
+6. [blastdbcmd](https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/) (2.16.0+)
+7. [hmmbuild](http://hmmer.org/download.html) (3.4)
+8. [hmmpress](http://hmmer.org/download.html) (3.4)
+9. [nhmmer](http://hmmer.org/download.html) (3.4)
 10. [perl](https://www.perl.org/get.html) (5.34.0)
 11. [plast](https://github.com/PLAST-software/plast-library) (2.3.2)
 12. [splitfast](https://github.com/nylander/split-fasta-seq) (Tue 14 Jan 2020)
@@ -207,6 +208,8 @@ Furthermore, softwares 11, and 12 still needs to be installed separately
 
 ## Installing and Running birdscanner2 on Rackham
 
+**Note: Updated 2025-11-03**
+
 ### 1. Install software
 
 On [Rackham](https://www.uu.se/centrum/uppmax/resurser/kluster/rackham), most
@@ -223,7 +226,7 @@ Note: I recommend compiling (there might be memory errors otherwise):
     $ git clone https://github.com/PLAST-software/plast-library.git
     $ cd plast-library
     $ git checkout stable
-    $ sed -i '98,99{s/^/#/}' CMakeLists.txt # if no cppunit, disable unittest 
+    $ sed -i '98,99{s/^/#/}' CMakeLists.txt # if no cppunit, disable unittest
     $ mkdir build
     $ cd build
     $ cmake -Wno-dev ..
@@ -240,6 +243,8 @@ Note: I recommend compiling (there might be memory errors otherwise):
 ### 2. Clone birdscanner2
 
     $ git clone https://github.com/nylander/birdscanner2.git
+    $ cd birdscanner2
+    $ git checkout bs2_rackham
 
 ### 3. Add your uppmax account number
 
@@ -248,7 +253,7 @@ your [SNIC compute project account
 number](https://uppmax.uu.se/support/getting-started/applying-for-projects/)
 (e.g., "snic2020-12-34"). For example:
 
-    $ sed -i 's/#SNICACCOUNT#/snic2020-12-34/' config/cluster.yaml
+    $ sed -i 's/SNICACCOUNT/snic2020-12-34/' rackham/settings.json
 
 ### 4. Add genome and reference data
 
@@ -274,14 +279,14 @@ Allow the previous slurm job to finish, and then procede below.
 - **6.2. Load modules**
 
        $ module load bioinfo-tools \
-             hmmer/3.3.2 \
-             blast/2.15.0+ \
+             hmmer/3.4 \
+             blast/2.16.0+ \
              snakemake/7.25.0 \
              pigz/2.8
 
-- **6.3. Start snakemake** *(TODO: advice on number of jobs)*
+- **6.3. Start snakemake**
 
-        $ snakemake --profile slurm -j 200
+        $ snakemake --profile rackham
 
 - **6.4. Detach the screen session** (Ctrl-A + Ctrl-D)
 
