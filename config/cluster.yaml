@@ -1,5 +1,5 @@
 # Set defaults for birdscanner2 rules on cluster.
-# Last modified: tis okt 28, 2025  03:22
+# Last modified: tis okt 28, 2025  04:27
 # Sign: JN
 # Notes: Exceptions are specified below.
 # Threads are given per tool, and are specified in config/config.yaml
@@ -9,7 +9,7 @@ __default__:
   account: "#SNICACCOUNT#"
   partition: core
   time: 45
-  cpus_per_task: 1
+  cpus-per-task: 1
   output: "slurm/stdout/{rule}.{wildcards}.out"
   error: "slurm/stderr/{rule}.{wildcards}.err"
 
@@ -39,7 +39,7 @@ __default__:
 # May take hours
 OO7_run_plast:
     time: 14000
-    cpus_per_task: 20
+    threads: 20
 
 # local rule?
 #OO8_get_scaffold_ids:
@@ -61,9 +61,10 @@ OO7_run_plast:
 #    time: 10
 
 # May take a very long time
+# Note that "threads" means differentthing in Snakefile for this rule
 O13_run_hmmer:
     time: 140000
-    cpus_per_task: 2
+    threads: 20
 
 #O14_parse_hmmer:
 #    time: 10

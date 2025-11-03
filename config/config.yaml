@@ -1,5 +1,5 @@
 # Config file for birdscanner2
-# Last modified: tor okt 16, 2025  07:04
+# Last modified: tis okt 28, 2025  04:32
 # Sign: JN
 
 # Reference input is DNA (True) or Protein (False).
@@ -41,7 +41,8 @@ blastdbcmd:
 # Hmmer
 hmmer:
     outfmt: "--notextw --noali"
-    threads: 2
+    hmmercpu: 2
+    threads: 20
 
 # Parsehmmer
 parsehmmer:
