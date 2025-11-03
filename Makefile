@@ -1,12 +1,6 @@
 # Makefile for birdscanner2
-# Last modified: tis okt 28, 2025  03:32
+# Last modified: 2025-11-03 16:56:28
 # Sign: JN
-
-#UPPNR :=
-
-#ifndef UPPNR
-#$(error UPPNR is not set. Please run \"make account UPPNR=snic1234-5-678\" \(use your account nr\) or edit the Makefile and the config/cluster.yaml files and add your uppmax compute account nr. )
-#endif
 
 .PHONY: all run debug dryrun report slurm-init slurm-run clean distclean
 
@@ -30,9 +24,8 @@ convert:
 slurm-run:
 	snakemake --profile slurm -j 200
 
-#account:
-#	sed -i 's/#SNICACCOUNT#/$(UPPNR)/' config/cluster.yaml ; \
-#	sed -i '/^UPPNR/ s/$$/ $(UPPNR)/' $(lastword $(MAKEFILE_LIST))
+rackham-run:
+	snakemake --profile rackham
 
 clean:
 	rm -rf .snakemake run slurm/stderr slurm/stdout slurm/__pycache__ slurm/err/bs2-convert.err slurm/logs/bs2-convert.out
