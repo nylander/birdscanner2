@@ -1,5 +1,5 @@
 # Config file for birdscanner2
-# Last modified: tis okt 28, 2025  04:32
+# Last modified: 2025-11-03 18:20:55
 # Sign: JN
 
 # Reference input is DNA (True) or Protein (False).
@@ -28,7 +28,7 @@ splitfast:
 plast:
     maxhitperquery: "1"
     bargraph: "-bargraph"
-    threads: 20
+    plastcpu: 20
 
 # Makeblastdb
 makeblastdb:
@@ -42,7 +42,6 @@ blastdbcmd:
 hmmer:
     outfmt: "--notextw --noali"
     hmmercpu: 2
-    threads: 20
 
 # Parsehmmer
 parsehmmer:
