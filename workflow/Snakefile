@@ -1,5 +1,5 @@
-# Birdscanner v2
-# Last modified: tis okt 28, 2025  04:32
+# Birdscanner v2_rackham
+# Last modified: 2025-11-03 18:57:13
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -127,14 +127,16 @@ rule OO7_run_plast:
         query = "run/tmp/reference.fas"
     output:
         temp("run/plast/{genome}.plast.tab")
-    threads:
-        config["plast"]["threads"]
     params:
         maxhitperquery = config["plast"]["maxhitperquery"],
         bargraph = config["plast"]["bargraph"],
-        plastprog = config["type"]["plastprog"]
+        plastcpu = config["plast"]["plastcpu"],
+        plastprog = config["type"]["plastprog"],
+    resources:
+        time = "14000",
+        mem_mb = "64000",
     shell:
-        "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {threads} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
+        "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {params.plastcpu} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
 
 # 8. get_scaffold_ids
 rule OO8_get_scaffold_ids:
@@ -245,8 +247,9 @@ rule O13_run_hmmer:
         hmmerprog = config["type"]["hmmerprog"],
         outfmt = config["hmmer"]["outfmt"],
         hmmercpu = config["hmmer"]["hmmercpu"],
-    threads:
-        config["hmmer"]["threads"]
+    resources:
+        time = "14000",
+        mem_mb = "128000",
     conda:
         "envs/hmmer.yaml"
     shell:
