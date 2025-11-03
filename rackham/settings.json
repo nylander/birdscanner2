@@ -1,0 +1,5 @@
+{
+    "SBATCH_DEFAULTS": "account=MYACCOUNT partition=core",
+    "CLUSTER_NAME": "rackham",
+    "CLUSTER_CONFIG": ""
+}
