@@ -1,6 +1,6 @@
 # Birdscanner version 2\_pelle (Snakemake version)
 
-- Last modified: 2026-01-25 18:40:26
+- Last modified: 2026-01-25 19:05:22
 - Sign: JN
 
 ## Description
@@ -292,7 +292,7 @@ Allow the previous slurm job to finish, and then procede below.
 - **6.3. Load and start snakemake**
 
         $ mamba activate snakemake7.25
-        (snakemake7.25)$ snakemake --profile rackham
+        (snakemake7.25)$ snakemake --profile pelle
 
 - **6.4. Detach the screen session** (Ctrl-A + Ctrl-D)
 
