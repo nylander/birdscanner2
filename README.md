@@ -1,6 +1,6 @@
 # Birdscanner version 2\_pelle (Snakemake version)
 
-- Last modified: 2026-01-25 18:18:56
+- Last modified: 2026-01-25 18:40:26
 - Sign: JN
 
 ## Description
@@ -299,9 +299,9 @@ Allow the previous slurm job to finish, and then procede below.
 Re-attaching to the screen session is done with `screen -R birdscanner2`.
 When the workflow is finished, remember to exit the screen session!
 
-Jobs on the cluster can be monitored with command `jobinfo`. Or, perhaps better:
+Jobs on the cluster can be monitored with command `squeue`. Or, perhaps better:
 
-    $ squeue --user=$USER -M rackham --format="%.8i %.50j %.8u %.8T %.10M %.10l %.9P %.6C %.6D %.16R"
+    $ squeue --user=$USER --format="%.8i %.50j %.8u %.8T %.10M %.10l %.9P %.6C %.6D %.16R"
 
 ## Run time
 
