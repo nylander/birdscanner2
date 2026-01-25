@@ -1,6 +1,6 @@
 # Birdscanner version 2\_rackham (Snakemake version)
 
-- Last modified: 2025-11-03 19:12:10
+- Last modified: 2025-11-03 19:55:34
 - Sign: JN
 
 ## Description
@@ -248,7 +248,7 @@ Note: I recommend compiling (there might be memory errors otherwise):
 
 ### 3. Add your uppmax account number
 
-Manually edit the file [`config/cluster.yaml`](config/cluster.yaml), and add
+Manually edit the file [`rackham/settings.json`](rackham/settings.json), and add
 your [SNIC compute project account
 number](https://uppmax.uu.se/support/getting-started/applying-for-projects/)
 (e.g., "snic2020-12-34"). For example:

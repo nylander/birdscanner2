@@ -1,4 +1,3 @@
-
 cluster-cancel: "scancel"
 restart-times: 3
 jobscript: "slurm-jobscript.sh"
@@ -12,19 +11,14 @@ use-conda: "True"
 use-singularity: "False"
 jobs: 500
 printshellcmds: "False"
-
 default-resources:
-  runtime: 45
-  mem_mb: 6000
-
+  - runtime=45
+  - mem_mb=6000
 set-threads:
-  OO7_run_plast: 20
-  O13_run_hmmer: 2
-
+  - OO7_run_plast=20
+  - O13_run_hmmer=2
 set-resources:
-  OO7_run_plast:
-    mem_mb:  64000
-    runtime: 14000
-  O13_run_hmmer:
-    mem_mb:  128000
-    runtime: 14000
+  - OO7_run_plast:mem_mb=64000
+  - OO7_run_plast:runtime=14000
+  - O13_run_hmmer:mem_mb=128000
+  - O13_run_hmmer:runtime=14000
