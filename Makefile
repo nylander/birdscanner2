@@ -1,8 +1,8 @@
 # Makefile for birdscanner2
-# Last modified: 2025-11-03 16:56:28
+# Last modified: 2026-01-25 17:45:27
 # Sign: JN
 
-.PHONY: all run debug dryrun report slurm-init slurm-run clean distclean
+.PHONY: all run debug dryrun report slurm-init slurm-run rackham-run pelle-run clean distclean
 
 all: run
 
@@ -24,8 +24,8 @@ convert:
 slurm-run:
 	snakemake --profile slurm -j 200
 
-rackham-run:
-	snakemake --profile rackham
+pelle-run:
+	snakemake --profile pelle
 
 clean:
 	rm -rf .snakemake run slurm/stderr slurm/stdout slurm/__pycache__ slurm/err/bs2-convert.err slurm/logs/bs2-convert.out

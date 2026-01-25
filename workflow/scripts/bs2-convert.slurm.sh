@@ -2,9 +2,7 @@
 
 #SBATCH -J bs2-convert
 #SBATCH -t 24:00:00
-#SBATCH -p core
-#SBATCH -n 10
-#SBATCH -M rackham
+#SBATCH -c 10
 #SBATCH --error=slurm/err/bs2-convert.err
 #SBATCH --output=slurm/logs/bs2-convert.out
 
@@ -22,14 +20,10 @@
 #     scancel --state=pending -u $USER
 #
 # Monitor by using:
-#    jobinfo -u $USER -M rackham
-#    sinfo -p devel
-#    squeue
+#    jobinfo -u $USER
 #
 
-module load bioinfo-tools
-module load hmmer/3.2.1-intel
-module load gnuparallel
+module load HMMER/3.4-GCC-13.3.0
 
 make convert
 

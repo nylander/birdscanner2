@@ -1,5 +1,0 @@
-{
-    "SBATCH_DEFAULTS": "account=SNICACCOUNT partition=core",
-    "CLUSTER_NAME": "rackham",
-    "CLUSTER_CONFIG": ""
-}

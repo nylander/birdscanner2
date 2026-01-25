@@ -1,6 +1,6 @@
-# Birdscanner version 2\_rackham (Snakemake version)
+# Birdscanner version 2\_pelle (Snakemake version)
 
-- Last modified: 2025-11-03 19:55:34
+- Last modified: 2026-01-25 18:18:56
 - Sign: JN
 
 ## Description
@@ -22,8 +22,8 @@ input for further processing with a multiple-sequence alignment software.
 
 ## Installation and testing
 
-**Note:** For installing and running on the Rackham cluster, skip to
-[**relevant section below**.](#installing-and-running-birdscanner2-on-rackham)
+**Note:** For installing and running on the Pelle cluster, skip to
+[**relevant section below**.](#installing-and-running-birdscanner2-on-pelle)
 
 ### Local installation
 
@@ -156,8 +156,8 @@ If different runs have been made *with the same references data*, then the
 separate runs can be combined using the helper script
 [`bs2-gather-genes.pl`](workflow/scripts/bs2-gather-genes.pl). For example, if
 genome `Apa.gz` and `Bpa.gz` have been run against the same set of references
-at different occasions, the individual files in `results/genomes/Apa` and
-`results/genomes/Bpa` can be concatenated to fasta files ready for
+at different occasions, the individual files in `results/genomes/Apa/` and
+`results/genomes/Bpa/` can be concatenated to fasta files ready for
 multiple-sequence alignment:
 
     $ bs2-gather-genes.pl --outdir=out /path/to/results/genomes/Apa /path/to/results/genomes/Bpa
@@ -172,7 +172,7 @@ The workflow is tested on GNU/Linux (Ubuntu 22.04), and uses standard Linux
 (bash) tools in addition to the main workflow manager `snakemake` (**v.7
 (!)**). A list of tools (and tested version) are given below.  See also section
 [**Installing and Running birdscanner2 on
-Rackham**](#installing-and-running-birdscanner2-on-rackham) (where most of the
+Pelle**](#installing-and-running-birdscanner2-on-pelle) (where most of the
 required software are already available as modules).
 
 1. [bash](https://www.gnu.org/software/bash/) (5.0.18)
@@ -206,23 +206,23 @@ Note: This requires conda, and is currently mostly untested.
 Furthermore, softwares 11, and 12 still needs to be installed separately
 (currently not in any conda channels).
 
-## Installing and Running birdscanner2 on Rackham
+## Installing and Running birdscanner2 on Pelle
 
-**Note: Updated 2025-11-03**
+**Note: Updated 2026-01-25**
 
 ### 1. Install software
 
-On [Rackham](https://www.uu.se/centrum/uppmax/resurser/kluster/rackham), most
-software are available as modules. However, the `plast` and `splitfast`
+On [Pelle](https://www.uu.se/centrum/uppmax/resurser/kluster/pelle), most
+software are available as modules. However, `snakemake`, `plast` and `splitfast`
 programs need to be installed manually. For example (tested on cluster
-["Rackham"](https://uppmax.uu.se/support/user-guides/rackham-user-guide/), and
+["Pelle"](https://docs.uppmax.uu.se/cluster_guides/pelle/), and
 assuming that the folder `$HOME/bin` is present and in your `PATH`):
 
 #### 1.1. plast
 
 Note: I recommend compiling (there might be memory errors otherwise):
 
-    $ module load cmake doxygen
+    $ module load CMake/3.31.3-GCCcore-14.2.0 Doxygen/1.14.0-GCCcore-14.3.0
     $ git clone https://github.com/PLAST-software/plast-library.git
     $ cd plast-library
     $ git checkout stable
@@ -240,20 +240,26 @@ Note: I recommend compiling (there might be memory errors otherwise):
     $ make
     $ cp splitfast $HOME/bin/
 
+#### 1.3. snakemake
+
+Provided you have mamba (conda) available (see e.g., <https://hackmd.io/@pmitev/conda_on_Rackham>).
+
+    $ mamba create -y -c conda-forge -c bioconda -c nodefaults -n snakemake7.25 snakemake=7.25.0
+
 ### 2. Clone birdscanner2
 
     $ git clone https://github.com/nylander/birdscanner2.git
     $ cd birdscanner2
-    $ git checkout bs2_rackham
+    $ git checkout bs2_pelle
 
 ### 3. Add your uppmax account number
 
-Manually edit the file [`rackham/settings.json`](rackham/settings.json), and add
+Manually edit the file [`pelle/settings.json`](pelle/settings.json), and add
 your [SNIC compute project account
-number](https://uppmax.uu.se/support/getting-started/applying-for-projects/)
+number](https://supr.naiss.se/public/project/)
 (e.g., "snic2020-12-34"). For example:
 
-    $ sed -i 's/SNICACCOUNT/snic2020-12-34/' rackham/settings.json
+    $ sed -i 's/SNICACCOUNT/snic2020-12-34/' pelle/settings.json
 
 ### 4. Add genome and reference data
 
@@ -278,15 +284,15 @@ Allow the previous slurm job to finish, and then procede below.
 
 - **6.2. Load modules**
 
-       $ module load bioinfo-tools \
-             hmmer/3.4 \
-             blast/2.16.0+ \
-             snakemake/7.25.0 \
-             pigz/2.8
+       $ module load \
+             HMMER/3.4-GCC-13.3.0 \
+             BLAST+/2.16.0-GCC-13.3.0\
+             pigz/2.8-GCCcore-13.3.0
 
-- **6.3. Start snakemake**
+- **6.3. Load and start snakemake**
 
-        $ snakemake --profile rackham
+        $ mamba activate snakemake7.25
+        (snakemake7.25)$ snakemake --profile rackham
 
 - **6.4. Detach the screen session** (Ctrl-A + Ctrl-D)
 
@@ -323,7 +329,7 @@ currently in progress.
 
 ## License and Copyright
 
-Copyright (c) 2020-2024 Johan Nylander
+Copyright (c) 2020-2026 Johan Nylander
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

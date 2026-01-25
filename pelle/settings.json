@@ -1,0 +1,5 @@
+{
+    "SBATCH_DEFAULTS": "account=SNICACCOUNT partition=pelle",
+    "CLUSTER_NAME": "pelle",
+    "CLUSTER_CONFIG": ""
+}
