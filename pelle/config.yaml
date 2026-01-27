@@ -19,6 +19,6 @@ set-threads:
   - O13_run_hmmer=2
 set-resources:
   - OO7_run_plast:mem_mb=64000
-  - OO7_run_plast:runtime=14000
-  - O13_run_hmmer:mem_mb=128000
-  - O13_run_hmmer:runtime=14000
+  - OO7_run_plast:time=14000
+  - O13_run_hmmer:mem_mb=256000
+  - O13_run_hmmer:time=14000
