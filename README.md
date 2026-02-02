@@ -1,6 +1,6 @@
 # Birdscanner version 2\_pelle (Snakemake version)
 
-- Last modified: 2026-01-25 19:05:22
+- Last modified: 2026-02-02 10:34:59
 - Sign: JN
 
 ## Description
@@ -208,8 +208,6 @@ Furthermore, softwares 11, and 12 still needs to be installed separately
 
 ## Installing and Running birdscanner2 on Pelle
 
-**Note: Updated 2026-01-25**
-
 ### 1. Install software
 
 On [Pelle](https://www.uu.se/centrum/uppmax/resurser/kluster/pelle), most
@@ -222,7 +220,7 @@ assuming that the folder `$HOME/bin` is present and in your `PATH`):
 
 Note: I recommend compiling (there might be memory errors otherwise):
 
-    $ module load CMake/3.31.3-GCCcore-14.2.0 Doxygen/1.14.0-GCCcore-14.3.0
+    $ module load CMake/3.29.3-GCCcore-13.3.0 Doxygen/1.11.0-GCCcore-13.3.0
     $ git clone https://github.com/PLAST-software/plast-library.git
     $ cd plast-library
     $ git checkout stable
