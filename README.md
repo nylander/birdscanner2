@@ -1,6 +1,6 @@
-# Birdscanner version 2\_pelle (Snakemake version)
+# Birdscanner version 2 (Snakemake version)
 
-- Last modified: 2026-02-02 10:34:59
+- Last modified: 2026-02-10 17:11:36
 - Sign: JN
 
 ## Description
@@ -33,7 +33,7 @@ input for further processing with a multiple-sequence alignment software.
 
         $ sudo apt install build-essential git hmmer ncbi-blast+ pigz plast snakemake
         $ git clone https://github.com/nylander/split-fasta-seq.git
-        $ cd split-fasta-seq/src/ && make && sudo make install 
+        $ cd split-fasta-seq/src/ && make && sudo make install
 
 2. Clone birdscanner2 from GitHub:
 
@@ -127,7 +127,7 @@ the same in all files.
 ##### 2.2 Jarvis bird data
 
 We also provide filtered versions of the "Jarvis data"
-([Jarvis *et al*.2015](resources/Jarvis_et_al_2015/Jarvis_et_al_2015.pdf)).
+([Jarvis *et al*. 2015](resources/Jarvis_et_al_2015/Jarvis_et_al_2015.pdf)).
 If you wish to use any of these data sets, it is recommend to download and uncompress the data
 (`references.tgz`) directly inside the `birdscanner2/data/` folder. Please see
 the file
@@ -152,7 +152,7 @@ multiple-sequence alignments.
 
 ## Concatenate output from separate runs
 
-If different runs have been made *with the same references data*, then the
+If different runs have been made *with the same reference data*, then the
 separate runs can be combined using the helper script
 [`bs2-gather-genes.pl`](workflow/scripts/bs2-gather-genes.pl). For example, if
 genome `Apa.gz` and `Bpa.gz` have been run against the same set of references
@@ -170,7 +170,7 @@ sequences in the concatenated files may not be the same.
 
 The workflow is tested on GNU/Linux (Ubuntu 22.04), and uses standard Linux
 (bash) tools in addition to the main workflow manager `snakemake` (**v.7
-(!)**). A list of tools (and tested version) are given below.  See also section
+(!)**). A list of tools (and tested version) are given below. See also section
 [**Installing and Running birdscanner2 on
 Pelle**](#installing-and-running-birdscanner2-on-pelle) (where most of the
 required software are already available as modules).
