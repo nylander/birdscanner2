@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: 2026-02-10 17:11:36
+- Last modified: 2026-02-10 17:13:34
 - Sign: JN
 
 ## Description
@@ -248,7 +248,6 @@ Provided you have mamba (conda) available (see e.g., <https://hackmd.io/@pmitev/
 
     $ git clone https://github.com/nylander/birdscanner2.git
     $ cd birdscanner2
-    $ git checkout bs2_pelle
 
 ### 3. Add your uppmax account number
 
