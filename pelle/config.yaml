@@ -24,3 +24,4 @@ set-resources:
   - O13_run_hmmer:mem_mb=256000
   - O13_run_hmmer:time=14000
   - O13_run_hmmer:runtime=14000
+  - O15_gather_genes:runtime=450
