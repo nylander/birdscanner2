@@ -1,5 +1,5 @@
 # Birdscanner v2_pelle
-# Last modified: 2026-01-28 16:49:19
+# Last modified: 2026-03-13 10:30:57
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -247,7 +247,7 @@ rule O13_run_hmmer:
     conda:
         "envs/hmmer.yaml"
     shell:
-        "{params.hmmerprog} {params.outfmt} --cpu {params.hmmercpu} --tblout {output} {input.hmm} {input.query} > /dev/null"
+        "{params.hmmerprog} {params.outfmt} {params.hmmbuildtype} --cpu {params.hmmercpu} --tblout {output} {input.hmm} {input.query} > /dev/null"
 
 # 14. parse_hmmer
 rule O14_parse_hmmer:
