@@ -1,6 +1,6 @@
 # Birdscanner version 2 (Snakemake version)
 
-- Last modified: 2026-02-10 17:13:34
+- Last modified: 2026-03-16 14:19:57
 - Sign: JN
 
 ## Description
@@ -196,14 +196,14 @@ required software are already available as modules).
 14. [bs2-parse-nhmmer.pl](workflow/scripts/bs2-parse-nhmmer.pl) (1.0)
 15. [bs2-gather-genes.pl](workflow/scripts/bs2-gather-genes.pl) (1.0)
 
-Softwares 13-15 are provided. Software requirements 1-10 can also be
+Softwares 13-15 are provided. Software requirements 1-11 can also be
 taken care of by the [conda system](https://docs.conda.io/) by running the
 pipeline with commands
 
     $ snakemake --use-conda
 
-Note: This requires conda, and is currently mostly untested.
-Furthermore, softwares 11, and 12 still needs to be installed separately
+Note: This requires conda, and is mostly untested.
+Furthermore, 12 still needs to be installed separately
 (currently not in any conda channels).
 
 ## Installing and Running birdscanner2 on Pelle
