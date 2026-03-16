@@ -1,5 +1,5 @@
 # Birdscanner v2_pelle
-# Last modified: 2026-03-13 10:30:57
+# Last modified: 2026-03-16 07:46:27
 # Sign: JN
 
 configfile: "config/config.yaml"
@@ -131,7 +131,7 @@ rule OO7_run_plast:
         maxhitperquery = config["plast"]["maxhitperquery"],
         bargraph = config["plast"]["bargraph"],
         plastcpu = config["plast"]["plastcpu"],
-        plastprog = config["type"]["plastprog"],
+        plastprog = config["type"]["plastprog"]
     shell:
         "plast -p {params.plastprog} -i {input.query} -d run/plast/{wildcards.genome}.split.fas -o {output} -a {params.plastcpu} -max-hit-per-query {params.maxhitperquery} {params.bargraph}"
 
@@ -242,8 +242,9 @@ rule O13_run_hmmer:
         temp("run/hmmer/{genome}.hmmer.out")
     params:
         hmmerprog = config["type"]["hmmerprog"],
+        hmmbuildtype = config["type"]["hmmbuildtype"],
         outfmt = config["hmmer"]["outfmt"],
-        hmmercpu = config["hmmer"]["hmmercpu"],
+        hmmercpu = config["hmmer"]["hmmercpu"]
     conda:
         "envs/hmmer.yaml"
     shell:
